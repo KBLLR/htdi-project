@@ -4,7 +4,7 @@ const MiniCSSExtractPlugin = require('mini-css-extract-plugin')
 const path = require('path')
 
 module.exports = {
-  entry: path.resolve(__dirname, '../src/script.js'),
+  entry: path.resolve(__dirname, '../src/main.js'),
   output: {
     hashFunction: 'xxhash64',
     filename: 'bundle.[contenthash].js',
@@ -14,11 +14,12 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin({
       patterns: [
-        { from: path.resolve(__dirname, '../static') }
+        { from: path.resolve(__dirname, '../static') },
+        { from: path.resolve(__dirname, '../public'), noErrorOnMissing: true }
       ]
     }),
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, '../src/index.html'),
+      template: path.resolve(__dirname, '../index.html'),
       minify: true
     }),
     new MiniCSSExtractPlugin()

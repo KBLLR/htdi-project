@@ -25,12 +25,17 @@ module.exports = merge(
             https: false,
             allowedHosts: 'all',
             hot: false,
-            watchFiles: ['src/**', 'static/**'],
-            static:
-            {
-                watch: true,
-                directory: path.join(__dirname, '../static')
-            },
+            watchFiles: ['src/**', 'static/**', 'public/**'],
+            static: [
+                {
+                    watch: true,
+                    directory: path.join(__dirname, '../public')
+                },
+                {
+                    watch: true,
+                    directory: path.join(__dirname, '../static')
+                }
+            ],
             client:
             {
                 logging: 'none',
