@@ -1,11 +1,5 @@
 console.clear();
 
-import './css/style.css'
-import 'tippy.js/dist/tippy.css';
-import 'tippy.js/animations/scale.css';
-import 'tippy.js/dist/backdrop.css';
-import 'tippy.js/animations/shift-away.css';
-import 'tippy.js/themes/translucent.css';
 import { normalizeWheel } from './js/normalize-wheel/normalizeWheel.js'
 import { SVG, extend as SVGextend, Element as SVGElement } from '@svgdotjs/svg.js'
 import * as THREE from 'three'
