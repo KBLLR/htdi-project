@@ -4,8 +4,8 @@ export class Config {
     static CDN = '';
 
     static ASSETS = [
-        'assets/images/dknight.svg',
-        'assets/images/frame.svg'
+        '/assets/images/dknight.svg',
+        '/assets/images/frame.svg'
     ];
 
     static GUI = /[?&]ui/.test(location.search);
