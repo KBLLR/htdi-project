@@ -9,39 +9,39 @@ import 'tippy.js/themes/translucent.css';
 import { normalizeWheel } from './js/normalize-wheel/normalizeWheel.js'
 import { SVG, extend as SVGextend, Element as SVGElement } from '@svgdotjs/svg.js'
 import * as THREE from 'three'
-import { WebGLRenderer } from "three";
-import { Canvas } from 'glsl-canvas-js';
-import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { BloomEffect, EffectComposer, EffectPass, RenderPass } from "postprocessing";
-import SimplexNoise from 'simplex-noise';
-import tippy, { animateFill } from 'tippy.js';
-import { InteractionManager } from "three.interactive";
+import { WebGLRenderer } from 'three'
+import { Canvas } from 'glsl-canvas-js'
+import { BloomEffect, EffectComposer, EffectPass, RenderPass } from 'postprocessing'
+import SimplexNoise from 'simplex-noise'
+import tippy, { animateFill } from 'tippy.js'
 // import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
-import { Pane } from 'tweakpane';
+import { Pane } from 'tweakpane'
 // import * as TweakpaneImagePlugin from 'tweakpane/dist/tweakpane-image-plugin.min.js';
-import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
+import GUI from 'lil-gui'
 import Stats from 'stats.js'
-import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
-import gsap from "gsap";
+import gsap from 'gsap'
 // import { normalizeWheel } from './js/normalize-wheel/normalizewheel.js'
-import { ImprovedNoise } from 'three/examples/jsm/math/ImprovedNoise.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
-import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass.js';
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { LuminosityShader } from 'three/examples/jsm/shaders/LuminosityShader.js';
-import { SobelOperatorShader } from 'three/examples/jsm/shaders/SobelOperatorShader.js';
-import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js';
-import { CinematicCamera } from 'three/examples/jsm/cameras/CinematicCamera.js';
-import { CopyShader } from 'three/examples/jsm/shaders/CopyShader.js';
-import { Lensflare, LensflareElement } from 'three/examples/jsm/objects/Lensflare.js';
-import { Water } from 'three/examples/jsm/objects/Water2.js';
-import { Reflector } from 'three/examples/jsm/objects/Reflector.js';
-import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
+import {
+  OrbitControls,
+  CinematicCamera,
+  CopyShader,
+  FBXLoader,
+  FXAAShader,
+  GLTFExporter,
+  GLTFLoader,
+  GlitchPass,
+  ImprovedNoise,
+  Lensflare,
+  LensflareElement,
+  LuminosityShader,
+  Reflector,
+  RGBELoader,
+  ShaderPass,
+  SobelOperatorShader,
+  SVGLoader,
+  UnrealBloomPass,
+  Water
+} from 'three-stdlib'
 
 
 ////////////////////////////////////////////////////////////////////
