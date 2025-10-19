@@ -1,0 +1,307 @@
+------------------------------------------------------------------------------ ◉
+# THREE.BAS https://github.com/zadvorsky/three.bas
+
+### Buffer Animation System
+
+THREE Buffer Animation System is an extension for THREE.js. It simplifies the workflow of extending the built-in THREE.js materials to include animation logic in the vertex shader. For an overview of this approach, check out this tutorial series.
+
+The standard way of animating objects in THREE.js is to change the values of position, rotation and scale on the CPU and upload the results to the GPU as a transformation matrix. As the number of objects increases, the volume of data sent to the GPU each frame becomes a bottleneck. THREE.BAS works around this issue by storing additional information on the GPU when the geometry is created (using attributes). The animation state is then determined in the vertex shader based on a small number of uniform values.
+
+------------------------------------------------------------------------------ ◉
+# COORDINATE SPACES
+
+>> Pixel coordinate space {x: viewportWidth, y: viewportHeight}
+>> Normalized Device Coordinates (center of the screen at {x: 0, y: 0})
+>> 3D Coordinates (World Space) starts at center at {x: 0, y: 0, z: 0}
+>> UV Space (Texture Maps) bottom left corner at {u: 0, v: 0}, and moves right and up to {u: 1.0, v: 1.0}
+
+´´´
+window.addEventListener('mousemove', function(e) {
+  var x = (e.clientX / window.innerWidth * 2) - 1;
+  var y = (e.clientY / window.innerHeight * -2) + 1;
+
+  // something awesome
+});
+
+*This converts the position of the pointer on screen from pixel coordinates to  Normalized Device Coordinates.
+
+´´´
+------------------------------------------------------------------------------ ◉
+//==================================================
+//https://threejs.org/docs/#api/en/constants/Textures
+//===================================================
+
+# SCENE
+
+´´´
+var scene = {
+  children: []
+};
+
+var camera = new THREE.PerspectiveCamera();
+var renderer = new Renderer();
+
+´´´
+------------------------------------------------------------------------------ ◉
+# DEFINING GEOMETRY
+
+Properties of vertices are called attributes. Alongside position, a typical vertex will have an attribute called a normal (a 3D point perpendicular to the surface of the model), used for lighting calculations, and a UV coordinate, used for texture mapping. Like JavaScript objects, vertices can have any number of attributes. This is limited only by the quality of your GPU, though you are much more likely to run into other issues before the number of attributes becomes a problem.
+
+var vertex = {
+  position: {x: 0, y: 0, z: 0},
+  normal: {x: 0, y: 0, z: 1},
+  uv: {u: 0, v: 0}
+  // etc...
+};
+
+var mesh = {
+  geometry: {
+    vertices: [
+      // top left corner
+      { position: {x: -100, y:  50, z: 0} },
+      // top right corner
+      { position: {x:  100, y:  50, z: 0} },
+      // bottom right corner
+      { position: {x:  100, y: -50, z: 0} },
+      // bottom left corner
+      { position: {x: -100, y: -50, z: 0} }
+    ]
+  }
+};
+
+------------------------------------------------------------------------------ ◉
+# CAMERA CONTROLS
+https://github.com/yomotsu/camera-controls
+
+Note: If you do not wish to use the entire three.js to reduce file size(tree-shaking for example), make a subset to install.
+
+import {
+	Vector2,
+	Vector3,
+	Vector4,
+	Quaternion,
+	Matrix4,
+	Spherical,
+	Box3,
+	Sphere,
+	Raycaster,
+} from 'three';
+
+const subsetOfTHREE = {
+	Vector2   : Vector2,
+	Vector3   : Vector3,
+	Vector4   : Vector4,
+	Quaternion: Quaternion,
+	Matrix4   : Matrix4,
+	Spherical : Spherical,
+	Box3      : Box3,
+	Sphere    : Sphere,
+	Raycaster : Raycaster,
+};
+
+CameraControls.install( { THREE: subsetOfTHREE } );
+
+------------------------------------------------------------------------------ ◉
+# MATERIALS
+
+### Material Constants https://threejs.org/docs/index.html#api/en/constants/Materials
+
+//These constants define properties common to all material types, with the exception of Texture Combine Operations which only apply to MeshBasicMaterial, MeshLambertMaterial and MeshPhongMaterial.
+//---✧ SIDE
+// Defines which side of faces will be rendered - front, back or both. Default is FrontSide.
+// THREE.FrontSide
+// THREE.BackSide
+// THREE.DoubleSide
+
+//---✧ BLENDING MODE
+NormalBlending is the default. Note that CustomBlending must be set to use Custom Blending Equations.
+
+>> THREE.NoBlending
+>> THREE.NormalBlending
+>> THREE.AdditiveBlending
+>> THREE.SubtractiveBlending
+>> THREE.MultiplyBlending
+>> THREE.CustomBlending
+
+Control the source and destination blending equations for the material's RGB and Alpha sent to the WebGLRenderer for use by WebGL.
+
+Depth Mode
+THREE.NeverDepth
+THREE.AlwaysDepth
+THREE.EqualDepth
+THREE.LessDepth
+THREE.LessEqualDepth
+THREE.GreaterEqualDepth
+THREE.GreaterDepth
+THREE.NotEqualDepth
+
+Which depth function the material uses to compare incoming pixels Z-depth against the current Z-depth buffer value. If the result of the comparison is true, the pixel will be drawn.
+
+>> NeverDepth will never return true.
+>> AlwaysDepth will always return true.
+>> EqualDepth will return true if the incoming pixel Z-depth is equal to the current buffer Z-depth.
+>> LessDepth will return true if the incoming pixel Z-depth is less than the current buffer Z-depth.
+>> LessEqualDepth is the default and will return true if the incoming pixel Z-depth is less than or equal to the current buffer Z-depth.
+>> GreaterEqualDepth will return true if the incoming pixel Z-depth is greater than or equal to the current buffer Z-depth.
+>> GreaterDepth will return true if the incoming pixel Z-depth is greater than the current buffer Z-depth.
+>> NotEqualDepth will return true if the incoming pixel Z-depth is not equal to the current buffer Z-depth.
+
+//---✧ TEXTURE COMBINE OPERATIONS
+
+THREE.MultiplyOperation
+THREE.MixOperation
+THREE.AddOperation
+
+These define how the result of the surface's color is combined with the environment map (if present), for MeshBasicMaterial, MeshLambertMaterial and MeshPhongMaterial.
+MultiplyOperation is the default and multiplies the environment map color with the surface color.
+MixOperation uses reflectivity to blend between the two colors.
+AddOperation adds the two colors.
+
+Stencil Functions
+THREE.NeverStencilFunc
+// THREE.LessStencilFunc
+// THREE.EqualStencilFunc
+// THREE.LessEqualStencilFunc
+// THREE.GreaterStencilFunc
+// THREE.NotEqualStencilFunc
+// THREE.GreaterEqualStencilFunc
+// THREE.AlwaysStencilFunc
+
+// Which stencil function the material uses to determine whether or not to perform a stencil operation.
+
+// NeverStencilFunc will never return true.
+// LessStencilFunc will return true if the stencil reference value is less than the current stencil value.
+// EqualStencilFunc will return true if the stencil reference value is equal to the current stencil value.
+// LessEqualStencilFunc will return true if the stencil reference value is less than or equal to the current stencil value.
+// GreaterStencilFunc will return true if the stencil reference value is greater than the current stencil value.
+// NotEqualStencilFunc will return true if the stencil reference value is not equal to the current stencil value.
+// GreaterEqualStencilFunc will return true if the stencil reference value is greater than or equal to the current stencil value.
+// AlwaysStencilFunc will always return true.
+
+// Stencil Operations
+
+// THREE.ZeroStencilOp
+// THREE.KeepStencilOp
+// THREE.ReplaceStencilOp
+// THREE.IncrementStencilOp
+// THREE.DecrementStencilOp
+// THREE.IncrementWrapStencilOp
+// THREE.DecrementWrapStencilOp
+// THREE.InvertStencilOp
+
+// Which stencil operation the material will perform on the stencil buffer pixel if the provided stencil function passes.
+
+// ZeroStencilOp will set the stencil value to 0.
+// KeepStencilOp will not change the current stencil value.
+// ReplaceStencilOp will replace the stencil value with the specified stencil reference value.
+// IncrementStencilOp will increment the current stencil value by 1.
+// DecrementStencilOp will decrement the current stencil value by 1.
+// IncrementWrapStencilOp will increment the current stencil value by 1. If the value increments past 255 it will be set to 0.
+// DecrementWrapStencilOp will increment the current stencil value by 1. If the value decrements below 0 it will be set to 255.
+// InvertStencilOp will perform a bitwise inversion of the current stencil value.
+
+// Normal map type
+// THREE.TangentSpaceNormalMap
+// THREE.ObjectSpaceNormalMap
+
+// Defines the type of the normal map. For TangentSpaceNormalMap, the information is relative to the underlying surface. For ObjectSpaceNormalMap, the information is relative to the object orientation. Default is TangentSpaceNormalMap.
+
+// GLSL Version
+// THREE.GLSL1
+// THREE.GLSL3
+
+
+### MeshPhysicalMaterial:
+
+- Highly Detailed Objects: MeshPhysicalMaterial is used for objects that require high levels of detail, such as characters in character modeling, detailed architectural elements, or any object that needs physically-based rendering (PBR).
+
+- Realistic Surfaces: It's ideal for objects with realistic surfaces that interact with light in a physically accurate way, like metals, glass, and plastics.
+
+- Realistic Lighting: MeshPhysicalMaterial can take full advantage of advanced lighting and shading techniques, making it suitable for objects in scenes with realistic lighting.
+
+Cars
+Furniture
+People
+Animals
+Plants
+Food
+Metal objects
+Glass objects
+Plastic objects
+
+***
+
+### MeshStandard Material:
+
+- General Use: Standard materials are commonly used for a wide range of objects in 3D scenes. They provide a good balance between realism and performance.
+
+- Everyday Objects: Standard materials are suitable for everyday objects like furniture, walls, and basic 3D assets where a high level of detail and physical accuracy isn't necessary.
+
+- Objects with Textures: When objects in the scene rely on textures for their appearance, standard materials work well.
+
+Game objects
+Architectural models
+Product models
+UI elements
+Icons
+Logos
+Text
+
+***
+
+### MeshBasicMaterial:
+
+- Low Detail Objects: MeshBasicMaterial is used for objects that don't require high levels of detail, and where simplicity is preferred.
+
+- Flat Shading: It's ideal for objects with flat shading and without complex lighting interactions.
+
+- Objects in Simple Scenes: Basic materials are suitable for objects in simple scenes, like placeholders or objects in a scene where realism is not the primary focus.
+
+Billboards
+Wireframes
+Placeholders
+Simple shapes
+Low-poly models
+
+***
+
+------------------------------------------------------------------------------ ◉
+# FILTERS
+
+### Anisotropic Filtering:
+
+In layman's terms, anisotropic filtering retains the "sharpness" of a texture normally lost by MIP map texture's attempts to avoid aliasing. Anisotropic filtering can therefore be said to maintain crisp texture detail at all viewing orientations while providing fast anti-aliased texture filtering.
+
+Example: https://threejs.org/examples/?q=anisotropy#webgl_materials_texture_anisotropy
+Wikipedia: https://en.wikipedia.org/wiki/Anisotropic_filtering
+
+------------------------------------------------------------------------------ ◉
+# CUBE TEXTURE LOADER
+https://threejs.org/docs/#api/en/loaders/CubeTextureLoader
+https://threejs.org/examples/?q=cubemap#webgl_materials_cubemap_dynamic
+https://threejs.org/docs/#api/en/textures
+https://learnopengl.com/Advanced-OpenGL/Cubemaps
+
+------------------------------------------------------------------------------ ◉
+# COLOR SPACE - COLOR MANAGEMENT - Linear sRGBA - sRGBA
+https://threejs.org/docs/#manual/en/introduction/Color-management
+https://en.wikipedia.org/wiki/RGB_color_space
+https://en.wikipedia.org/wiki/Gamma_correction
+https://libpng.org/pub/png/spec/1.2/PNG-GammaAppendix.html
+https://poynton.com/notes/colour_and_gamma/GammaFAQ.html
+https://stackoverflow.com/questions/12524623/what-are-the-practical-differences-when-working-with-colors-in-a-linear-vs-a-no/12894053#12894053
+https://developer.nvidia.com/gpugems/gpugems3/part-iv-image-effects/chapter-24-importance-being-linears
+
+------------------------------------------------------------------------------ ◉
+
+# THREEJS
+https://threejs
+https://threejs.org/docs/#api/en/constants/Textures
+https://threejs.org/docs/#api/geometries/BoxGeometry
+https://threejs.org/docs/#api
+https://discourse.threejs.org/t/three-js-bookshelf/2468
+
+------------------------------------------------------------------------------ ◉
+# GITHUB Repos
+https://github.com/zadvorsky/three.bas
+https://github.com/yomotsu/camera-controls

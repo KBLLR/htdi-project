@@ -6,7 +6,7 @@
 	!.gitignore
 	!.editorconfig
 	!.phpcs.xml.dist
-	!.env.example	
+	!.env.example
 
 # ignore all files starting with . or ~
 .*
@@ -14,6 +14,8 @@
 
 # ignore node/grunt dependency directories
 node_modules/
+
+dist/
 
 # ignore composer vendor directory
 /vendor
@@ -108,4 +110,3 @@ Temporary Items
 *.der
 *.key
 *.pem
-

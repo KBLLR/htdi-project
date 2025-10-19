@@ -1,0 +1,229 @@
+/* ************************************************************ */
+/* ************************************ Grid 5x5 - 9 div grid  */
+
+/* Layout goes with quote:  "why do we keep living like we live in a prison, when the door is wide open"; */
+
+/* <!---------------------- HTML div structure for GRID ------------>
+<div class="parent" id="grid">
+  <div class="div1">
+    <div class="cell">
+      <div class="door">
+        <div class="outer">
+          <div class="inner" id="in01">
+            <div class="cavern"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="div2">
+    <div class="cell">
+      <div class="door">
+        <div class="outer">
+          <div class="inner" id="in01">
+            <div class="cavern"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="div3">
+    <div class="cell">
+      <div class="door">
+        <div class="outer">
+          <div class="inner" id="in01">
+            <div class="cavern"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="div4">
+    <div class="cell">
+      <div class="door">
+        <div class="outer">
+          <div class="inner" id="in01">
+            <div class="cavern"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="div5">
+    <div class="cell">
+      <div class="door">
+        <div class="outer">
+          <div class="inner" id="in01">
+            <div class="cavern"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="div6">
+    <div class="cell">
+      <div class="door">
+        <div class="outer">
+          <div class="inner" id="in01">
+            <div class="cavern"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="div7">
+    <div class="cell">
+      <div class="door">
+        <div class="outer">
+          <div class="inner" id="in01">
+            <div class="cavern"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="div8">
+    <div class="cell">
+      <div class="door">
+        <div class="outer">
+          <div class="inner" id="in01">
+            <div class="cavern"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="div9">
+    <div class="cell">
+      <div class="door">
+        <div class="outer">
+          <div class="inner" id="in01">
+            <div class="cavern"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> */
+
+.parent {
+width: 100vw;
+height: 100vh;
+position: fixed;
+top: 0;   
+z-index: 0;
+display: grid;
+grid-template-columns: repeat(5, 1fr);
+grid-template-rows: repeat(5, 1fr);
+align-items: center;
+column-gap: 0px;
+row-gap: 0px;
+pointer-events: none;
+padding: 8rem;
+ background: linear-gradient(to bottom,
+
+  var(--t) calc(50% - 0.5px), 
+  var(--w) calc(50% - 0.5px), 
+  var(--w) calc(50% + 0.5px), 
+  var(--t) calc(50% + 0.5px)),
+
+  linear-gradient(to right, 
+    var(--t) calc(50% - 0.5px), 
+    var(--w) calc(50% - 0.5px), 
+    var(--w) calc(50% + 0.5px), 
+    var(--t) calc(50% + 0.5px)), 
+  linear-gradient(45deg, 
+    var(--t) calc(50% - 0.5px), 
+    var(--w) calc(50% - 0.5px), 
+    var(--w) calc(50% + 0.5px), 
+    var(--t) calc(50% + 0.5px)), 
+  linear-gradient(-45deg, 
+    var(--t) calc(50% - 0.5px), 
+    var(--w) calc(50% - 0.5px), 
+    var(--w) calc(50% + 0.5px), 
+    var(--t) calc(50% + 0.5px));
+ opacity: 0;
+ visibility: hidden;
+ transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+body.grid-open #grid {
+  opacity: 0.75;
+  visibility: visible;
+}
+
+#grid.visible {
+  opacity: 0.75;
+  visibility: visible;
+}
+
+.div1 { grid-area: 1 / 1 / 2 / 2; }
+.div2 { grid-area: 1 / 5 / 2 / 6; }
+.div3 { grid-area: 3 / 5 / 4 / 6; }
+.div4 { grid-area: 3 / 1 / 4 / 2; }
+.div5 { grid-area: 5 / 1 / 6 / 2; }
+.div6 { grid-area: 5 / 3 / 6 / 4; }
+.div7 { grid-area: 5 / 5 / 6 / 6; }
+.div8 { grid-area: 3 / 3 / 4 / 4; }
+.div9 { grid-area: 1 / 3 / 2 / 4; }
+
+
+.cell { position: relative;}
+.cell:nth-of-type(even) .door::after {content: "⚙︎"; font-size: 8vmin;}
+.cell:nth-of-type(odd) .door::after {content: "⚙︎"; font-size: 8vmin;}
+
+.door {
+  width: 54vmin;
+  height: 71vmin;
+  position: absolute;
+  box-shadow: 0 0 0 1vmin var(--black), 0 0 0 calc(1vmin + 8px) var(--w), 0 0 0 10vmin var(--black);
+  box-sizing: border-box;
+  border-radius: 70vmin 70vmin 0 0 ;
+  transform: translate(-50%, -50%) scale(0.3) translateZ(0px);
+  top: 50%;
+  left: 50%;
+  background-color: var(--yellow04);
+}
+.door::before,.door::after {
+   content: "◉";
+   color: var(--w);
+   font-size: 6vmin;
+   justify-content: center;
+   align-items: center;
+   border-radius: 100%;
+   display: flex;
+   position: absolute;
+   box-sizing: border-box;
+   width: 8vmin;
+   height: 8vmin;
+   left: -10.5vmin;
+   top: calc(50% - 4vmin);
+   bottom: -10vmin;
+   animation: spin 20s linear infinite;
+}
+ @keyframes spin {
+   to {
+     transform: rotate(360deg);
+  }
+}
+.door::after { left: auto; right: -10.5vmin;}
+
+.outer {
+   position: absolute;
+   width: 100%;
+   height: 100%;
+    left: 0;
+   top: 0;
+   background: var(--t);
+   overflow: hidden;
+   border-radius: inherit;
+}
+
+.inner {
+   transform: translateY(-10vmin) translateZ(0px);
+   position: absolute;
+   width: 115%;
+   height: 140%;
+   left: -5%;
+   top: -5%;
+}

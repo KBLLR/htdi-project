@@ -1,0 +1,12 @@
+{
+  "tracks": [
+    {
+      "id": "lucid-space",
+      "title": "Lucid Space",
+      "artist": "Joseph Beg",
+      "duration": "3:12",
+      "file": "/sounds/ES_Lucid_Space-Joseph_Beg.ogg",
+      "description": "Atmospheric pads and gentle pulses for immersive focus sessions."
+    }
+  ]
+}
