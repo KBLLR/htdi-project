@@ -7,6 +7,14 @@
       "duration": "3:12",
       "file": "/sounds/ES_Lucid_Space-Joseph_Beg.ogg",
       "description": "Atmospheric pads and gentle pulses for immersive focus sessions."
+    },
+    {
+      "id": "i-keep-on-walking",
+      "title": "I Keep On Walking",
+      "artist": "Spin Around",
+      "duration": "2:00",
+      "file": "/music/i_keep_on_walking.mp3",
+      "description": "An uplifting and energetic track with a driving beat."
     }
   ]
 }

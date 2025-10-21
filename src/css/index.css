@@ -1,9 +1,10 @@
+@import "./_radix.css";
 /* Radix color tokens */
 @import "@radix-ui/colors/gray.css";
 @import "@radix-ui/colors/plum.css";
 @import "@radix-ui/colors/slate.css";
 @import "@radix-ui/colors/yellow.css";
-@import "@radix-ui/colors/grayDark.css";
+@import "@radix-ui/colors/gray-dark.css";
 
 /* Font faces */
 @import './fonts.css';

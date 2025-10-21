@@ -17,6 +17,8 @@ node_modules/
 
 dist/
 
+.DS_Store
+
 # ignore composer vendor directory
 /vendor
 
@@ -110,3 +112,6 @@ Temporary Items
 *.der
 *.key
 *.pem
+
+.gemini/
+gha-creds-*.json

@@ -1,6 +1,10 @@
-//Loads scene assets.
-@return { Promise } 
-//A promise that returns a collection of assets.
+import { LoadingManager } from 'three';
+
+/**
+ * Loads scene assets.
+ * @return { Promise } 
+ * A promise that returns a collection of assets.
+ */
 
 export function load() {
 

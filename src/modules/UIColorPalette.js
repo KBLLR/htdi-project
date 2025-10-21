@@ -1,4 +1,4 @@
-import '../css/style.css'
+import '@css/style.css'
 
 export default class UiColorPalette {
   constructor() {
@@ -76,5 +76,3 @@ sound.onmousemove = (e) => {
   const random = () => colors[Math.floor(Math.random() * colors.length)];
   document.documentElement.style.cssText = ` --hue: ${random()}; `
 }
-
-

@@ -1,5 +1,28 @@
 import * as THREE from 'three';
-import { WebGLRenderer } from 'three';
+import {
+  WebGLRenderer,
+  PerspectiveCamera,
+  Scene,
+  PointLight,
+  DirectionalLight,
+  MeshStandardMaterial,
+  SphereGeometry,
+  LinearFilter,
+  RGBAFormat,
+  SRGBColorSpace,
+  MeshLambertMaterial,
+  Group,
+  Box3,
+  Vector3,
+  CircleGeometry,
+  RepeatWrapping,
+  Vector2,
+  Clock,
+  PCFSoftShadowMap,
+  ACESFilmicToneMapping,
+  DoubleSide,
+  AdditiveBlending
+} from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Water } from 'three/examples/jsm/objects/Water2.js';
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
@@ -12,13 +35,13 @@ import {
   loadGLTFAsset,
   loadFBXAsset,
   waitForAsset
-} from 'modules/assetRegistry.js';
-import { registerEnvironmentTarget, registerKidMaterialAccessor } from 'modules/sceneManager.js';
+} from '@modules/assetRegistry.js';
+import { registerEnvironmentTarget, registerKidMaterialAccessor } from '@three/sceneManager.js';
 
 export function createExperience() {
-  const canvas1 = document.querySelector('canvas.webgl')
+  const canvas = document.querySelector('canvas.webgl')
 
-  const scene = new THREE.Scene()
+  const scene = new Scene()
 
   // Scene registry for debugging/inspection
   const sceneRegistry = {
@@ -39,31 +62,31 @@ export function createExperience() {
     sceneRegistry[category][name] = data
   }
   window.sceneRegistry = sceneRegistry
-  const paramRender = {
-    canvas: canvas1,
+  const renderParams = {
+    canvas: canvas,
     antialias: true,
     alpha: false,
     powerPreference: "high-performance",
   }
 
-  const renderer = new WebGLRenderer(paramRender);
+  const renderer = new WebGLRenderer(renderParams);
 
 
   ////////////////////////////////////////////////////////////////////
   // PERSPECTIVE CAMERA
   ///////////////////////////////////////////////////////////////////////////
 
-  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, 10000);
+  const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.01, 1000);
   camera.position.set(3, -3, 3);
 
   scene.add(camera)
   register('cameras', 'main', {
     ref: camera,
     type: 'PerspectiveCamera',
-    fov: 60,
+    fov: 50,
     aspect: window.innerWidth / window.innerHeight,
-    near: 0.01,
-    far: 10000,
+    near: 0.1,
+    far: 1000,
     position: camera.position.toArray()
   })
 

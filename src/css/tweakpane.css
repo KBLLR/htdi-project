@@ -1,0 +1,12 @@
+/* Keep pane above canvas/UI and style for glassy look */
+.tp-dfwv {
+    z-index: 40 !important;
+}
+
+:root {
+    --tp-base-background-color: rgba(14, 14, 18, 0.72);
+    --tp-base-shadow-color: rgba(0, 0, 0, 0.35);
+    --tp-blade-background-color: rgba(22, 22, 28, 0.85);
+    --tp-label-foreground-color: #c9d1d9;
+    --tp-input-foreground-color: #e5e7eb;
+}

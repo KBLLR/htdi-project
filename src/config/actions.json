@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "modules": [
+    {
+      "id": "devlog",
+      "title": "DevLog",
+      "buttonId": "info-btn",
+      "params": {
+        "logLevel": { "type": "enum", "options": ["debug", "info", "warn", "error"], "value": "debug" }
+      }
+    },
+    {
+      "id": "tasks",
+      "title": "Tasks",
+      "buttonId": "tasks-btn",
+      "params": {
+        "defaultAssignee": { "type": "string", "value": "" }
+      }
+    },
+    {
+      "id": "deployments",
+      "title": "Deployments",
+      "buttonId": "deployments-btn",
+      "params": {
+        "provider": { "type": "enum", "options": ["vercel", "netlify", "cloudflare"], "value": "vercel" }
+      }
+    },
+    {
+      "id": "music",
+      "title": "Music",
+      "buttonId": "sound-btn",
+      "params": {
+        "autoplay": { "type": "boolean", "value": false },
+        "volume": { "type": "number", "min": 0, "max": 1, "step": 0.01, "value": 0.5 }
+      }
+    },
+    {
+      "id": "sceneGenerator",
+      "title": "Scene Generator",
+      "buttonId": "scene-picker-btn",
+      "params": {
+        "seed": { "type": "number", "min": 0, "max": 1e9, "step": 1, "value": 42 }
+      }
+    },
+    {
+      "id": "ai",
+      "title": "AI",
+      "buttonId": "ai-btn",
+      "params": {
+        "model": { "type": "enum", "options": ["gpt-4o", "gpt-4.1-mini", "llama3.1"], "value": "gpt-4o" }
+      }
+    },
+    {
+      "id": "data",
+      "title": "Data",
+      "buttonId": "data-btn",
+      "params": {
+        "source": { "type": "enum", "options": ["local", "github", "s3"], "value": "local" }
+      }
+    }
+  ]
+}

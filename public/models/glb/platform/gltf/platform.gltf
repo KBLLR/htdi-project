@@ -93,12 +93,12 @@
   "images": [
     {
       "name": "composited_baseColor_opacity",
-      "uri": "plat-skins/001/composited_baseColor_opacity.png",
+      "uri": "/models/glb/platform/plat-skins/001/composited_baseColor_opacity.png",
       "mimeType": "image/png"
     },
     {
       "name": "composited_roughness",
-      "uri": "plat-skins/001/composited_roughness.png",
+      "uri": "/models/glb/platform/plat-skins/001/composited_roughness.png",
       "mimeType": "image/png"
     }
   ],
@@ -126,22 +126,7 @@
       "doubleSided": true
     }
   ],
-  "meshes": [
-    {
-      "name": "Rounded Cube Flat",
-      "primitives": [
-        {
-          "attributes": {
-            "POSITION": 0,
-            "NORMAL": 1,
-            "TEXCOORD_0": 2
-          },
-          "indices": 3,
-          "material": 0
-        }
-      ]
-    }
-  ],
+  "meshes": [],
   "nodes": [
     {
       "translation": [
@@ -180,7 +165,6 @@
         0.20099999010562897,
         0.9999998211860657
       ],
-      "mesh": 0,
       "name": "APP ICON"
     }
   ],

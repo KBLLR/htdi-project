@@ -1,4 +1,4 @@
-import { createScene } from '../modules/sceneFactory.js';
+import { createScene } from '@three/sceneFactory.js';
 
 export const scenes = [
   createScene({
