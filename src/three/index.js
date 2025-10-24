@@ -1,7 +1,28 @@
 import * as THREE from 'three';
+import { Easing } from '@tweenjs/tween.js';
+
+import { EventBus } from '@shared/EventBus.js';
+
+import { enableOverlay, installConsoleTap, devlog } from '@modules/devlog.js';
+
+// Show overlay and mirror console into it
+installConsoleTap({ level: 'debug' });
+enableOverlay();
+
+devlog.info('Booting…');
+
+// Feature modules (aliased)
+import { initialiseDeploymentTimeline } from '@modules/deploymentTimelineUI.js';
+import { getScenes, applyScene, setSceneContext, setEnvironment } from '@three/sceneManager.js';
+import { initialiseScenePicker } from '@modules/scenePickerUI.js';
+import { initDeploymentViewer } from '@modules/deploymentViewer.js';
+import { initialiseMusicPlayer } from '@modules/musicPlayerUI.js';
+
+// Actions Bar: manager + concrete action initializers
+import { ActionsBarManager } from '@modules/actionsBar/ActionsBarManager.js';
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
 import { Water } from 'three/examples/jsm/objects/Water.js';
-import { BloomEffect, DepthOfFieldEffect, EffectComposer, EffectPass, RenderPass } from 'postprocessing';
+import { BloomEffect, DepthOfFieldEffect, EffectComposer, EffectPass, RenderPass, FXAAEffect } from 'postprocessing';
 
 import { loadVideoTextureAsset, loadTextureAsset, loadGLTFAsset, loadFBXAsset, waitForAsset } from '@modules/assetRegistry.js';
 import { registerEnvironmentTarget, registerKidMaterialAccessor } from './sceneManager.js';
@@ -12,6 +33,7 @@ import { createRenderer } from '@three/core/createRenderer.js';
 import { createControls, applyControlsState } from '@three/core/createControls.js';
 import { attachLightsToScene } from '@three/lighting/createLights.js';
 import { createAlphaMaterial, createInnerSphereMaterial, createKidMaterial, createGroundMaterial, loadMaterialsFromJson } from '@three/materials/createDefaultMaterials.js';
+import { ParticleSystem } from '@modules/Particles.js';
 import { SceneRegistry } from '@three/registry/SceneRegistry.js';
 import { setupResize } from '@three/utils/resize.js';
 import { startLoop } from '@three/core/loop.js';
@@ -51,6 +73,7 @@ export async function createExperience() {
 
   // Lights
   const { directional, rotatingPoints, update: updateRotatingLights } = attachLightsToScene(scene);
+  directional.visible = false; // Set directional light to off by default
   register('lights', 'directional', directional);
   register('lights', 'rotatingPoints', rotatingPoints);
 
@@ -319,20 +342,43 @@ export async function createExperience() {
   groupKid.add(water);
   register('meshes', 'water', { ref: water, params: { color: 0xFFDEAD, side: 'DoubleSide', scale: 0.5, flowDirection: [-1, 1], textureSize: [1024, 1024] } });
 
+  // Particles
+  const particles = new ParticleSystem({
+    count: 500,
+    color: '#31FF9C',
+    size: 0.2,
+    textureName: 'star_0.png',
+    velocityFactor: 1,
+    emissionRate: 10,
+    maxAge: 5,
+    areaSize: 10,
+  });
+  particles.visible = false; // Set particles to off by default
+  scene.add(particles);
+  register('particles', 'main', { ref: particles });
+
   // Post-processing
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
 
-  const bloomEffect = new BloomEffect();
+  const bloomEffect = new BloomEffect({
+    intensity: 0.1, // Lower default intensity
+  });
+  bloomEffect.enabled = false; // Set bloom effect to off by default
   const depthOfFieldEffect = new DepthOfFieldEffect(camera, {
     focusDistance: 0.2,
     focalLength: 0.018,
-    bokehScale: 2.5
+    bokehScale: 1.0 // Lower default bokehScale
   });
+  depthOfFieldEffect.enabled = false; // Set depth of field effect to off by default
 
-  composer.addPass(new EffectPass(camera, bloomEffect, depthOfFieldEffect));
+  const fxaaEffect = new FXAAEffect();
+  fxaaEffect.enabled = false; // Set FXAA to off by default
+
+  composer.addPass(new EffectPass(camera, bloomEffect, depthOfFieldEffect, fxaaEffect));
   register('postprocessing', 'bloomEffect', { ref: bloomEffect });
   register('postprocessing', 'depthOfFieldEffect', { ref: depthOfFieldEffect });
+  register('postprocessing', 'fxaaEffect', { ref: fxaaEffect });
   register('postprocessing', 'composer', { ref: composer });
 
   const _stopLoop = startLoop({
@@ -344,6 +390,7 @@ export async function createExperience() {
     outerMesh: outer_Mesh,
     updateRotatingLights,
     mixers,
+    particles,
   });
 
   return {
@@ -364,6 +411,7 @@ export async function createExperience() {
     stopDofTween,
     start: () => { /* The loop is already started by startLoop, this can be a no-op or re-initiate if needed */ },
     stop: () => { if (_stopLoop) _stopLoop(); },
+    setEnvironment,
     get depthOfFieldEffect() {
       return depthOfFieldEffect;
     },

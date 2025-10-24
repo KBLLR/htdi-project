@@ -1,0 +1,231 @@
+// src/config/tweakpane-config.js
+
+const CONFIG = {
+  title: 'HTDI Controls',
+  expanded: true,
+  children: [
+    {
+      type: 'folder',
+      title: 'Scene',
+      expanded: true,
+      children: [
+        {
+          type: 'folder',
+          title: 'Camera',
+          children: [
+            { type: 'binding', path: 'camera.position', label: 'Position' },
+            {
+              type: 'binding',
+              path: 'camera.fov',
+              label: 'FOV',
+              min: 10,
+              max: 150,
+              step: 1,
+              onChange: (cam) => cam.updateProjectionMatrix(),
+            },
+            {
+              type: 'button',
+              title: 'Overview Preset',
+              handler: 'animateCameraPreset',
+              args: ['overview'],
+            },
+            {
+              type: 'button',
+              title: 'Focus Preset',
+              handler: 'animateCameraPreset',
+              args: ['focus'],
+            },
+          ],
+        },
+        {
+          type: 'folder',
+          title: 'Controls',
+          children: [
+            { type: 'binding', path: 'controls.enabled', label: 'Enabled' },
+            { type: 'binding', path: 'controls.autoRotate', label: 'Auto Rotate' },
+            {
+              type: 'binding',
+              path: 'controls.autoRotateSpeed',
+              label: 'AutoRot Speed',
+              min: -10,
+              max: 10,
+              step: 0.1,
+            },
+            { type: 'binding', path: 'controls.enableDamping', label: 'Damping On' },
+            {
+              type: 'binding',
+              path: 'controls.dampingFactor',
+              label: 'Damping',
+              min: 0.01,
+              max: 0.25,
+              step: 0.005,
+            },
+            {
+              type: 'binding',
+              path: 'controls.minDistance',
+              label: 'Min Dist',
+              min: 0.01,
+              max: 20,
+              step: 0.01,
+            },
+            {
+              type: 'binding',
+              path: 'controls.maxDistance',
+              label: 'Max Dist',
+              min: 0.1,
+              max: 100,
+              step: 0.1,
+            },
+            { type: 'binding', path: 'controls.target', label: 'Target' },
+          ],
+        },
+        {
+          type: 'folder',
+          title: 'Lights',
+          children: [
+            {
+              type: 'binding',
+              path: 'sceneRegistry.lights.directional.ref.intensity',
+              label: 'Dir Intensity',
+              min: 0,
+              max: 5,
+              step: 0.01,
+            },
+            { type: 'binding', path: 'sceneRegistry.lights.directional.ref.position', label: 'Dir Position' },
+            { type: 'binding', path: 'sceneRegistry.lights.directional.ref.color', label: 'Dir Color' },
+          ],
+        },
+        {
+          type: 'folder',
+          title: 'Environment',
+          children: [
+            // Environment controls will be added dynamically
+          ],
+        },
+      ],
+    },
+    {
+      type: 'folder',
+      title: 'Rendering',
+      expanded: true,
+      children: [
+        {
+          type: 'folder',
+          title: 'Post-processing',
+          children: [
+            {
+              type: 'folder',
+              title: 'Bloom',
+              children: [
+                { type: 'binding', path: 'sceneRegistry.postprocessing.bloomEffect.enabled', label: 'Enabled' },
+                {
+                  type: 'binding',
+                  path: 'sceneRegistry.postprocessing.bloomEffect.luminanceThreshold',
+                  label: 'Threshold',
+                  min: 0,
+                  max: 1,
+                  step: 0.01,
+                },
+                {
+                  type: 'binding',
+                  path: 'sceneRegistry.postprocessing.bloomEffect.intensity',
+                  label: 'Strength',
+                  min: 0,
+                  max: 5,
+                  step: 0.01,
+                },
+                {
+                  type: 'binding',
+                  path: 'sceneRegistry.postprocessing.bloomEffect.luminanceSmoothing',
+                  label: 'Radius',
+                  min: 0,
+                  max: 1,
+                  step: 0.01,
+                },
+              ],
+            },
+            {
+              type: 'folder',
+              title: 'Depth of Field',
+              children: [
+                { type: 'binding', path: 'sceneRegistry.postprocessing.depthOfFieldEffect.enabled', label: 'Enabled' },
+                {
+                  type: 'binding',
+                  path: 'sceneRegistry.postprocessing.depthOfFieldEffect.focusDistance',
+                  label: 'Focus',
+                  min: 0,
+                  max: 1,
+                  step: 0.01,
+                },
+                {
+                  type: 'binding',
+                  path: 'sceneRegistry.postprocessing.depthOfFieldEffect.bokehScale',
+                  label: 'Aperture',
+                  min: 0,
+                  max: 10,
+                  step: 0.1,
+                },
+              ],
+            },
+            {
+              type: 'folder',
+              title: 'FXAA',
+              children: [
+                { type: 'binding', path: 'sceneRegistry.postprocessing.fxaaEffect.enabled', label: 'Enabled' },
+              ],
+            },
+          ],
+        },
+        {
+          type: 'folder',
+          title: 'Tone Mapping',
+          children: [
+            {
+              type: 'binding',
+              path: 'renderer.toneMappingExposure',
+              label: 'Exposure',
+              min: 0,
+              max: 5,
+              step: 0.01,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: 'folder',
+      title: 'Assets',
+      expanded: true,
+      children: [
+        {
+          type: 'folder',
+          title: 'Models',
+          children: [
+            // Models will be added dynamically
+          ],
+        },
+        {
+          type: 'folder',
+          title: 'Material Library',
+          children: [
+            // Materials will be added dynamically
+          ],
+        },
+        {
+          type: 'folder',
+          title: 'Particles',
+          children: [
+            // Particle controls will be added here
+          ],
+        },
+      ],
+    },
+    {
+      type: 'folder',
+      title: 'Performance',
+      children: [{ type: 'fpsgraph', label: 'FPS' }],
+    },
+  ],
+};
+
+export default CONFIG;

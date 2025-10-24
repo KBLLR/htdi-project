@@ -64,6 +64,29 @@ export function setSceneContext({ scene, renderer, alphaMaterial, innerSphereMat
   console.log('sharedContext after setSceneContext:', sharedContext);
 }
 
+export async function setEnvironment(fileName) {
+  ensureContext();
+  const hdrId = `env:hdr:${fileName}`;
+  const pmremId = `env:pmrem:${fileName}`;
+
+  loadHDRTextureAsset(hdrId, fileName, {
+    path: '/envs/',
+    mapping: THREE.EquirectangularReflectionMapping,
+    name: `${fileName}-hdr`
+  });
+
+  let environmentTexture = null;
+  try {
+    environmentTexture = await resolvePMREMTexture({ id: fileName, environment: { hdr: { file: fileName, path: '/envs/' } } }, hdrId, pmremId);
+  } catch (error) {
+    console.warn('Failed to generate PMREM texture', error);
+    environmentTexture = null;
+  }
+
+  applyEnvironmentTexture(environmentTexture, '#050505');
+  sharedContext.scene.background = environmentTexture;
+}
+
 export function registerEnvironmentTarget(target) {
   if (!target) return;
   environmentMaterials.add(target);
@@ -125,6 +148,7 @@ export async function applyScene(sceneId, overrideContext) {
       || asset.id.startsWith(`scene:background:${activeSceneId}`)
       || asset.id.startsWith(`texture:alpha:${activeSceneId}`)
       || asset.id.startsWith(`texture:kid:${activeSceneId}`)
+      || asset.id === 'particles:main'
     );
     assetsToDispose.forEach(asset => {
       console.log(`Disposing asset: ${asset.id}`);

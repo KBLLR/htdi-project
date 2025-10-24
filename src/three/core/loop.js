@@ -22,6 +22,7 @@ export function startLoop({
   outerMesh,
   updateRotatingLights,
   mixers,
+  particles,
 }) {
   const clock = new Clock();
   let previousTime = 0;
@@ -51,6 +52,11 @@ export function startLoop({
     if (mixers?.cFlow) { mixers.cFlow.update(deltaTime); }
     if (mixers?.kid) { mixers.kid.update(deltaTime); }
     if (mixers?.kid2) { mixers.kid2.update(deltaTime); }
+
+    // Update particles
+    if (particles) {
+      particles.update(elapsedTime);
+    }
 
     // Render
     composer.render(scene, camera);

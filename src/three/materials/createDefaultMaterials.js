@@ -4,6 +4,7 @@
 // - Converts nested color entries (srgb-linear preferred) and clamps numeric ranges
 // - Ignores schema extras (complexIor, transmissionDispersion, subsurfaceRadius) unless mappable
 
+import * as THREE from 'three';
 import {
   MeshStandardMaterial,
   MeshLambertMaterial,

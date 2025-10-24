@@ -105,7 +105,7 @@ export function installConsoleTap({ level = 'debug' } = {}) {
     warn: console.warn.bind(console),
     error: console.error.bind(console),
   };
-  function make(kind, fn) {
+  function make(kind, originalFn) {
     return (...args) => {
       try {
         if (levels.indexOf(kind) >= minIdx) {
@@ -119,7 +119,7 @@ export function installConsoleTap({ level = 'debug' } = {}) {
           bus.emit({ level: kind, ts: timestamp(), message: msg });
         }
       } catch {/*no-op*/ }
-      fn(...args);
+      originalFn(...args);
     };
   }
   console.log = make('debug', orig.log);

@@ -20,6 +20,7 @@ enableOverlay();
 devlog.info('Booting…');
 
 // Feature modules (aliased)
+import { initialiseDeploymentTimeline } from '@modules/deploymentTimelineUI.js';
 import { getScenes, applyScene, setSceneContext } from '@three/sceneManager.js';
 import { initialiseScenePicker } from '@modules/scenePickerUI.js';
 import { initDeploymentViewer } from '@modules/deploymentViewer.js';
@@ -44,7 +45,6 @@ import { initModalService } from '@modules/modalService.js';
 
 // Tweakpane v4.0.5
 import TweakpaneManager from '@modules/TweakpaneManager.js';
-import { attachMaterialsPane } from '@modules/TweakpaneMaterials.js';
 
 // Three (refactored domain)
 import { createExperience } from '@three/index.js';
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const {
     scene,
     renderer,
-    camera,
+    // camera,
     // controls,
     // sceneRegistry,
     alphaMaterial,
@@ -169,7 +169,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!window.__tpManager) {
     window.__tpManager = new TweakpaneManager(experience, { title: 'HTDI Controls', expanded: true });
   }
-  attachMaterialsPane?.(window.__tpManager.pane, experience);
 
   if (import.meta?.hot) {
     window.__reloadTP = () => import.meta.hot.send?.('tweakpane:reload');
@@ -251,7 +250,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('innerSphereMaterial:', innerSphereMaterial);
   setSceneContext({ scene, renderer, alphaMaterial, innerSphereMaterial });
 
-  // const deploymentViewer = initDeploymentViewer();
+  const deploymentViewer = initDeploymentViewer();
 
   const availableScenes = getScenes();
   const scenePicker = initialiseScenePicker({
@@ -275,9 +274,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       .catch((e) => console.error('Failed to load default scene', e));
   }
 
-  // initialiseDeploymentTimeline({
-  //   onOpenDeployment: (url) => deploymentViewer.open(url),
-  // }); // Removed
+  initialiseDeploymentTimeline({
+    onOpenDeployment: (url) => deploymentViewer.open(url),
+  });
 
   // Wire up modal buttons
   wireModalButtons({
