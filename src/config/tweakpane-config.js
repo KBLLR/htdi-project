@@ -117,10 +117,10 @@ const CONFIG = {
               type: 'folder',
               title: 'Bloom',
               children: [
-                { type: 'binding', path: 'sceneRegistry.postprocessing.bloomEffect.enabled', label: 'Enabled' },
+                { type: 'binding', path: 'sceneRegistry.postprocessing.bloomEffect.ref.enabled', label: 'Enabled' },
                 {
                   type: 'binding',
-                  path: 'sceneRegistry.postprocessing.bloomEffect.luminanceThreshold',
+                  path: 'sceneRegistry.postprocessing.bloomEffect.ref.luminanceThreshold',
                   label: 'Threshold',
                   min: 0,
                   max: 1,
@@ -128,7 +128,7 @@ const CONFIG = {
                 },
                 {
                   type: 'binding',
-                  path: 'sceneRegistry.postprocessing.bloomEffect.intensity',
+                  path: 'sceneRegistry.postprocessing.bloomEffect.ref.intensity',
                   label: 'Strength',
                   min: 0,
                   max: 5,
@@ -136,7 +136,7 @@ const CONFIG = {
                 },
                 {
                   type: 'binding',
-                  path: 'sceneRegistry.postprocessing.bloomEffect.luminanceSmoothing',
+                  path: 'sceneRegistry.postprocessing.bloomEffect.ref.luminanceSmoothing',
                   label: 'Radius',
                   min: 0,
                   max: 1,
@@ -148,10 +148,10 @@ const CONFIG = {
               type: 'folder',
               title: 'Depth of Field',
               children: [
-                { type: 'binding', path: 'sceneRegistry.postprocessing.depthOfFieldEffect.enabled', label: 'Enabled' },
+                { type: 'binding', path: 'sceneRegistry.postprocessing.depthOfFieldEffect.ref.enabled', label: 'Enabled' },
                 {
                   type: 'binding',
-                  path: 'sceneRegistry.postprocessing.depthOfFieldEffect.focusDistance',
+                  path: 'sceneRegistry.postprocessing.depthOfFieldEffect.ref.focusDistance',
                   label: 'Focus',
                   min: 0,
                   max: 1,
@@ -159,7 +159,7 @@ const CONFIG = {
                 },
                 {
                   type: 'binding',
-                  path: 'sceneRegistry.postprocessing.depthOfFieldEffect.bokehScale',
+                  path: 'sceneRegistry.postprocessing.depthOfFieldEffect.ref.bokehScale',
                   label: 'Aperture',
                   min: 0,
                   max: 10,
@@ -171,7 +171,7 @@ const CONFIG = {
               type: 'folder',
               title: 'FXAA',
               children: [
-                { type: 'binding', path: 'sceneRegistry.postprocessing.fxaaEffect.enabled', label: 'Enabled' },
+                { type: 'binding', path: 'sceneRegistry.postprocessing.fxaaEffect.ref.enabled', label: 'Enabled' },
               ],
             },
           ],
