@@ -5,7 +5,9 @@ import {
   loadHDRTextureAsset,
   waitForAsset,
   registerAsset,
-  getAssetEntry
+  getAssetEntry,
+  listAssets,
+  disposeAsset
 } from '@modules/assetRegistry.js';
 import { scenes } from '@data/scenes.js';
 
@@ -100,6 +102,7 @@ export function onKidMaterialAvailable(callback) {
 }
 
 export async function applyScene(sceneId, overrideContext) {
+  const startTime = performance.now();
   if (overrideContext) {
     setSceneContext(overrideContext);
   }
@@ -112,6 +115,22 @@ export async function applyScene(sceneId, overrideContext) {
   }
 
   const token = ++activeSceneToken;
+
+  // Dispose of previous scene's assets
+  if (activeSceneId) {
+    const assetsToDispose = listAssets().filter(asset =>
+      asset.id.startsWith(`env:hdr:${activeSceneId}`)
+      || asset.id.startsWith(`env:pmrem:${activeSceneId}`)
+      || asset.id.startsWith(`env:cubemap:${activeSceneId}`)
+      || asset.id.startsWith(`scene:background:${activeSceneId}`)
+      || asset.id.startsWith(`texture:alpha:${activeSceneId}`)
+      || asset.id.startsWith(`texture:kid:${activeSceneId}`)
+    );
+    assetsToDispose.forEach(asset => {
+      console.log(`Disposing asset: ${asset.id}`);
+      disposeAsset(asset.id);
+    });
+  }
 
   applyBackgroundFallback(sceneDef.environment.fallback);
 
@@ -153,6 +172,8 @@ export async function applyScene(sceneId, overrideContext) {
   applyUITheme(sceneDef.ui);
 
   activeSceneId = sceneDef.id;
+  const endTime = performance.now();
+  console.log(`Scene '${sceneId}' loaded in ${((endTime - startTime) / 1000).toFixed(2)} seconds.`);
 }
 
 function ensureContext() {

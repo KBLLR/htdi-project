@@ -23,23 +23,171 @@ export default class TweakpaneManager {
 
     try {
       pane.registerPlugin(Essentials); // provides fpsgraph, etc.
-    } catch {
+    } catch (e) {
       // Essentials is optional; fallback handled below where used
+      console.warn('Failed to register Tweakpane Essentials plugin', e);
     }
 
     if (import.meta?.hot) {
       import.meta.hot.dispose(() => {
         try {
           pane.dispose();
-        } catch { }
+        } catch (e) {
+          // Ignore dispose errors during HMR
+          console.warn('Failed to dispose Tweakpane during HMR', e);
+        }
       });
     }
 
     this.#camera();
     this.#controls();
-    this.#lights();
-    this.#materials();
+    this.#sceneSettings();
+    this.#postprocessing();
+    this.#models();
     this.#perf();
+  }
+
+  // ---------- panels ----------
+
+  #sceneSettings() {
+    const f = this.#folder('Scene Settings');
+    const envFolder = this.#folder('Environment', false);
+    f.add(envFolder);
+
+    const scene = this.experience.scene;
+    const renderer = this.experience.renderer;
+    const materials = this.experience.sceneRegistry?.materials;
+
+    if (scene) {
+      // Skybox (using renderer.toneMappingExposure for overall environment brightness)
+      const skyboxFolder = this.#folder('Skybox', false);
+      envFolder.add(skyboxFolder);
+      this.#bind(skyboxFolder, renderer, 'toneMappingExposure', { label: 'Intensity', min: 0, max: 5, step: 0.01 });
+      // Note: Direct texture change is complex for Tweakpane, skipping for now.
+
+      // Ground
+      const groundFolder = this.#folder('Ground', false);
+      envFolder.add(groundFolder);
+      const groundMaterial = materials?.groundMaterial?.ref;
+      if (groundMaterial && groundMaterial.color) {
+        this.#bind(groundFolder, groundMaterial.color, 'r', { label: 'Color R', min: 0, max: 1, step: 0.001 });
+        this.#bind(groundFolder, groundMaterial.color, 'g', { label: 'Color G', min: 0, max: 1, step: 0.001 });
+        this.#bind(groundFolder, groundMaterial.color, 'b', { label: 'Color B', min: 0, max: 1, step: 0.001 });
+      } else {
+        this.#msg(groundFolder, 'Ground material not found');
+      }
+    } else {
+      this.#msg(envFolder, 'Scene not found');
+    }
+
+    const lightingFolder = this.#folder('Lighting', false);
+    f.add(lightingFolder);
+    const lights = this.experience.sceneRegistry?.lights;
+
+    if (lights) {
+      // Ambient Light (assuming a global ambient light or adding a placeholder)
+      // For now, let's assume there's no explicit ambient light and add a placeholder.
+      const ambientFolder = this.#folder('Ambient', false);
+      lightingFolder.add(ambientFolder);
+      this.#msg(ambientFolder, 'Ambient light not directly controllable via registry');
+
+      // Directional Light
+      const directionalLight = lights.directional?.ref;
+      if (directionalLight) {
+        const directionalFolder = this.#folder('Directional', false);
+        lightingFolder.add(directionalFolder);
+        this.#bind(directionalFolder, directionalLight.color, 'r', { label: 'Color R', min: 0, max: 1, step: 0.001 });
+        this.#bind(directionalFolder, directionalLight.color, 'g', { label: 'Color G', min: 0, max: 1, step: 0.001 });
+        this.#bind(directionalFolder, directionalLight.color, 'b', { label: 'Color B', min: 0, max: 1, step: 0.001 });
+        this.#bind(directionalFolder, directionalLight, 'intensity', { label: 'Intensity', min: 0, max: 5, step: 0.01 });
+        this.#bind(directionalFolder, directionalLight.position, 'x', { label: 'Position X' });
+        this.#bind(directionalFolder, directionalLight.position, 'y', { label: 'Position Y' });
+        this.#bind(directionalFolder, directionalLight.position, 'z', { label: 'Position Z' });
+      } else {
+        this.#msg(lightingFolder, 'Directional light not found');
+      }
+    } else {
+      this.#msg(lightingFolder, 'Lights not found in registry');
+    }
+  }
+
+  #postprocessing() {
+    const f = this.#folder('Post-processing');
+    const effectsFolder = this.#folder('Effects', false);
+    f.add(effectsFolder);
+
+    const pp = this.experience.sceneRegistry?.postprocessing;
+
+    if (!pp) {
+      this.#msg(effectsFolder, 'Post-processing effects missing');
+      return;
+    }
+
+    // Bloom
+    const bloom = pp.bloomEffect?.ref;
+    if (bloom) {
+      const bloomFolder = this.#folder('Bloom', false);
+      effectsFolder.add(bloomFolder);
+      this.#bind(bloomFolder, bloom, 'luminanceThreshold', { label: 'Threshold', min: 0, max: 1, step: 0.01 });
+      this.#bind(bloomFolder, bloom, 'intensity', { label: 'Strength', min: 0, max: 5, step: 0.01 });
+      this.#bind(bloomFolder, bloom, 'luminanceSmoothing', { label: 'Radius', min: 0, max: 1, step: 0.01 });
+    } else {
+      this.#msg(effectsFolder, 'Bloom effect not found');
+    }
+
+    // Depth of Field
+    const dof = pp.depthOfFieldEffect?.ref;
+    if (dof) {
+      const dofFolder = this.#folder('DOF', false);
+      effectsFolder.add(dofFolder);
+      this.#bind(dofFolder, dof, 'focusDistance', { label: 'Focus', min: 0, max: 1, step: 0.01 });
+      this.#bind(dofFolder, dof, 'bokehScale', { label: 'Aperture', min: 0, max: 10, step: 0.1 });
+      // MaxBlur is not a direct property, bokehScale controls the blur amount.
+      this.#msg(dofFolder, 'MaxBlur controlled by Aperture (Bokeh Scale)');
+    } else {
+      this.#msg(effectsFolder, 'Depth of Field effect not found');
+    }
+  }
+
+  #models() {
+    const f = this.#folder('Models');
+    const meshes = this.experience.sceneRegistry?.meshes;
+
+    if (!meshes) {
+      this.#msg(f, 'Models not found in registry');
+      return;
+    }
+
+    const modelNames = ['kid', 'creativeFlow', 'platform']; // Add other model names as needed
+
+    modelNames.forEach(name => {
+      const model = meshes[name]?.ref;
+      if (model) {
+        const modelFolder = this.#folder(name, false);
+        f.add(modelFolder);
+
+        // Position
+        const posFolder = this.#folder('Position', false);
+        modelFolder.add(posFolder);
+        this.#bind(posFolder, model.position, 'x', { label: 'X' });
+        this.#bind(posFolder, model.position, 'y', { label: 'Y' });
+        this.#bind(posFolder, model.position, 'z', { label: 'Z' });
+
+        // Rotation
+        const rotFolder = this.#folder('Rotation', false);
+        modelFolder.add(rotFolder);
+        this.#bind(rotFolder, model.rotation, 'x', { label: 'X', min: -Math.PI, max: Math.PI, step: 0.01 });
+        this.#bind(rotFolder, model.rotation, 'y', { label: 'Y', min: -Math.PI, max: Math.PI, step: 0.01 });
+        this.#bind(rotFolder, model.rotation, 'z', { label: 'Z', min: -Math.PI, max: Math.PI, step: 0.01 });
+
+        // Scale
+        const scaleFolder = this.#folder('Scale', false);
+        modelFolder.add(scaleFolder);
+        this.#bind(scaleFolder, model.scale, 'x', { label: 'X', min: 0.0001, max: 10, step: 0.0001 });
+        this.#bind(scaleFolder, model.scale, 'y', { label: 'Y', min: 0.0001, max: 10, step: 0.0001 });
+        this.#bind(scaleFolder, model.scale, 'z', { label: 'Z', min: 0.0001, max: 10, step: 0.0001 });
+      }
+    });
   }
 
   // ---------- helpers ----------
@@ -104,87 +252,6 @@ export default class TweakpaneManager {
       this.#bind(t, c.target, 'y', { label: 'Target Y' });
       this.#bind(t, c.target, 'z', { label: 'Target Z' });
     }
-  }
-
-  #lights() {
-    const f = this.#folder('Lights');
-    const reg = this.experience.sceneRegistry?.lights;
-
-    if (!reg) {
-      this.#msg(f, 'sceneRegistry.lights missing');
-      return;
-    }
-
-    // Directional
-    const d = reg.directional?.ref;
-    if (d) {
-      const df = this.#folder('Directional', false);
-      this.#bind(df, d, 'intensity', { label: 'Intensity', min: 0, max: 5, step: 0.01 });
-      if (d.color) {
-        ['r', 'g', 'b'].forEach((c) => this.#bind(df, d.color, c, { label: `Color ${c.toUpperCase()}`, min: 0, max: 1, step: 0.001 }));
-      }
-      ['x', 'y', 'z'].forEach((c) => this.#bind(df, d.position, c, { label: `Pos ${c.toUpperCase()}` }));
-    }
-
-    // Rotating points
-    const rp = Array.isArray(reg.rotatingPoints) ? reg.rotatingPoints : [];
-    rp.forEach((item, i) => {
-      const l = item?.ref;
-      if (!l) return;
-      const pf = this.#folder(`Point ${i + 1}`, false);
-      this.#bind(pf, l, 'intensity', { label: 'Intensity', min: 0, max: 20, step: 0.01 });
-      this.#bind(pf, l, 'distance', { label: 'Distance', min: 0, max: 1000, step: 1 });
-      this.#bind(pf, l, 'decay', { label: 'Decay', min: 0, max: 2, step: 0.01 });
-      if (l.color) {
-        ['r', 'g', 'b'].forEach((c) => this.#bind(pf, l.color, c, { label: `Color ${c.toUpperCase()}`, min: 0, max: 1, step: 0.001 }));
-      }
-      ['x', 'y', 'z'].forEach((c) => this.#bind(pf, l.position, c, { label: `Pos ${c.toUpperCase()}` }));
-    });
-  }
-
-  #materials() {
-    const f = this.#folder('Materials');
-    const mats = this.experience.sceneRegistry?.materials;
-
-    if (!mats) {
-      this.#msg(f, 'sceneRegistry.materials missing');
-      return;
-    }
-
-    const add = (mat, title) => {
-      if (!mat) return;
-      const mf = this.#folder(title, false);
-
-      const bind = (k, opts) => (k in mat) && this.#bind(mf, mat, k, opts);
-
-      bind('transparent', { label: 'Transparent' });
-      bind('wireframe', { label: 'Wireframe' });
-      bind('opacity', { label: 'Opacity', min: 0, max: 1, step: 0.01 });
-      bind('roughness', { label: 'Roughness', min: 0, max: 1, step: 0.01 });
-      bind('metalness', { label: 'Metalness', min: 0, max: 1, step: 0.01 });
-      bind('emissiveIntensity', { label: 'Emissive Int', min: 0, max: 10, step: 0.1 });
-
-      if (mat.emissive) {
-        ['r', 'g', 'b'].forEach((c) => this.#bind(mf, mat.emissive, c, { label: `Emissive ${c.toUpperCase()}`, min: 0, max: 1, step: 0.001 }));
-      }
-      if (mat.color) {
-        ['r', 'g', 'b'].forEach((c) => this.#bind(mf, mat.color, c, { label: `Color ${c.toUpperCase()}`, min: 0, max: 1, step: 0.001 }));
-      }
-
-      bind('envMapIntensity', { label: 'EnvMap Int', min: 0, max: 10, step: 0.1 });
-      bind('alphaTest', { label: 'Alpha Test', min: 0, max: 1, step: 0.01 });
-      bind('ior', { label: 'IOR', min: 1, max: 2.33, step: 0.01 });
-      bind('thickness', { label: 'Thickness', min: 0, max: 1, step: 0.01 });
-      bind('specularIntensity', { label: 'Spec Int', min: 0, max: 10, step: 0.1 });
-
-      if (mat.specularColor) {
-        ['r', 'g', 'b'].forEach((c) => this.#bind(mf, mat.specularColor, c, { label: `Specular ${c.toUpperCase()}`, min: 0, max: 1, step: 0.001 }));
-      }
-    };
-
-    add(mats.alphaMat?.ref, 'Outer Mesh');
-    add(mats.innerSphereMaterial?.ref, 'Inner Sphere');
-    add(mats.kidMaterial?.ref, 'Kid');
   }
 
   #perf() {

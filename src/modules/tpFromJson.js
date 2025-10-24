@@ -31,7 +31,7 @@ export function createPane(opts = {}) {
   // HMR-safe cleanup
   if (import.meta?.hot) {
     import.meta.hot.dispose(() => {
-      try { pane.dispose(); } catch { }
+      try { pane.dispose(); } catch (e) { /* Ignore dispose errors during HMR */ console.warn('Failed to dispose Tweakpane during HMR', e); }
     });
   }
 
@@ -146,7 +146,7 @@ export function buildPaneFromJson(experience, json) {
   return {
     pane,
     rebuild(nextJson) {
-      try { pane.children.forEach(ch => ch.dispose?.()); } catch { }
+      try { pane.children.forEach(ch => ch.dispose?.()); } catch (e) { /* Ignore dispose errors during rebuild */ console.warn('Failed to dispose Tweakpane children during rebuild', e); }
       try {
         for (const child of nextJson.children ?? []) buildNode(pane, child, { experience });
       } catch (e) {

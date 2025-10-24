@@ -20,7 +20,6 @@ enableOverlay();
 devlog.info('Booting…');
 
 // Feature modules (aliased)
-import { initialiseDeploymentTimeline } from '@modules/deploymentTimelineUI.js';
 import { getScenes, applyScene, setSceneContext } from '@three/sceneManager.js';
 import { initialiseScenePicker } from '@modules/scenePickerUI.js';
 import { initDeploymentViewer } from '@modules/deploymentViewer.js';
@@ -127,7 +126,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderer,
     camera,
     // controls,
-    sceneRegistry,
+    // sceneRegistry,
     alphaMaterial,
     innerSphereMaterial,
     // materialLibrary,
@@ -135,9 +134,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     applyControlsState,
     animateCameraPreset,
     animateDepthOfField,
-    setDepthOfFieldPreset,
+    // setDepthOfFieldPreset,
+    // stopCameraTween,
+    // stopDofTween,
     // start: startExperience, // Removed as loop is started internally
   } = experience;
+
+  // Actions Bar
+  const actionsBarTarget = document.querySelector('.glass-footer');
+  console.log('Actions Bar Target:', actionsBarTarget);
+
+  // Make the actions bar visible and clickable after the experience is ready
+  actionsBarTarget.classList.add('is-ready');
 
   /* ──────────────────────────────────────────────────────────────────────────
      Modal service hooks
@@ -199,8 +207,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   /* ──────────────────────────────────────────────────────────────────────────
      Actions Bar — JSON-driven registration (config/actions/actions.json)
   ────────────────────────────────────────────────────────────────────────── */
-  const actionsBarTarget = document.querySelector('.glass-footer');
-  console.log('Actions Bar Target:', actionsBarTarget);
   const eventBus = new EventBus();
   const actions = new ActionsBarManager({ target: actionsBarTarget, eventBus });
   // Map action id -> initializer
@@ -245,7 +251,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('innerSphereMaterial:', innerSphereMaterial);
   setSceneContext({ scene, renderer, alphaMaterial, innerSphereMaterial });
 
-  const deploymentViewer = initDeploymentViewer();
+  // const deploymentViewer = initDeploymentViewer();
 
   const availableScenes = getScenes();
   const scenePicker = initialiseScenePicker({

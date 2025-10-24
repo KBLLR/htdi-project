@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
 import { Water } from 'three/examples/jsm/objects/Water.js';
 import { BloomEffect, DepthOfFieldEffect, EffectComposer, EffectPass, RenderPass } from 'postprocessing';
-import { update as tweenUpdate } from '@tweenjs/tween.js';
 
 import { loadVideoTextureAsset, loadTextureAsset, loadGLTFAsset, loadFBXAsset, waitForAsset } from '@modules/assetRegistry.js';
 import { registerEnvironmentTarget, registerKidMaterialAccessor } from './sceneManager.js';
@@ -18,7 +17,7 @@ import { setupResize } from '@three/utils/resize.js';
 import { startLoop } from '@three/core/loop.js';
 
 export async function createExperience() {
-  const canvas1 = document.querySelector('canvas.webgl');
+  const canvas = document.querySelector('canvas.webgl');
   const sceneRegistry = new SceneRegistry();
   const register = sceneRegistry.register.bind(sceneRegistry);
   window.sceneRegistry = sceneRegistry.getAll(); // Expose for debugging
@@ -30,10 +29,10 @@ export async function createExperience() {
   scene.add(camera);
   register('cameras', 'main', { ref: camera, type: 'PerspectiveCamera', fov: camera.fov, aspect: camera.aspect, near: camera.near, far: camera.far, position: camera.position.toArray() });
 
-  const renderer = createRenderer(canvas1);
+  const renderer = createRenderer(canvas);
   register('renderer', 'main', { ref: renderer, config: { useLegacyLights: renderer.useLegacyLights, outputColorSpace: 'SRGBColorSpace', toneMapping: 'ACESFilmicToneMapping', toneMappingExposure: renderer.toneMappingExposure, shadowMap: { enabled: renderer.shadowMap.enabled, type: 'PCFSoftShadowMap' }, clearColor: 0x000000 } });
 
-  const controls = createControls(camera, canvas1);
+  const controls = createControls(camera, canvas);
   register('controls', 'orbit', { enabled: controls.enabled, enableDamping: controls.enableDamping, dampingFactor: controls.dampingFactor, autoRotate: controls.autoRotate, autoRotateSpeed: controls.autoRotateSpeed, enableZoom: controls.enableZoom, minDistance: controls.minDistance, maxDistance: controls.maxDistance, minPolarAngle: controls.minPolarAngle, maxPolarAngle: controls.maxPolarAngle, target: controls.target.toArray() });
 
   setupResize(camera, renderer);
@@ -61,11 +60,34 @@ export async function createExperience() {
     register('materials', name, { ref: material });
   });
 
+  // Video Texture Eye (must be loaded before innerSphereMaterial)
+  const videoEyeAsset = loadVideoTextureAsset('video:eye', {
+    src: '/vid/eye.webm',
+    autoplay: true,
+    muted: true,
+    loop: true,
+    playsInline: true,
+    appendTo: document.body
+  });
+  const videoEye = videoEyeAsset.element;
+  const webmEye = videoEyeAsset.texture;
+
+  // Hide the video element (it should only be used as a texture)
+  videoEye.style.cssText = 'position: absolute; top: -9999px; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none;';
+
+  webmEye.minFilter = THREE.LinearFilter;
+  webmEye.magFilter = THREE.LinearFilter;
+  webmEye.format = THREE.RGBAFormat;
+  webmEye.colorSpace = THREE.SRGBColorSpace;
+  webmEye.offset.y = 0.03;
+  webmEye.repeat.set(0.94, 0.94);
+  register('videos', 'eye', { assetId: 'video:eye', element: videoEye, src: videoEye.src, texture: webmEye });
+
   // Default materials (if not overridden by JSON)
   const alphaMat = createAlphaMaterial();
   register('materials', 'alphaMat', { ref: alphaMat });
 
-  const innerSphereMaterial = createInnerSphereMaterial();
+  const innerSphereMaterial = createInnerSphereMaterial({ map: webmEye });
   register('materials', 'innerSphereMaterial', { ref: innerSphereMaterial });
 
   let kidMaterial = createKidMaterial();
@@ -96,26 +118,6 @@ export async function createExperience() {
   groupKid.add(outer_Mesh);
   register('meshes', 'outerMesh', { ref: outer_Mesh, geometry: { type: 'SphereGeometry', radius: radiusAM, segments: segmentsAM, rings: ringsAM }, position: outer_Mesh.position.toArray(), rotation: [outer_Mesh.rotation.x, outer_Mesh.rotation.y, outer_Mesh.rotation.z] });
 
-  // Video Texture Eye
-  const videoEyeAsset = loadVideoTextureAsset('video:eye', {
-    src: '/vid/eye.webm',
-    autoplay: true,
-    muted: true,
-    loop: true,
-    playsInline: true,
-    hidden: true,
-    appendTo: document.body
-  });
-  const videoEye = videoEyeAsset.element;
-  const webmEye = videoEyeAsset.texture;
-  webmEye.minFilter = THREE.LinearFilter;
-  webmEye.magFilter = THREE.LinearFilter;
-  webmEye.format = THREE.RGBAFormat;
-  webmEye.colorSpace = THREE.SRGBColorSpace;
-  webmEye.offset.y = 0.03;
-  webmEye.repeat.set(0.94, 0.94);
-  register('videos', 'eye', { assetId: 'video:eye', element: videoEye, src: videoEye.src, texture: webmEye });
-
   // Inner World
   const radius = 0.48;
   const segments = 104;
@@ -126,9 +128,14 @@ export async function createExperience() {
   scene.add(inner_World);
   register('meshes', 'innerWorld', { ref: inner_World, geometry: { type: 'SphereGeometry', radius, segments, rings }, material: { type: 'MeshLambertMaterial', transparent: true, opacity: innerSphereMaterial.opacity, emissive: innerSphereMaterial.emissive, emissiveIntensity: innerSphereMaterial.emissiveIntensity, blending: 'AdditiveBlending', envMap: 'HDR equirectangular' }, position: inner_World.position.toArray() });
 
+  // Animation Mixers (mutable object so loop can access them after async loading)
+  const mixers = {
+    kid: null,
+    cFlow: null,
+    kid2: null
+  };
+
   // Kid Model
-  let kidMixer;
-  let kid2Mixer; // Assuming kid2Mixer is still needed
   let kid;
   loadFBXAsset('fbx:kid.walking', 'models/fbx/curiousKid/animations/Walking.fbx')
     .then((object) => {
@@ -136,8 +143,8 @@ export async function createExperience() {
       console.log('Kid FBX object loaded:', kid);
       console.log('Kid animations:', kid.animations);
       if (kid.animations && kid.animations.length > 0) {
-        kidMixer = new THREE.AnimationMixer(kid);
-        const action = kidMixer.clipAction(kid.animations[0]);
+        mixers.kid = new THREE.AnimationMixer(kid);
+        const action = mixers.kid.clipAction(kid.animations[0]);
         console.log('Kid animation action:', action);
         action.play();
       } else {
@@ -159,7 +166,7 @@ export async function createExperience() {
         event.target.material.color.set(0xff0000);
         document.body.style.cursor = "pointer";
       });
-      register('mixers', 'kidMixer', { ref: kidMixer, clips: kid.animations.length });
+      register('mixers', 'kidMixer', { ref: mixers.kid, clips: kid.animations.length });
       register('meshes', 'kid', { ref: kid, scale: kid.scale.toArray(), position: kid.position.toArray(), rotation: kid.rotation.toArray() });
     })
     .catch((error) => {
@@ -168,7 +175,6 @@ export async function createExperience() {
 
   // Creative Flow Model
   let creativeFlow;
-  let cFlowMixer = null;
   loadGLTFAsset('gltf:cFlow4', 'models/glb/flow4/cFlow4.glb')
     .then((gltf) => {
       creativeFlow = gltf.scene;
@@ -185,10 +191,10 @@ export async function createExperience() {
       });
       registerEnvironmentTarget(creativeFlow);
 
-      cFlowMixer = new THREE.AnimationMixer(gltf.scene);
-      const cFlowAction = cFlowMixer.clipAction(gltf.animations[0]);
+      mixers.cFlow = new THREE.AnimationMixer(gltf.scene);
+      const cFlowAction = mixers.cFlow.clipAction(gltf.animations[0]);
       cFlowAction.play();
-      register('mixers', 'cFlowMixer', { ref: cFlowMixer, clips: gltf.animations.length });
+      register('mixers', 'cFlowMixer', { ref: mixers.cFlow, clips: gltf.animations.length });
       register('meshes', 'creativeFlow', { ref: creativeFlow, scale: creativeFlow.scale.toArray(), position: creativeFlow.position.toArray(), rotation: creativeFlow.rotation.toArray() });
     })
     .catch((error) => {
@@ -337,13 +343,11 @@ export async function createExperience() {
     composer,
     outerMesh: outer_Mesh,
     updateRotatingLights,
-    cFlowMixer,
-    kidMixer,
-    kid2Mixer,
+    mixers,
   });
 
   return {
-    canvas: canvas1,
+    canvas,
     scene,
     renderer,
     camera,

@@ -5,6 +5,7 @@ export const scenes = [
     id: 'era',
     name: 'Era of Reflection',
     description: 'Celestial teal ambience with aurora glass panels.',
+    thumbnail: '/thumbnails/era.jpg',
     environment: {
       hdr: { file: 'era-7.hdr', directory: '/envs' },
       cubemap: { directory: '/cubes/cube001' },
@@ -40,6 +41,7 @@ export const scenes = [
     id: 'omega',
     name: 'Omega Gradient',
     description: 'Iridescent dusk hues with crystalline reflections.',
+    thumbnail: '/thumbnails/omega.jpg',
     environment: {
       hdr: { file: 'OMEGA.hdr', directory: '/envs' },
       cubemap: { directory: '/cubes/cube002' },

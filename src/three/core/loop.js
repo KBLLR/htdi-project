@@ -11,9 +11,7 @@ import { update as tweenUpdate } from '@tweenjs/tween.js';
  * @param {import('postprocessing').EffectComposer} options.composer - The Postprocessing EffectComposer.
  * @param {THREE.Mesh} options.outerMesh - The outer mesh object to animate.
  * @param {function(number): void} options.updateRotatingLights - Function to update rotating lights.
- * @param {THREE.AnimationMixer} [options.cFlowMixer] - Animation mixer for creative flow.
- * @param {THREE.AnimationMixer} [options.kidMixer] - Animation mixer for kid model.
- * @param {THREE.AnimationMixer} [options.kid2Mixer] - Animation mixer for second kid model.
+ * @param {object} options.mixers - Object containing animation mixers (kid, cFlow, kid2).
  */
 export function startLoop({
   renderer,
@@ -23,9 +21,7 @@ export function startLoop({
   composer,
   outerMesh,
   updateRotatingLights,
-  cFlowMixer,
-  kidMixer,
-  kid2Mixer,
+  mixers,
 }) {
   const clock = new Clock();
   let previousTime = 0;
@@ -52,9 +48,9 @@ export function startLoop({
     updateRotatingLights(deltaTime);
 
     // Update Animation Mixers
-    if (cFlowMixer) { cFlowMixer.update(deltaTime); }
-    if (kidMixer) { kidMixer.update(deltaTime); }
-    if (kid2Mixer) { kid2Mixer.update(deltaTime); }
+    if (mixers?.cFlow) { mixers.cFlow.update(deltaTime); }
+    if (mixers?.kid) { mixers.kid.update(deltaTime); }
+    if (mixers?.kid2) { mixers.kid2.update(deltaTime); }
 
     // Render
     composer.render(scene, camera);

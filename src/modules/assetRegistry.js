@@ -1,3 +1,4 @@
+// src/modules/assetRegistry.js
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
@@ -11,10 +12,10 @@ const loaders = {
   cube: new THREE.CubeTextureLoader(),
   hdr: new HDRLoader(),
   gltf: new GLTFLoader(),
-  fbx: new FBXLoader()
+  fbx: new FBXLoader(),
 };
 
-const noop = () => {};
+const noop = () => { };
 
 function createDeferred() {
   let resolve = noop;
@@ -27,10 +28,7 @@ function createDeferred() {
 }
 
 function resolveSource(source, options = {}) {
-  if (!options.path) {
-    return source;
-  }
-  return `${options.path}${source}`;
+  return options.path ? `${options.path}${source}` : source;
 }
 
 function notifyListeners(id, resource) {
@@ -47,10 +45,26 @@ function notifyErrorListeners(id, error) {
   listeners.delete(id);
 }
 
-function createDefaultDisposer(resource) {
-  if (!resource) {
-    return noop;
+function disposeMaterial(material) {
+  if (!material) return;
+  if (Array.isArray(material)) {
+    material.forEach(disposeMaterial);
+    return;
   }
+  material.dispose?.();
+}
+
+function disposeObject3D(root) {
+  root.traverse((child) => {
+    if (child.isMesh || child.isLine || child.isPoints) {
+      child.geometry?.dispose?.();
+      disposeMaterial(child.material);
+    }
+  });
+}
+
+function createDefaultDisposer(resource) {
+  if (!resource) return noop;
 
   if (resource.isTexture || resource.isCubeTexture || resource.isWebGLRenderTarget) {
     return () => resource.dispose();
@@ -64,7 +78,7 @@ function createDefaultDisposer(resource) {
     return () => disposeObject3D(resource);
   }
 
-  if (resource.texture && resource.texture.isTexture) {
+  if (resource.texture?.isTexture) {
     return () => {
       resource.texture.dispose();
       if (resource.element && typeof resource.element.remove === 'function') {
@@ -76,36 +90,12 @@ function createDefaultDisposer(resource) {
   return noop;
 }
 
-function disposeObject3D(root) {
-  root.traverse((child) => {
-    if (child.isMesh || child.isLine || child.isPoints) {
-      if (child.geometry && typeof child.geometry.dispose === 'function') {
-        child.geometry.dispose();
-      }
-      disposeMaterial(child.material);
-    }
-  });
-}
-
-function disposeMaterial(material) {
-  if (!material) return;
-  if (Array.isArray(material)) {
-    material.forEach(disposeMaterial);
-    return;
-  }
-  if (typeof material.dispose === 'function') {
-    material.dispose();
-  }
-}
-
 export function registerAsset(id, resource, { type = 'generic', dispose, source, metadata, ready } = {}) {
-  if (!id) {
-    throw new Error('Asset id is required to register.');
-  }
+  if (!id) throw new Error('Asset id is required to register.');
 
+  // replace existing
   if (assets.has(id)) {
-    const entry = assets.get(id);
-    entry.dispose?.();
+    try { assets.get(id)?.dispose?.(); } catch { /* noop */ }
     assets.delete(id);
   }
 
@@ -117,7 +107,7 @@ export function registerAsset(id, resource, { type = 'generic', dispose, source,
     metadata: metadata ?? {},
     dispose: dispose ?? createDefaultDisposer(resource),
     ready: ready ?? null,
-    error: null
+    error: null,
   };
 
   assets.set(id, entry);
@@ -137,8 +127,7 @@ export function registerAsset(id, resource, { type = 'generic', dispose, source,
 }
 
 export function getAsset(id) {
-  const entry = assets.get(id);
-  return entry ? entry.resource : undefined;
+  return assets.get(id)?.resource;
 }
 
 export function getAssetEntry(id) {
@@ -150,23 +139,17 @@ export function hasAsset(id) {
 }
 
 export function listAssets() {
+  // Deliberately omit the raw `resource` to avoid JSON/serialization spam in logs
   return Array.from(assets.values()).map(({ id, type, source, metadata }) => ({
-    id,
-    type,
-    source,
-    metadata
+    id, type, source, metadata,
   }));
 }
 
 export function waitForAsset(id) {
   const entry = assets.get(id);
   if (entry) {
-    if (entry.error) {
-      return Promise.reject(entry.error);
-    }
-    if (entry.ready) {
-      return entry.ready.then(() => entry.resource);
-    }
+    if (entry.error) return Promise.reject(entry.error);
+    if (entry.ready) return entry.ready.then(() => entry.resource);
     return Promise.resolve(entry.resource);
   }
 
@@ -179,40 +162,31 @@ export function waitForAsset(id) {
 
 export function disposeAsset(id) {
   const entry = assets.get(id);
-  if (!entry) {
-    return false;
-  }
+  if (!entry) return false;
 
-  try {
-    entry.dispose?.();
-  } catch (error) {
-    console.warn(`Failed to dispose asset "${id}"`, error);
-  }
-
+  try { entry.dispose?.(); } catch (e) { console.warn(`Failed to dispose asset "${id}"`, e); }
   assets.delete(id);
   listeners.delete(id);
   return true;
 }
 
 export function disposeAllAssets() {
-  Array.from(assets.keys()).forEach(disposeAsset);
+  for (const id of assets.keys()) disposeAsset(id);
 }
 
+/* ──────────────────────────────
+   Texture (2D)
+   ────────────────────────────── */
 export function loadTextureAsset(id, url, options = {}) {
   const existing = assets.get(id);
-  if (existing) {
-    return existing.resource;
-  }
+  if (existing) return existing.resource;
 
   const loader = options.loader ?? loaders.texture;
-  const previousPath = loader.path;
+  const prevPath = loader.path;
+  const prevCrossOrigin = loader.crossOrigin;
 
-  if (options.path) {
-    loader.setPath(options.path);
-  }
-
-  const previousCrossOrigin = loader.crossOrigin;
-  if (options.crossOrigin !== undefined) {
+  if (options.path) loader.setPath(options.path);
+  if (options.crossOrigin !== undefined && typeof loader.setCrossOrigin === 'function') {
     loader.setCrossOrigin(options.crossOrigin);
   }
 
@@ -221,16 +195,16 @@ export function loadTextureAsset(id, url, options = {}) {
   const texture = loader.load(
     url,
     (tex) => {
-      if (options.colorSpace) {
-        tex.colorSpace = options.colorSpace;
-      }
+      if (options.colorSpace) tex.colorSpace = options.colorSpace;
       options.onLoad?.(tex);
       resolve(tex);
     },
     options.onProgress,
     (event) => {
       options.onError?.(event);
-      const error = event instanceof Error ? event : new Error(`Failed to load texture asset "${id}" from "${url}"`);
+      const error = event instanceof Error
+        ? event
+        : new Error(`Failed to load texture asset "${id}" from "${url}"`);
       error.cause = event;
       reject(error);
       assets.delete(id);
@@ -240,58 +214,72 @@ export function loadTextureAsset(id, url, options = {}) {
 
   texture.name = options.name ?? id;
 
+  // transforms & sampling
   if (options.wrapS) texture.wrapS = options.wrapS;
   if (options.wrapT) texture.wrapT = options.wrapT;
+
   if (options.repeat) {
-    const { x = options.repeat[0], y = options.repeat[1] ?? options.repeat[0] } = options.repeat;
-    texture.repeat.set(x, y);
+    if (Array.isArray(options.repeat)) {
+      const [rx, ry = options.repeat[0]] = options.repeat;
+      texture.repeat.set(rx, ry);
+    } else if (typeof options.repeat === 'object') {
+      const { x = 1, y = 1 } = options.repeat;
+      texture.repeat.set(x, y);
+    }
   }
+
+  if (options.offset) {
+    const { x = 0, y = 0 } = options.offset;
+    texture.offset.set(x, y);
+  }
+
+  if (options.center) {
+    const { x = 0.5, y = 0.5 } = options.center;
+    texture.center.set(x, y);
+  }
+
+  if (options.rotation) texture.rotation = options.rotation;
   if (options.magFilter) texture.magFilter = options.magFilter;
   if (options.minFilter) texture.minFilter = options.minFilter;
+  if (options.anisotropy) texture.anisotropy = options.anisotropy;
 
   registerAsset(id, texture, {
     type: 'texture',
     source: resolveSource(url, options),
     metadata: { ready },
-    ready
+    ready,
   });
 
-  if (options.path) {
-    loader.setPath(previousPath ?? '');
-  }
-
-  if (options.crossOrigin !== undefined) {
-    loader.setCrossOrigin(previousCrossOrigin ?? 'anonymous');
+  if (options.path) loader.setPath(prevPath ?? '');
+  if (options.crossOrigin !== undefined && typeof loader.setCrossOrigin === 'function') {
+    loader.setCrossOrigin(prevCrossOrigin ?? 'anonymous');
   }
 
   return texture;
 }
 
+/* ──────────────────────────────
+   CubeTexture (6 faces)
+   ────────────────────────────── */
 export function loadCubeTextureAsset(id, files, options = {}) {
   const existing = assets.get(id);
-  if (existing) {
-    return existing.resource;
-  }
+  if (existing) return existing.resource;
 
   const loader = options.loader ?? loaders.cube;
-  const previousPath = loader.path;
-  const previousCrossOrigin = loader.crossOrigin;
-  if (options.crossOrigin !== undefined) {
+  const prevPath = loader.path;
+  const prevCrossOrigin = loader.crossOrigin;
+
+  if (options.crossOrigin !== undefined && typeof loader.setCrossOrigin === 'function') {
     loader.setCrossOrigin(options.crossOrigin);
   }
-
-  if (options.path) {
-    loader.setPath(options.path);
-  }
+  if (options.path) loader.setPath(options.path);
 
   const { promise: ready, resolve, reject } = createDeferred();
 
   const texture = loader.load(
     files,
     (cubeTexture) => {
-      if (options.colorSpace) {
-        cubeTexture.colorSpace = options.colorSpace;
-      }
+      if (options.colorSpace) cubeTexture.colorSpace = options.colorSpace;
       cubeTexture.generateMipmaps = options.generateMipmaps ?? true;
       cubeTexture.name = options.name ?? id;
       options.onLoad?.(cubeTexture);
@@ -300,7 +288,9 @@ export function loadCubeTextureAsset(id, files, options = {}) {
     options.onProgress,
     (event) => {
       options.onError?.(event);
-      const error = event instanceof Error ? event : new Error(`Failed to load cube texture asset "${id}" from "${options.path ?? ''}"`);
+      const error = event instanceof Error
+        ? event
+        : new Error(`Failed to load cube texture asset "${id}" from "${options.path ?? ''}"`);
       error.cause = event;
       reject(error);
       assets.delete(id);
@@ -310,37 +300,30 @@ export function loadCubeTextureAsset(id, files, options = {}) {
 
   registerAsset(id, texture, {
     type: 'cube-texture',
-    source: {
-      path: options.path ?? null,
-      files: [...files]
-    },
+    source: { path: options.path ?? null, files: [...files] },
     metadata: { ready },
-    ready
+    ready,
   });
 
-  if (options.path) {
-    loader.setPath(previousPath ?? '');
-  }
-
-  if (options.crossOrigin !== undefined) {
-    loader.setCrossOrigin(previousCrossOrigin ?? 'anonymous');
+  if (options.path) loader.setPath(prevPath ?? '');
+  if (options.crossOrigin !== undefined && typeof loader.setCrossOrigin === 'function') {
+    loader.setCrossOrigin(prevCrossOrigin ?? 'anonymous');
   }
 
   return texture;
 }
 
+/* ──────────────────────────────
+   HDR equirectangular (RGBE)
+   ────────────────────────────── */
 export function loadHDRTextureAsset(id, file, options = {}) {
   const existing = assets.get(id);
-  if (existing) {
-    return existing.resource;
-  }
+  if (existing) return existing.resource;
 
   const loader = options.loader ?? loaders.hdr;
-  const previousPath = loader.path;
+  const prevPath = loader.path;
 
-  if (options.path) {
-    loader.setPath(options.path);
-  }
+  if (options.path) loader.setPath(options.path);
 
   const { promise: ready, resolve, reject } = createDeferred();
 
@@ -348,16 +331,18 @@ export function loadHDRTextureAsset(id, file, options = {}) {
     file,
     (hdrTexture) => {
       hdrTexture.name = options.name ?? id;
-      if (options.mapping !== undefined) {
-        hdrTexture.mapping = options.mapping;
-      }
+      // sensible defaults for IBL
+      hdrTexture.mapping = options.mapping ?? THREE.EquirectangularReflectionMapping;
+      hdrTexture.colorSpace = options.colorSpace ?? THREE.LinearSRGBColorSpace;
       options.onLoad?.(hdrTexture);
       resolve(hdrTexture);
     },
     options.onProgress,
     (event) => {
       options.onError?.(event);
-      const error = event instanceof Error ? event : new Error(`Failed to load HDR texture asset "${id}" from "${file}"`);
+      const error = event instanceof Error
+        ? event
+        : new Error(`Failed to load HDR texture asset "${id}" from "${file}"`);
       error.cause = event;
       reject(error);
       assets.delete(id);
@@ -369,27 +354,30 @@ export function loadHDRTextureAsset(id, file, options = {}) {
     type: 'hdr-texture',
     source: resolveSource(file, options),
     metadata: { ready },
-    ready
+    ready,
   });
 
-  if (options.path) {
-    loader.setPath(previousPath ?? '');
-  }
+  if (options.path) loader.setPath(prevPath ?? '');
 
   return texture;
 }
 
+/* ──────────────────────────────
+   GLTF / FBX
+   ────────────────────────────── */
+function disposeGLTF(gltf) {
+  if (gltf.scene) disposeObject3D(gltf.scene);
+  if (Array.isArray(gltf.scenes)) gltf.scenes.forEach(disposeObject3D);
+  if (Array.isArray(gltf.animations)) gltf.animations.length = 0;
+}
+
 export async function loadGLTFAsset(id, url, options = {}) {
   const existing = assets.get(id);
-  if (existing) {
-    return existing.resource;
-  }
+  if (existing) return existing.resource;
 
   const loader = options.loader ?? loaders.gltf;
-  const previousPath = loader.path;
-  if (options.path) {
-    loader.setPath(options.path);
-  }
+  const prevPath = loader.path;
+  if (options.path) loader.setPath(options.path);
 
   try {
     const gltf = await loader.loadAsync(url);
@@ -398,81 +386,55 @@ export async function loadGLTFAsset(id, url, options = {}) {
       source: resolveSource(url, options),
       metadata: {
         animations: gltf.animations?.length ?? 0,
-        scenes: gltf.scenes?.length ?? (gltf.scene ? 1 : 0)
+        scenes: gltf.scenes?.length ?? (gltf.scene ? 1 : 0),
       },
       ready: Promise.resolve(gltf),
-      dispose: () => disposeGLTF(gltf)
+      dispose: () => disposeGLTF(gltf),
     });
     return gltf;
   } catch (error) {
     notifyErrorListeners(id, error);
     throw error;
   } finally {
-    if (options.path) {
-      loader.setPath(previousPath ?? '');
-    }
-  }
-}
-
-function disposeGLTF(gltf) {
-  if (gltf.scene) {
-    disposeObject3D(gltf.scene);
-  }
-  if (Array.isArray(gltf.scenes)) {
-    gltf.scenes.forEach(disposeObject3D);
-  }
-  if (Array.isArray(gltf.animations)) {
-    gltf.animations.length = 0;
+    if (options.path) loader.setPath(prevPath ?? '');
   }
 }
 
 export async function loadFBXAsset(id, url, options = {}) {
   const existing = assets.get(id);
-  if (existing) {
-    return existing.resource;
-  }
+  if (existing) return existing.resource;
 
   const loader = options.loader ?? loaders.fbx;
-  const previousPath = loader.path;
-  if (options.path) {
-    loader.setPath(options.path);
-  }
+  const prevPath = loader.path;
+  if (options.path) loader.setPath(options.path);
 
   try {
     const object = await loader.loadAsync(url);
     registerAsset(id, object, {
       type: 'fbx',
       source: resolveSource(url, options),
-      metadata: {
-        animations: object.animations?.length ?? 0
-      },
+      metadata: { animations: object.animations?.length ?? 0 },
       ready: Promise.resolve(object),
-      dispose: () => disposeObject3D(object)
+      dispose: () => disposeObject3D(object),
     });
     return object;
   } catch (error) {
     notifyErrorListeners(id, error);
     throw error;
   } finally {
-    if (options.path) {
-      loader.setPath(previousPath ?? '');
-    }
+    if (options.path) loader.setPath(prevPath ?? '');
   }
 }
 
+/* ──────────────────────────────
+   Video → VideoTexture (+ DOM element)
+   ────────────────────────────── */
 export function loadVideoTextureAsset(id, options = {}) {
   const existing = assets.get(id);
-  if (existing) {
-    return existing.resource;
-  }
+  if (existing) return existing.resource;
 
-  if (!options.src) {
-    throw new Error(`Video asset "${id}" requires a src option.`);
-  }
-
-  if (typeof document === 'undefined') {
-    throw new Error('Video textures require a DOM environment.');
-  }
+  if (!options.src) throw new Error(`Video asset "${id}" requires a src option.`);
+  if (typeof document === 'undefined') throw new Error('Video textures require a DOM environment.');
 
   const video = options.element ?? document.createElement('video');
   video.id = options.elementId ?? id;
@@ -483,14 +445,8 @@ export function loadVideoTextureAsset(id, options = {}) {
   video.crossOrigin = options.crossOrigin ?? 'anonymous';
   video.setAttribute('muted', '');
 
-  if (options.hidden !== false) {
-    video.style.display = 'none';
-  }
-
   const mountTarget = options.appendTo === false ? null : options.appendTo ?? document.body;
-  if (mountTarget && !video.isConnected) {
-    mountTarget.appendChild(video);
-  }
+  if (mountTarget && !video.isConnected) mountTarget.appendChild(video);
 
   const { promise: ready, resolve, reject } = createDeferred();
 
@@ -501,6 +457,7 @@ export function loadVideoTextureAsset(id, options = {}) {
 
   const handleCanPlay = () => {
     cleanup();
+    console.log(`Video element readyState for '${id}': ${video.readyState}`);
     if (options.autoplay !== false) {
       video.play().catch((error) => {
         console.warn(`Autoplay failed for video asset "${id}"`, error);
@@ -511,7 +468,7 @@ export function loadVideoTextureAsset(id, options = {}) {
 
   const handleError = (event) => {
     cleanup();
-    const error = event?.error ?? event;
+    const error = event?.error ?? event ?? new Error(`Video failed: ${options.src}`);
     reject(error);
     assets.delete(id);
     notifyErrorListeners(id, error);
@@ -525,11 +482,7 @@ export function loadVideoTextureAsset(id, options = {}) {
   texture.colorSpace = options.colorSpace ?? THREE.SRGBColorSpace;
   texture.name = options.name ?? id;
 
-  const resource = {
-    element: video,
-    texture,
-    ready
-  };
+  const resource = { element: video, texture, ready };
 
   registerAsset(id, resource, {
     type: 'video',
@@ -538,16 +491,17 @@ export function loadVideoTextureAsset(id, options = {}) {
     ready,
     dispose: () => {
       texture.dispose();
-      video.pause();
-      if (!options.element && video.isConnected) {
-        video.remove();
-      }
-    }
+      video.pause?.();
+      if (!options.element && video.isConnected) video.remove();
+    },
   });
 
   return resource;
 }
 
+/* ──────────────────────────────
+   Metadata helpers
+   ────────────────────────────── */
 export function updateAssetMetadata(id, updater) {
   const entry = assets.get(id);
   if (!entry) return;
@@ -560,6 +514,9 @@ export function setAssetMetadata(id, metadata) {
   entry.metadata = metadata;
 }
 
+/* ──────────────────────────────
+   Dev convenience (no heavy objects)
+   ────────────────────────────── */
 if (typeof window !== 'undefined') {
   window.assetRegistry = {
     get: getAsset,
@@ -568,6 +525,6 @@ if (typeof window !== 'undefined') {
     list: listAssets,
     wait: waitForAsset,
     dispose: disposeAsset,
-    disposeAll: disposeAllAssets
+    disposeAll: disposeAllAssets,
   };
 }

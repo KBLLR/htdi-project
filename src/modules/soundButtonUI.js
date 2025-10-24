@@ -27,11 +27,9 @@ export function setupSoundButton({ updateTooltipContent, buttonId = 'sound-btn' 
 
   if (import.meta?.hot) {
     import.meta.hot.dispose(() => {
-      try {
-        soundBtn?.classList.remove('is-playing');
-        soundBtn?.removeAttribute('data-playing');
-        soundBtn?.removeAttribute('data-active-track');
-      } catch {}
+    try {
+      // noop
+    } catch { /* noop */ }
     });
   }
 

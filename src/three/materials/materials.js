@@ -1,22 +1,22 @@
-// materials.js — JSON-aware, Three r180-safe material builder
-// - Chooses proper material class per record (metal, dielectric, liquid/crystal, SSS-ish organics)
-// - Maps JSON fields to valid Three.js options only (avoids unsupported props on MeshStandardMaterial)
+// src/three/materials/materials.js
+// JSON-aware, Three r180-safe material builder with optional chaining applied
+// - Chooses proper material class per record (metal, dielectric, transparent/SSS)
+// - Maps JSON fields to valid Three.js options only
 // - Converts nested color entries (srgb-linear preferred) and clamps numeric ranges
-// - Ignores schema extras (complexIor, transmissionDispersion, subsurfaceRadius) unless mappable
 
 import {
-  MeshStandardMaterial,
+  AdditiveBlending,
+  Color,
+  DoubleSide,
   MeshLambertMaterial,
   MeshPhysicalMaterial,
-  DoubleSide,
-  AdditiveBlending,
+  MeshStandardMaterial,
   Vector2,
-  Color,
 } from "three";
 
-/** ─────────────────────────────────────────────────────────────────────────
- *  Helpers
- *  ───────────────────────────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────────────────
+ * Helpers
+ * ───────────────────────────────────────────────────────────────────────── */
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
 
@@ -33,13 +33,13 @@ function pickLinearRGBFromColorArray(colorField) {
   if (Array.isArray(colorField)) {
     // try srgb-linear first
     for (const entry of colorField) {
-      if (entry && entry.colorSpace && entry.colorSpace.toLowerCase() === "srgb-linear" && Array.isArray(entry.color)) {
+      if (entry?.colorSpace?.toLowerCase?.() === "srgb-linear" && Array.isArray(entry?.color)) {
         return entry.color;
       }
     }
     // fallback to first valid
     for (const entry of colorField) {
-      if (entry && Array.isArray(entry.color)) return entry.color;
+      if (Array.isArray(entry?.color)) return entry.color;
     }
   }
 
@@ -49,19 +49,20 @@ function pickLinearRGBFromColorArray(colorField) {
 /** specularColor field is nested: [{ format, color:[ {colorSpace, color:[r,g,b]}, ...] }, ...] */
 function pickSpecularLinearRGB(specularField) {
   if (!Array.isArray(specularField)) return null;
+
   for (const fmt of specularField) {
-    if (!fmt || !Array.isArray(fmt.color)) continue;
+    if (!Array.isArray(fmt?.color)) continue;
     for (const c of fmt.color) {
-      if (c && c.colorSpace && c.colorSpace.toLowerCase() === "srgb-linear" && Array.isArray(c.color)) {
+      if (c?.colorSpace?.toLowerCase?.() === "srgb-linear" && Array.isArray(c?.color)) {
         return c.color;
       }
     }
   }
   // fallback: first numeric triplet we find
   for (const fmt of specularField) {
-    if (!fmt || !Array.isArray(fmt.color)) continue;
+    if (!Array.isArray(fmt?.color)) continue;
     for (const c of fmt.color) {
-      if (c && Array.isArray(c.color)) return c.color;
+      if (Array.isArray(c?.color)) return c.color;
     }
   }
   return null;
@@ -72,9 +73,9 @@ function toThreeColor(rgbArr, fallbackHex = 0xffffff) {
   if (Array.isArray(rgbArr) && rgbArr.length === 3) {
     // Values assumed linear
     c.setRGB(
-      clamp01(rgbArr[0] ?? 1),
-      clamp01(rgbArr[1] ?? 1),
-      clamp01(rgbArr[2] ?? 1)
+      clamp01(rgbArr?.[0] ?? 1),
+      clamp01(rgbArr?.[1] ?? 1),
+      clamp01(rgbArr?.[2] ?? 1)
     );
   }
   return c;
@@ -82,26 +83,23 @@ function toThreeColor(rgbArr, fallbackHex = 0xffffff) {
 
 /** Heuristic classification for which material model to use */
 function classifyMaterialRecord(m) {
-  const category = Array.isArray(m?.category) ? m.category : [];
-  const tags = Array.isArray(m?.tags) ? m.tags : [];
-
-  const isMetal = (isNum(m?.metalness) && m.metalness >= 1) || category.includes("Metal");
+  const isMetal = (isNum(m?.metalness) && m?.metalness >= 1) || m?.category?.includes?.("Metal");
   if (isMetal) return "metal";
 
   const isTransparent =
-    (isNum(m?.transmission) && m.transmission > 0) ||
-    category.includes("Liquid") ||
-    category.includes("Crystal") ||
-    tags.includes("liquid") ||
-    tags.includes("gem") ||
-    tags.includes("gemstone");
+    (isNum(m?.transmission) && m?.transmission > 0) ||
+    m?.category?.includes?.("Liquid") ||
+    m?.category?.includes?.("Crystal") ||
+    m?.tags?.includes?.("liquid") ||
+    m?.tags?.includes?.("gem") ||
+    m?.tags?.includes?.("gemstone");
   if (isTransparent) return "transparent";
 
   const wantsSSS =
     m?.subsurfaceRadius ||
-    category.includes("Human") ||
-    category.includes("Organic") ||
-    tags.includes("sss");
+    m?.category?.includes?.("Human") ||
+    m?.category?.includes?.("Organic") ||
+    m?.tags?.includes?.("sss");
   if (wantsSSS) return "sss";
 
   return "dielectric";
@@ -156,7 +154,7 @@ function pickAllowedOptionsFor(klass, opts) {
   const allow = klass === MeshPhysicalMaterial ? base.concat(physicalExtra) : base;
   const out = {};
   for (const k of allow) {
-    if (opts[k] !== undefined) out[k] = opts[k];
+    if (opts?.[k] !== undefined) out[k] = opts[k];
   }
   return out;
 }
@@ -174,32 +172,31 @@ function mapRecordToMaterialOptions(m) {
   const specColor = specRGB ? toThreeColor(specRGB, 0xffffff) : null;
 
   // Common
-  const roughness = isNum(m?.roughness) ? clamp01(m.roughness) : (kind === "metal" ? 0.1 : kind === "dielectric" ? 0.6 : 0.2);
-  const metalness = kind === "metal" ? 1 : clamp01(isNum(m?.metalness) ? m.metalness : 0);
+  const roughness = isNum(m?.roughness) ? clamp01(m?.roughness) : (kind === "metal" ? 0.1 : kind === "dielectric" ? 0.6 : 0.2);
+  const metalness = kind === "metal" ? 1 : clamp01(isNum(m?.metalness) ? m?.metalness : 0);
 
   // Transmission / SSS approximations (Physical)
   const hasTransmission = kind === "transparent" || kind === "sss";
-  const transmission = hasTransmission ? clamp01(isNum(m?.transmission) ? m.transmission : (kind === "transparent" ? 1 : 0.35)) : 0;
+  const transmission = hasTransmission ? clamp01(isNum(m?.transmission) ? m?.transmission : (kind === "transparent" ? 1 : 0.35)) : 0;
 
-  // Map "transmissionDepth" (dataset) → Three's "thickness" & "attenuationDistance"
-  // Heuristic: thickness in meters-ish; attenuationDistance in meters, > 0
-  const depth = isNum(m?.transmissionDepth) ? Math.max(0, m.transmissionDepth) : (kind === "sss" ? 0.1 : 0.02);
+  // Map "transmissionDepth" → thickness/attenuationDistance
+  const depth = isNum(m?.transmissionDepth) ? Math.max(0, m?.transmissionDepth) : (kind === "sss" ? 0.1 : 0.02);
   const thickness = hasTransmission ? Math.max(0.001, depth) : 0;
 
   // For attenuation, use the base color as scattering tint; distance scaled from depth
   const attenuationColor = hasTransmission ? baseColor.clone() : undefined;
   const attenuationDistance = hasTransmission ? Math.max(0.005, depth * 10) : undefined;
 
-  // IOR is for Physical; use dataset ior for liquids/crystals/human; default 1.5
-  const ior = hasTransmission ? (isNum(m?.ior) ? Math.max(1, m.ior) : (kind === "sss" ? 1.4 : 1.5)) : undefined;
+  // IOR for liquids/crystals/sss; default 1.5 (1.4 for sss)
+  const ior = hasTransmission ? (isNum(m?.ior) ? Math.max(1, m?.ior) : (kind === "sss" ? 1.4 : 1.5)) : undefined;
 
   // Specular only meaningful for MeshPhysicalMaterial with metalness < 1
   const specularColor = specRGB && metalness < 1 ? specColor : undefined;
   const specularIntensity = specularColor ? 1.0 : undefined;
 
-  // Manmade mattes (brick, concrete, blackboard) want higher roughness
-  if (Array.isArray(m?.category) && m.category.includes("Manmade") && metalness < 1 && !hasTransmission) {
-    // preserve dataset roughness if provided
+  // Manmade mattes can prefer higher roughness (respect provided value if set)
+  if (m?.category?.includes?.("Manmade") && metalness < 1 && !hasTransmission) {
+    // keep dataset-provided roughness if any
   }
 
   return {
@@ -223,16 +220,16 @@ function mapRecordToMaterialOptions(m) {
   };
 }
 
-/** ─────────────────────────────────────────────────────────────────────────
- *  Public factory helpers (unchanged signatures, with sane values)
- *  ───────────────────────────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────────────────
+ * Public factory helpers
+ * ───────────────────────────────────────────────────────────────────────── */
 
 export function createAlphaMaterial(options = {}) {
   return new MeshStandardMaterial({
     transparent: true,
     side: DoubleSide,
     alphaTest: 0.5,
-    roughness: 1, // clamp to valid range
+    roughness: 1,
     wireframe: true,
     fog: false,
     ...options,
@@ -251,7 +248,6 @@ export function createInnerSphereMaterial(options = {}) {
     precision: "highp",
     fog: false,
     envMap: null,
-    map: options.map, // Add map option here
     ...options,
   });
 }
@@ -283,11 +279,9 @@ export function createGroundMaterial(options = {}) {
   });
 }
 
-/** ─────────────────────────────────────────────────────────────────────────
- *  Main: load & build materials from JSON
- *  materialsJsonUrl: URL to an array of records (see materials.json)
- *  returns { [name]: THREE.Material }
- *  ───────────────────────────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────────────────
+ * Load & build materials from JSON
+ * ───────────────────────────────────────────────────────────────────────── */
 export async function loadMaterialsFromJson(materialsJsonUrl) {
   const res = await fetch(materialsJsonUrl);
   if (!res?.ok) {
@@ -303,13 +297,16 @@ export async function loadMaterialsFromJson(materialsJsonUrl) {
     return {};
   }
 
-  const records = Array.isArray(data) ? data : Array.isArray(data?.materials) ? data.materials : [];
+  const records =
+    Array.isArray(data) ? data :
+      Array.isArray(data?.materials) ? data.materials :
+        [];
+
   if (!records.length) {
     console.warn("No material records found in JSON.");
     return {};
   }
 
-  /** Build */
   const out = {};
   for (const m of records) {
     const name = m?.name;
@@ -322,26 +319,19 @@ export async function loadMaterialsFromJson(materialsJsonUrl) {
     let material;
 
     if (kind === "metal") {
-      // Metals: standard model (no ior/specularColor on Standard)
       const opts = pickAllowedOptionsFor(MeshStandardMaterial, options);
-      // ensure full metal
       opts.metalness = 1;
       material = new MeshStandardMaterial(opts);
     } else if (kind === "transparent" || kind === "sss") {
-      // Liquids/Crystals/SSS-ish: physical with transmission, thickness, attenuation
       const opts = pickAllowedOptionsFor(MeshPhysicalMaterial, options);
-      // guard: specular only meaningful for non-metals
-      if (opts.metalness >= 1) {
+      if ((opts?.metalness ?? 0) >= 1) {
         delete opts.specularColor;
         delete opts.specularIntensity;
       }
       material = new MeshPhysicalMaterial(opts);
     } else {
-      // Dielectrics (plastics, stone, brick, concrete, etc.)
       const opts = pickAllowedOptionsFor(MeshStandardMaterial, options);
-      // Ensure non-metal
-      opts.metalness = clamp01(Math.min(opts.metalness ?? 0, 0.95));
-      // Remove physical-only props if any sneaked in
+      opts.metalness = clamp01(Math.min(opts?.metalness ?? 0, 0.95));
       delete opts.ior;
       delete opts.transmission;
       delete opts.thickness;
