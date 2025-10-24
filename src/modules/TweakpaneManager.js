@@ -101,9 +101,15 @@ export default class TweakpaneManager {
       const model = meshes[name]?.ref;
       if (model) {
         const modelFolder = modelsFolder.addFolder({ title: name, expanded: false });
-        this.addBinding(modelFolder, { path: `sceneRegistry.meshes.${name}.ref.position`, label: 'Position' });
-        this.addBinding(modelFolder, { path: `sceneRegistry.meshes.${name}.ref.rotation`, label: 'Rotation' });
-        this.addBinding(modelFolder, { path: `sceneRegistry.meshes.${name}.ref.scale`, label: 'Scale' });
+        modelFolder.addBinding(model.position, 'x', { label: 'Position X' });
+        modelFolder.addBinding(model.position, 'y', { label: 'Position Y' });
+        modelFolder.addBinding(model.position, 'z', { label: 'Position Z' });
+        modelFolder.addBinding(model.rotation, 'x', { label: 'Rotation X', min: -Math.PI, max: Math.PI, step: 0.01 });
+        modelFolder.addBinding(model.rotation, 'y', { label: 'Rotation Y', min: -Math.PI, max: Math.PI, step: 0.01 });
+        modelFolder.addBinding(model.rotation, 'z', { label: 'Rotation Z', min: -Math.PI, max: Math.PI, step: 0.01 });
+        modelFolder.addBinding(model.scale, 'x', { label: 'Scale X', min: 0.0001, max: 10, step: 0.0001 });
+        modelFolder.addBinding(model.scale, 'y', { label: 'Scale Y', min: 0.0001, max: 10, step: 0.0001 });
+        modelFolder.addBinding(model.scale, 'z', { label: 'Scale Z', min: 0.0001, max: 10, step: 0.0001 });
 
         const materialsFolder = modelFolder.addFolder({ title: 'Materials', expanded: false });
         const uniqueMaterials = new Map();

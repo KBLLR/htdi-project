@@ -54,6 +54,28 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: 'dist',
       sourcemap: true,
+      chunkSizeWarningLimit: 1000, // Increase limit to 1MB
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('three') || id.includes('postprocessing')) {
+                return 'vendor-three';
+              }
+              if (id.includes('tippy.js') || id.includes('tweakpane') || id.includes('lil-gui') || id.includes('aos') || id.includes('augmented-ui') || id.includes('@tweakpane/plugin-essentials')) {
+                return 'vendor-ui';
+              }
+              if (id.includes('gsap') || id.includes('@tweenjs/tween.js') || id.includes('popmotion')) {
+                return 'vendor-animation';
+              }
+              if (id.includes('pixi.js') || id.includes('@pixi/filter-kawase-blur')) {
+                return 'vendor-pixi';
+              }
+              return 'vendor'; // Catch-all for other node_modules
+            }
+          },
+        },
+      },
     },
 
     plugins: [

@@ -44,7 +44,7 @@ import { setupSoundButton } from '@modules/soundButtonUI.js';
 import { initModalService } from '@modules/modalService.js';
 
 // Tweakpane v4.0.5
-import TweakpaneManager from '@modules/TweakpaneManager.js';
+
 
 // Three (refactored domain)
 import { createExperience } from '@three/index.js';
@@ -166,17 +166,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   /* ──────────────────────────────────────────────────────────────────────────
      Tweakpane v4.0.5 (JSON + dynamic Materials)
   ────────────────────────────────────────────────────────────────────────── */
-  if (!window.__tpManager) {
-    window.__tpManager = new TweakpaneManager(experience, { title: 'HTDI Controls', expanded: true });
-  }
+  if (import.meta.env.DEV) {
+    import('@modules/TweakpaneManager.js').then(({ default: TweakpaneManager }) => {
+      if (!window.__tpManager) {
+        window.__tpManager = new TweakpaneManager(experience, { title: 'HTDI Controls', expanded: true });
+      }
 
-  if (import.meta?.hot) {
-    window.__reloadTP = () => import.meta.hot.send?.('tweakpane:reload');
-    import.meta.hot.accept();
+      if (import.meta?.hot) {
+        window.__reloadTP = () => import.meta.hot.send?.('tweakpane:reload');
+        import.meta.hot.accept();
+      }
+      document.addEventListener('keydown', (e) => {
+        if (e.altKey && (e.key === 'r' || e.key === 'R')) window.__reloadTP?.();
+      });
+    });
   }
-  document.addEventListener('keydown', (e) => {
-    if (e.altKey && (e.key === 'r' || e.key === 'R')) window.__reloadTP?.();
-  });
 
   /* ──────────────────────────────────────────────────────────────────────────
      Music player + sound button (FIXED)

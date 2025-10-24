@@ -78,7 +78,7 @@ export async function createExperience() {
   register('lights', 'rotatingPoints', rotatingPoints);
 
   // Materials from JSON
-  const loadedMaterials = await loadMaterialsFromJson('/src/config/materials.json');
+  const loadedMaterials = await loadMaterialsFromJson('/materials.json');
   Object.entries(loadedMaterials).forEach(([name, material]) => {
     register('materials', name, { ref: material });
   });
