@@ -11,7 +11,28 @@ export default class TweakpaneManager {
     this.experience = experience;
 
     const { title = TweakpaneConfig.title, expanded = TweakpaneConfig.expanded } = opts;
-    const pane = (this.pane = new Pane({ title, expanded }));
+    const pane = (this.pane = new Pane({ title, expanded, container: document.body }));
+
+    // Add logo to Tweakpane header
+    const titleElement = pane.element.querySelector('.tp-rotv_t');
+    if (titleElement) {
+      const logoImg = document.createElement('img');
+      logoImg.src = '/cursor/logo.svg'; // Path to your logo
+      logoImg.alt = 'Logo';
+      logoImg.style.cssText = 'height: 1.5em; margin-right: 0.5em; vertical-align: middle;';
+      titleElement.prepend(logoImg);
+    }
+
+    // Get canvas element from experience object
+    this.canvas = experience.canvas; // Assuming experience object has a canvas property
+
+    // Add expanded class to the pane element itself (not parent)
+    if (expanded) {
+      pane.element.classList.add('expanded');
+      if (this.canvas) {
+        this.canvas.style.pointerEvents = 'none';
+      }
+    }
 
     if (typeof pane.addBinding !== 'function') {
       throw new Error('TweakpaneManager: v4 API not found. Install tweakpane@4.0.5.');
@@ -37,7 +58,20 @@ export default class TweakpaneManager {
     this.addModels();
     this.addMaterials();
     this.addParticles();
-    this.addEnvironmentControls();
+    // Toggle canvas pointer events based on Tweakpane expanded state
+    pane.on('fold', () => {
+      if (this.canvas) {
+        this.canvas.style.pointerEvents = 'auto';
+      }
+      pane.element.classList.remove('expanded');
+    });
+
+    pane.on('unfold', () => {
+      if (this.canvas) {
+        this.canvas.style.pointerEvents = 'none';
+      }
+      pane.element.classList.add('expanded');
+    });
   }
 
   buildPaneFromConfig(children, container) {

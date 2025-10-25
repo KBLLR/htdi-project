@@ -2,12 +2,12 @@
 
 const CONFIG = {
   title: 'HTDI Controls',
-  expanded: true,
+  expanded: false,
   children: [
     {
       type: 'folder',
       title: 'Scene',
-      expanded: true,
+      expanded: false,
       children: [
         {
           type: 'folder',
@@ -51,7 +51,7 @@ const CONFIG = {
               max: 10,
               step: 0.1,
             },
-            { type: 'binding', path: 'controls.enableDamping', label: 'Damping On' },
+            { type: 'binding', path: 'controls.enableDamping', label: 'Damping On', initialValue: true },
             {
               type: 'binding',
               path: 'controls.dampingFactor',
@@ -107,7 +107,7 @@ const CONFIG = {
     {
       type: 'folder',
       title: 'Rendering',
-      expanded: true,
+      expanded: false,
       children: [
         {
           type: 'folder',
@@ -195,7 +195,7 @@ const CONFIG = {
     {
       type: 'folder',
       title: 'Assets',
-      expanded: true,
+      expanded: false,
       children: [
         {
           type: 'folder',

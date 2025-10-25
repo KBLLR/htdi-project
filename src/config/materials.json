@@ -1,0 +1,2015 @@
+[
+  {
+    "name": "Aluminum",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.916, 0.923, 0.924]
+      },
+      {
+        "colorSpace": "acescg",
+        "color": [0.918, 0.922, 0.923]
+      }
+    ],
+    "metalness": 1,
+    "specularColor": [
+      {
+        "format": ["Gulbrandsen"],
+        "color": [
+          {
+            "colorSpace": "srgb-linear",
+            "color": [0.989, 0.989, 0.972]
+          },
+          {
+            "colorSpace": "acescg",
+            "color": [0.985, 0.989, 0.993]
+          }
+        ]
+      },
+      {
+        "format": ["F82"],
+        "color": [
+          {
+            "colorSpace": "srgb-linear",
+            "color": [0.91, 0.936, 0.959]
+          },
+          {
+            "colorSpace": "acescg",
+            "color": [0.921, 0.934, 0.955]
+          }
+        ]
+      }
+    ],
+    "roughness": 0,
+    "complexIor": [
+      {
+        "colorSpace": "srgb-linear",
+        "n": [0.728978, 0.588215, 0.78354],
+        "k": [6.45971, 5.19646, 4.37746]
+      },
+      {
+        "colorSpace": "acescg",
+        "n": [0.73826, 0.58846, 0.401312],
+        "k": [5.76125, 5.26448, 4.35851]
+      }
+    ],
+    "density": [2700],
+    "category": ["Metal"],
+    "tags": ["aluminium", "mirror"],
+    "references": [
+      {
+        "title": "Refractive index database",
+        "author": "Polyanskiy, M. N.",
+        "url": "https://refractiveindex.info/?shelf=main&book=Al&page=Cheng",
+        "accessed": "2025-06-26"
+      },
+      {
+        "title": "Autodesk Arnold Documentation",
+        "author": "Arnold User Guide",
+        "publisher": "Autodesk Inc.",
+        "url": "https://help.autodesk.com/view/ARNOL/ENU/?guid=arnold_user_guide_ac_standard_surface_ac_standard_base_html#metalness",
+        "accessed": "2025-01-25"
+      },
+      {
+        "title": "Aluminium",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Aluminium&oldid=1271633189",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-25"
+      },
+      {
+        "title": "Density",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Density&oldid=1271894167",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-25"
+      },
+      {
+        "title": "Mirror",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Mirror&oldid=1268984936",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-25"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/aluminum.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/aluminum.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/aluminum.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/aluminum.avif"
+      }
+    ]
+  },
+  {
+    "name": "Banana",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.634, 0.532, 0.111]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0.5,
+    "ior": 1.5,
+    "category": ["Organic"],
+    "references": [
+      {
+        "title": "Spectral Materials Database",
+        "author": "Jakubiec, J. A.",
+        "url": "https://spectraldb.com/measurements/00379/",
+        "accessed": "2025-01-25"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/banana.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/banana.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/banana.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/banana.avif"
+      }
+    ]
+  },
+  {
+    "name": "Beryllium",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.539, 0.533, 0.534]
+      },
+      {
+        "colorSpace": "acescg",
+        "color": [0.537, 0.534, 0.534]
+      }
+    ],
+    "metalness": 1,
+    "specularColor": [
+      {
+        "format": ["Gulbrandsen"],
+        "color": [
+          {
+            "colorSpace": "srgb-linear",
+            "color": [0.549, 0.503, 0.364]
+          },
+          {
+            "colorSpace": "acescg",
+            "color": [0.504, 0.509, 0.545]
+          }
+        ]
+      },
+      {
+        "format": ["F82"],
+        "color": [
+          {
+            "colorSpace": "srgb-linear",
+            "color": [0.731, 0.738, 0.755]
+          },
+          {
+            "colorSpace": "acescg",
+            "color": [0.734, 0.738, 0.752]
+          }
+        ]
+      }
+    ],
+    "roughness": 0,
+    "complexIor": [
+      {
+        "colorSpace": "srgb-linear",
+        "n": [3.21038, 3.32907, 3.77105],
+        "k": [3.29815, 3.11669, 2.66995]
+      },
+      {
+        "colorSpace": "acescg",
+        "n": [3.36492, 3.30825, 3.09051],
+        "k": [3.16402, 3.13463, 3.12791]
+      }
+    ],
+    "density": [1850],
+    "category": ["Metal"],
+    "references": [
+      {
+        "title": "Refractive index database",
+        "author": "Polyanskiy, M. N.",
+        "url": "https://refractiveindex.info/?shelf=main&book=Be&page=Rakic-BB",
+        "accessed": "2025-06-18"
+      },
+      {
+        "title": "Beryllium",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Beryllium&oldid=1295895956",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-06-18"
+      },
+      {
+        "title": "Density",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Density&oldid=1271894167",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-06-18"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/beryllium.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/beryllium.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/beryllium.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/beryllium.avif"
+      }
+    ]
+  },
+  {
+    "name": "Blackboard",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.039, 0.039, 0.039]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0.9,
+    "ior": 1.5,
+    "category": ["Manmade"],
+    "references": [
+      {
+        "title": "Spectral Materials Database",
+        "author": "Jakubiec, J. A.",
+        "url": "https://spectraldb.com/measurements/00079/",
+        "accessed": "2025-01-25"
+      },
+      {
+        "title": "Spectrophotometer Measurement",
+        "author": "Palmqvist, A.",
+        "url": "https://github.com/AntonPalmqvist/physically-based-api/tree/main/data/materials/blackboard/",
+        "publisher": "Physically Based Database",
+        "accessed": "2025-01-25"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/blackboard.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/blackboard.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/blackboard.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/blackboard.avif"
+      }
+    ]
+  },
+  {
+    "name": "Blood",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.64448, 0.003, 0.005]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0,
+    "ior": 1.35,
+    "transmission": 1,
+    "transmissionDepth": 0.08,
+    "transmissionDispersion": 54,
+    "density": [1060],
+    "viscosity": [2.35, 4, 2.78],
+    "surfaceTension": 56,
+    "category": ["Human"],
+    "description": "The color of blood depends on its oxygen level. When there is plenty of oxygen, the color is a brighter red. The reason is because of a protein called hemoglobin, which carries the oxygen in your blood. When hemoglobin has a full oxygen load, it has a bright red color, and when it's deoxygenated it's a darker red. For example, arterial and capillary blood is bright, and venous blood is dark.",
+    "tags": ["liquid"],
+    "references": [
+      {
+        "title": "Blood",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Blood&oldid=1264714220",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-11"
+      },
+      {
+        "title": "Blood Red",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Blood_red&oldid=1217643853",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-25"
+      },
+      {
+        "title": "Hemorheology",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Hemorheology&oldid=1229971521",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-25"
+      },
+      {
+        "title": "Surface tension",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Surface_tension&oldid=1304099149#Values",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-08-30"
+      },
+      {
+        "title": "Refractive index database",
+        "author": "Polyanskiy, M. N.",
+        "url": "https://refractiveindex.info/?shelf=other&book=blood&page=Liu",
+        "accessed": "2025-07-22"
+      },
+      {
+        "title": "Density of Blood",
+        "author": "Shmukler, M., Elert, G. (Ed.)",
+        "url": "https://hypertextbook.com/facts/2004/MichaelShmukler.shtml",
+        "publisher": "The Physics Factbook",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "A Simple Quantitative Bedside Test to Determine Methemoglobin",
+        "author": "Shihana, F., Dissanayake, D. M., Buckley, N. A. & Dawson, A. H.",
+        "url": "https://www.annemergmed.com/article/S0196-0644(09)01281-5/fulltext",
+        "publisher": "Annals of emergency medicine",
+        "volume": "55",
+        "issue": "2",
+        "pages": "184--189",
+        "year": "2009",
+        "doi": "https://doi.org/10.1016/j.annemergmed.2009.07.022"
+      },
+      {
+        "title": "Liquids - Dynamic Viscosities",
+        "url": "https://www.engineeringtoolbox.com/absolute-viscosity-liquids-d_1259.html",
+        "publisher": "The Engineering ToolBox",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Blood Rheology: Key Parameters, Impact on Blood Flow, Role in Sickle Cell Disease and Effects of Exercise",
+        "author": "Nader, E., Skinner, S., Romana, M., Fort, R., Lemonne, N., Guillot, N., ... & Connes, P.",
+        "url": "https://www.frontiersin.org/articles/10.3389/fphys.2019.01329/full",
+        "publisher": "Frontiers in physiology",
+        "volume": "10",
+        "pages": "1329",
+        "year": "2019",
+        "doi": "https://doi.org/10.3389/fphys.2019.01329"
+      },
+      {
+        "title": "Hybrido Viscosity Table",
+        "author": "RealFlow 10 Documentation",
+        "publisher": "Next Limit Technologies",
+        "url": "https://nextlimitsupport.atlassian.net/wiki/spaces/rf2016docs/pages/5497120/Hybrido+Viscosity+Table",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Viscosity of Whole Blood",
+        "url": "https://wiki.anton-paar.com/en/whole-blood/",
+        "publisher": "Anton Paar GmbH",
+        "accessed": "2025-01-26"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/blood.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/blood.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/blood.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/blood.avif"
+      }
+    ]
+  },
+  {
+    "name": "Bone",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.793, 0.793, 0.664]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0.9,
+    "ior": 1.5,
+    "density": [1000, 2000, 1500],
+    "category": ["Organic"],
+    "tags": ["skeleton"],
+    "references": [
+      {
+        "title": "Density of Bone",
+        "author": "Yarusskaya, A., Donina, K., Elert, G. (Ed.)",
+        "url": "https://hypertextbook.com/facts/2002/AnnaYarusskaya.shtml",
+        "publisher": "The Physics Factbook",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Compact Bone Mineral Density of the Normal Human Radius",
+        "author": "Meema, H. E., & Meema, S.",
+        "url": "https://www.tandfonline.com/doi/abs/10.3109/02841867809127938",
+        "publisher": "Acta Radiologica: Oncology, Radiation, Physics, Biology",
+        "volume": "17",
+        "issue": "4",
+        "pages": "342--352",
+        "year": "1978",
+        "doi": "https://doi.org/10.3109/02841867809127938"
+      },
+      {
+        "title": "Bone",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Bone&oldid=1270646740",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/bone.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/bone.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/bone.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/bone.avif"
+      }
+    ]
+  },
+  {
+    "name": "Brass",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.91, 0.778, 0.423]
+      },
+      {
+        "colorSpace": "acescg",
+        "color": [0.844, 0.782, 0.473]
+      }
+    ],
+    "metalness": 1,
+    "specularColor": [
+      {
+        "format": ["Gulbrandsen"],
+        "color": [
+          {
+            "colorSpace": "srgb-linear",
+            "color": [0.995, 0.974, 0.747]
+          },
+          {
+            "colorSpace": "acescg",
+            "color": [0.983, 0.975, 0.866]
+          }
+        ]
+      },
+      {
+        "format": ["F82"],
+        "color": [
+          {
+            "colorSpace": "srgb-linear",
+            "color": [0.952, 0.979, 1.021]
+          },
+          {
+            "colorSpace": "acescg",
+            "color": [0.963, 0.977, 1.013]
+          }
+        ]
+      }
+    ],
+    "roughness": 0,
+    "complexIor": [
+      {
+        "colorSpace": "srgb-linear",
+        "n": [0.341048, 0.53349, 1.42749],
+        "k": [4.14088, 2.67993, 1.87543]
+      },
+      {
+        "colorSpace": "acescg",
+        "n": [0.473454, 0.521254, 1.0339],
+        "k": [3.16368, 2.69584, 1.92658]
+      }
+    ],
+    "density": [8600],
+    "category": ["Metal"],
+    "description": "Brass is an alloy of copper and zinc, with a bright and gold-like appearance. It is similar to bronze, another alloy containing copper that uses tin instead of zinc. Historically, the distinction between the two alloys has been less consistent and clear, and modern practice in museums and archaeology increasingly avoids both terms for historical objects in favor of the more general \"copper alloy\".",
+    "references": [
+      {
+        "title": "Refractive index database",
+        "author": "Polyanskiy, M. N.",
+        "url": "https://refractiveindex.info/?shelf=3d&book=metals&page=brass",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Brass",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Brass&oldid=1270509985",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Density",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Density&oldid=1271894167",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/brass.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/brass.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/brass.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/brass.avif"
+      }
+    ]
+  },
+  {
+    "name": "Brick",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.262, 0.095, 0.061]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0.9,
+    "ior": 1.5,
+    "density": [500, 2400, 2000],
+    "acousticAbsorption": [0.03, 0.03, 0.03, 0.04, 0.05, 0.07],
+    "category": ["Manmade"],
+    "references": [
+      {
+        "title": "Spectrophotometer Measurement",
+        "author": "Palmqvist, A.",
+        "url": "https://github.com/AntonPalmqvist/physically-based-api/tree/main/data/materials/brick/",
+        "publisher": "Physically Based Database",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Brick",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Brick&oldid=1270653991",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Absorption (acoustics)",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Absorption_(acoustics)&oldid=1261130500",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Absorption coefficients of common building materials and finishes",
+        "author": "JCW Acoustic Supplies",
+        "url": "https://www.acoustic-supplies.com/absorption-coefficient-chart/",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Absorption Coefficients",
+        "author": "Acoustic Materials & Technologies Ltd.",
+        "url": "https://www.acoustic.ua/st/web_absorption_data_eng.pdf",
+        "accessed": "2025-01-26"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/brick.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/brick.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/brick.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/brick.avif"
+      }
+    ]
+  },
+  {
+    "name": "Car Paint",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.1, 0.1, 0.1]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0,
+    "ior": 1.5,
+    "category": ["Manmade"],
+    "description": "Modern car paints are nearly always an acrylic polyurethane \"enamel\" with a pigmented basecoat and a clear topcoat. It may be described as \"acrylic\", \"acrylic enamel\", \"urethane\", etc. and the clearcoat in particular may be described as a lacquer. The size of the metal flakes in metallic paints is typically between 100 to 400 microns in diameter. Modern automobile paint is applied in several layers, with a total thickness of around 100 μm (0.1mm).",
+    "tags": ["acrylic", "coat", "car paint", "lacquer"],
+    "references": [
+      {
+        "title": "Automotive Paint",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Automotive_paint&oldid=1270250557",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Acrylic Lacquers",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Lacquer&oldid=1269195190#Acrylic_lacquers",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "BRDF and gloss computation of polyurethane coatings from roughness measurements: Modelling and experimental validation",
+        "author": "Wittmann, B., Montmitonnet, P., Burr, A., Gauthier, C., Agassant, J-F. & Casoli, A.",
+        "url": "https://www.sciencedirect.com/science/article/abs/pii/S0300944021001181?via%3Dihub",
+        "publisher": "Progress in Organic Coatings",
+        "volume": "156",
+        "issue": "0300-9440",
+        "pages": "106247",
+        "year": "2021",
+        "doi": "https://doi.org/10.1016/j.porgcoat.2021.106247"
+      },
+      {
+        "title": "High Refractive Index Aqueous Polyurethane Dispersion Coating Compositions",
+        "author": "Iwazumi, M., Schneider, A.",
+        "url": "https://patentscope.wipo.int/search/en/detail.jsf?docId=WO2011163461",
+        "publisher": "SDC TECHNOLOGIES, INC.",
+        "year": "2011"
+      },
+      {
+        "title": "Metal Flake for Cars: History & 15 Things You Didn't Know",
+        "author": "Cande Shop",
+        "url": "https://thecandeshop.com/metal-flake-for-cars/",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Understanding Modern Automotive Paintwork",
+        "author": "Ultimate Finish The Detailing Company",
+        "url": "https://www.theultimatefinish.co.uk/car-care-blog/featured/paintwork/",
+        "accessed": "2025-01-26"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/car-paint.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/car-paint.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/car-paint.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/car-paint.avif"
+      }
+    ]
+  },
+  {
+    "name": "Carrot",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.713, 0.17, 0.026]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0.5,
+    "ior": 1.5,
+    "category": ["Organic"],
+    "references": [
+      {
+        "title": "Spectral Materials Database",
+        "author": "Jakubiec, J. A.",
+        "url": "https://spectraldb.com/measurements/00456/",
+        "accessed": "2025-01-26"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/carrot.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/carrot.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/carrot.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/carrot.avif"
+      }
+    ]
+  },
+  {
+    "name": "Cesium",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.718, 0.554, 0.237]
+      },
+      {
+        "colorSpace": "acescg",
+        "color": [0.633, 0.561, 0.299]
+      }
+    ],
+    "metalness": 1,
+    "specularColor": [
+      {
+        "format": ["Gulbrandsen"],
+        "color": [
+          {
+            "colorSpace": "srgb-linear",
+            "color": [0.997, 1.002, 1.073]
+          },
+          {
+            "colorSpace": "acescg",
+            "color": [0.997, 1.002, 1.055]
+          }
+        ]
+      },
+      {
+        "format": ["F82"],
+        "color": [
+          {
+            "colorSpace": "srgb-linear",
+            "color": [1.087, 1.18, 1.44]
+          },
+          {
+            "colorSpace": "acescg",
+            "color": [1.128, 1.175, 1.394]
+          }
+        ]
+      }
+    ],
+    "roughness": 0,
+    "complexIor": [
+      {
+        "colorSpace": "srgb-linear",
+        "n": [0.204334, 0.272018, 0.449252],
+        "k": [1.19256, 0.906033, 0.517209]
+      },
+      {
+        "colorSpace": "acescg",
+        "n": [0.247616, 0.26693, 0.382321],
+        "k": [1.06956, 0.91021, 0.519484]
+      }
+    ],
+    "density": [1886],
+    "category": ["Metal"],
+    "tags": ["caesium"],
+    "references": [
+      {
+        "title": "Refractive index database",
+        "author": "Polyanskiy, M. N.",
+        "url": "https://refractiveindex.info/?shelf=main&book=Cs&page=Monin",
+        "accessed": "2025-06-25"
+      },
+      {
+        "title": "Caesium",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Caesium&oldid=1297091310",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-06-25"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/cesium.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/cesium.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/cesium.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/cesium.avif"
+      }
+    ]
+  },
+  {
+    "name": "Charcoal",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.02, 0.02, 0.02]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0.9,
+    "ior": 1.5,
+    "density": [200, 500, 200],
+    "category": ["Organic"],
+    "references": [
+      {
+        "title": "Feeding a Physically Based Shading Model",
+        "author": "Lagarde, S.",
+        "url": "https://seblagarde.wordpress.com/2011/08/17/feeding-a-physical-based-lighting-mode/",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Albedo And Pointer's Gamut",
+        "author": "Brejon, C.",
+        "url": "https://chrisbrejon.com/articles/albedo-and-pointers-gamut/",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Physical properties of charcoal",
+        "author": "Ukrainian Biofuel Suppliers",
+        "url": "http://ukrfuel.com/news-physical-properties-of-charcoal-22.html",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Activated Carbon",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Activated_carbon&oldid=1270525576",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/charcoal.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/charcoal.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/charcoal.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/charcoal.avif"
+      }
+    ]
+  },
+  {
+    "name": "Chocolate",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.162, 0.091, 0.06]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0.5,
+    "ior": 1.5,
+    "subsurfaceRadius": [0.1, 0.05, 0.025],
+    "density": [1229, 1336, 1300],
+    "category": ["Organic"],
+    "references": [
+      {
+        "title": "Spectrophotometer Measurement",
+        "author": "Palmqvist, A.",
+        "url": "https://github.com/AntonPalmqvist/physically-based-api/tree/main/data/materials/chocolate/",
+        "publisher": "Physically Based Database",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Chocolate (color)",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Chocolate_(color)&oldid=1245440651",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "The Density of Chocolate",
+        "author": "Banks, H.",
+        "url": "https://www.density.co.uk/documents/Density-of-Chocolate.pdf",
+        "publisher": "H&D Fitzgerald Ltd",
+        "year": "2012"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/chocolate.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/chocolate.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/chocolate.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/chocolate.avif"
+      }
+    ]
+  },
+  {
+    "name": "Chromium",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.654, 0.685, 0.701]
+      },
+      {
+        "colorSpace": "acescg",
+        "color": [0.666, 0.682, 0.698]
+      }
+    ],
+    "metalness": 1,
+    "specularColor": [
+      {
+        "format": ["Gulbrandsen"],
+        "color": [
+          {
+            "colorSpace": "srgb-linear",
+            "color": [0.591, 0.675, 0.703]
+          },
+          {
+            "colorSpace": "acescg",
+            "color": [0.608, 0.674, 0.797]
+          }
+        ]
+      },
+      {
+        "format": ["F82"],
+        "color": [
+          {
+            "colorSpace": "srgb-linear",
+            "color": [0.688, 0.728, 0.798]
+          },
+          {
+            "colorSpace": "acescg",
+            "color": [0.706, 0.726, 0.788]
+          }
+        ]
+      }
+    ],
+    "roughness": 0,
+    "complexIor": [
+      {
+        "colorSpace": "srgb-linear",
+        "n": [4.19382, 3.53806, 2.91521],
+        "k": [4.85545, 4.89986, 4.25568]
+      },
+      {
+        "colorSpace": "acescg",
+        "n": [3.99955, 3.5489, 2.40724],
+        "k": [4.78865, 4.90046, 4.50602]
+      }
+    ],
+    "density": [7200],
+    "category": ["Metal"],
+    "tags": ["chrome"],
+    "references": [
+      {
+        "title": "Refractive index database",
+        "author": "Polyanskiy, M. N.",
+        "url": "https://refractiveindex.info/?shelf=main&book=Cr&page=Sytchkova",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Density",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Density&oldid=1271894167",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/chromium.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/chromium.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/chromium.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/chromium.avif"
+      }
+    ]
+  },
+  {
+    "name": "Cobalt",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.699, 0.704, 0.671]
+      },
+      {
+        "colorSpace": "acescg",
+        "color": [0.699, 0.703, 0.676]
+      }
+    ],
+    "metalness": 1,
+    "specularColor": [
+      {
+        "format": ["Gulbrandsen"],
+        "color": [
+          {
+            "colorSpace": "srgb-linear",
+            "color": [0.731, 0.775, 0.715]
+          },
+          {
+            "colorSpace": "acescg",
+            "color": [0.73, 0.774, 0.814]
+          }
+        ]
+      },
+      {
+        "format": ["F82"],
+        "color": [
+          {
+            "colorSpace": "srgb-linear",
+            "color": [0.727, 0.772, 0.823]
+          },
+          {
+            "colorSpace": "acescg",
+            "color": [0.747, 0.77, 0.815]
+          }
+        ]
+      }
+    ],
+    "roughness": 0,
+    "complexIor": [
+      {
+        "colorSpace": "srgb-linear",
+        "n": [3.33754, 2.6841, 2.57555],
+        "k": [5.27723, 4.73548, 3.81892]
+      },
+      {
+        "colorSpace": "acescg",
+        "n": [3.14981, 2.70481, 2.06112],
+        "k": [4.96614, 4.76092, 4.00685]
+      }
+    ],
+    "density": [8900],
+    "category": ["Metal"],
+    "references": [
+      {
+        "title": "Refractive index database",
+        "author": "Polyanskiy, M. N.",
+        "url": "https://refractiveindex.info/?shelf=main&book=Co&page=Werner-DFT",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Feeding a Physically Based Shading Model",
+        "author": "Lagarde, S.",
+        "url": "https://seblagarde.wordpress.com/2011/08/17/feeding-a-physical-based-lighting-mode/",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Density",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Density&oldid=1271894167",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/cobalt.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/cobalt.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/cobalt.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/cobalt.avif"
+      }
+    ]
+  },
+  {
+    "name": "Coffee",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.447, 0.133, 0.034]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0,
+    "ior": 1.34,
+    "transmission": 1,
+    "transmissionDepth": 0.1,
+    "transmissionDispersion": 55.78,
+    "density": [1020],
+    "viscosity": [1.7],
+    "category": ["Liquid"],
+    "tags": ["sss"],
+    "references": [
+      {
+        "title": "Photo Reference",
+        "author": "Palmqvist, A.",
+        "url": "https://github.com/AntonPalmqvist/physically-based-api/tree/main/data/materials/coffee/",
+        "publisher": "Physically Based Database",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Espresso Coffee: The Science of Quality",
+        "author": "Viani, R., & Illy, A.",
+        "url": "https://books.google.com/books?id=cptQBAAAQBAJ&lpg=PP1",
+        "publisher": "Elsevier",
+        "pages": "292",
+        "year": "2005"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/coffee.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/coffee.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/coffee.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/coffee.avif"
+      }
+    ]
+  },
+  {
+    "name": "Concrete",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.51, 0.51, 0.51]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0.5,
+    "ior": 1.5,
+    "density": [2400],
+    "acousticAbsorption": [0.01, 0.01, 0.02, 0.02, 0.02, 0.02],
+    "category": ["Manmade"],
+    "references": [
+      {
+        "title": "Feeding a Physically Based Shading Model",
+        "author": "Lagarde, S.",
+        "url": "https://seblagarde.wordpress.com/2011/08/17/feeding-a-physical-based-lighting-mode/",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Density",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Density&oldid=1271894167",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Absorption (acoustics)",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Absorption_(acoustics)&oldid=1261130500",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Absorption coefficients of common building materials and finishes",
+        "author": "JCW Acoustic Supplies",
+        "url": "https://www.acoustic-supplies.com/absorption-coefficient-chart/",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Absorption Coefficients",
+        "author": "Acoustic Materials & Technologies Ltd.",
+        "url": "https://www.acoustic.ua/st/web_absorption_data_eng.pdf",
+        "accessed": "2025-01-26"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/concrete.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/concrete.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/concrete.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/concrete.avif"
+      }
+    ]
+  },
+  {
+    "name": "Cooking Oil",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.737911, 0.687, 0.091]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0,
+    "ior": 1.47,
+    "transmission": 1,
+    "density": [920],
+    "viscosity": [46],
+    "surfaceTension": 31,
+    "category": ["Liquid"],
+    "references": [
+      {
+        "title": "Index of Refraction of Vegetable Oil",
+        "author": "Ting Ting, L., Elert, G. (Ed.)",
+        "url": "https://hypertextbook.com/facts/2006/TingTingLuo.shtml",
+        "publisher": "The Physics Factbook",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "List of Refractive Indices",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=List_of_refractive_indices&oldid=1247284779",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Density",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Density&oldid=1271894167",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "List of Viscosities",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=List_of_viscosities&oldid=1256671906",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Absolute Viscosities of Vegetable Oils at Different Temperatures and Shear Rate Range of 64.5 to 4835 s-1",
+        "author": "Diamante, M. L. & Tianying, L.",
+        "url": "https://onlinelibrary.wiley.com/doi/abs/10.1155/2014/234583",
+        "publisher": "Journal of Food Processing",
+        "volume": "2014",
+        "issue": "1",
+        "pages": "234583",
+        "year": "2014",
+        "doi": "https://doi.org/10.1155/2014/234583"
+      },
+      {
+        "title": "Hybrido Viscosity Table",
+        "author": "RealFlow 10 Documentation",
+        "publisher": "Next Limit Technologies",
+        "url": "https://nextlimitsupport.atlassian.net/wiki/spaces/rf2016docs/pages/5497120/Hybrido+Viscosity+Table",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Density, Viscosity, And Surface Tension Of Five Vegetable Oils At Elevated Temperatures: Measurement And Modeling",
+        "author": "Sahasrabudhe, S. N., Rodriguez-Martinez, V., O’Meara, Meghan., & Farkas, B. E.",
+        "url": "https://www.tandfonline.com/doi/full/10.1080/10942912.2017.1360905",
+        "publisher": "International Journal of Food Properties",
+        "volume": "20",
+        "issue": "sup2",
+        "pages": "1965--1981",
+        "year": "2017",
+        "doi": "https://doi.org/10.1080/10942912.2017.1360905"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/cooking-oil.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/cooking-oil.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/cooking-oil.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/cooking-oil.avif"
+      }
+    ]
+  },
+  {
+    "name": "Copper",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.932, 0.623, 0.522]
+      },
+      {
+        "colorSpace": "acescg",
+        "color": [0.811, 0.643, 0.542]
+      }
+    ],
+    "metalness": 1,
+    "specularColor": [
+      {
+        "format": ["Gulbrandsen"],
+        "color": [
+          {
+            "colorSpace": "srgb-linear",
+            "color": [0.999, 0.9, 0.744]
+          },
+          {
+            "colorSpace": "acescg",
+            "color": [0.979, 0.915, 0.85]
+          }
+        ]
+      },
+      {
+        "format": ["F82"],
+        "color": [
+          {
+            "colorSpace": "srgb-linear",
+            "color": [0.982, 0.947, 0.945]
+          },
+          {
+            "colorSpace": "acescg",
+            "color": [0.97, 0.95, 0.946]
+          }
+        ]
+      }
+    ],
+    "roughness": 0,
+    "complexIor": [
+      {
+        "colorSpace": "srgb-linear",
+        "n": [0.133762, 1.05661, 1.68637],
+        "k": [3.10615, 2.63095, 2.42655]
+      },
+      {
+        "colorSpace": "acescg",
+        "n": [0.4946, 0.974095, 1.23853],
+        "k": [2.87217, 2.65208, 2.41041]
+      }
+    ],
+    "density": [8940],
+    "category": ["Metal"],
+    "references": [
+      {
+        "title": "Refractive index database",
+        "author": "Polyanskiy, M. N.",
+        "url": "https://refractiveindex.info/?shelf=main&book=Cu&page=Johnson",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Autodesk Arnold Documentation",
+        "author": "Arnold User Guide",
+        "publisher": "Autodesk Inc.",
+        "url": "https://help.autodesk.com/view/ARNOL/ENU/?guid=arnold_user_guide_ac_standard_surface_ac_standard_base_html#metalness",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Density",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Density&oldid=1271894167",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/copper.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/copper.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/copper.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/copper.avif"
+      }
+    ]
+  },
+  {
+    "name": "Diamond",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [1, 1, 1]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0,
+    "ior": 2.4168,
+    "transmission": 1,
+    "transmissionDispersion": 55.3,
+    "density": [3500],
+    "category": ["Crystal"],
+    "tags": ["gem", "gemstone"],
+    "references": [
+      {
+        "title": "Refractive index database",
+        "author": "Polyanskiy, M. N.",
+        "url": "https://refractiveindex.info/?shelf=3d&book=crystals&page=diamond",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Refractive index database",
+        "author": "Polyanskiy, M. N.",
+        "url": "https://refractiveindex.info/?shelf=main&book=C&page=Peter",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Density",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Density&oldid=1271894167",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/diamond.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/diamond.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/diamond.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/diamond.avif"
+      }
+    ]
+  },
+  {
+    "name": "Egg Shell",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.61, 0.624, 0.631]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0.9,
+    "ior": 1.5,
+    "category": ["Organic"],
+    "description": "White hen egg from grocery store.",
+    "references": [
+      {
+        "title": "Spectrophotometer Measurement",
+        "author": "Palmqvist, A.",
+        "url": "https://github.com/AntonPalmqvist/physically-based-api/tree/main/data/materials/egg-shell/",
+        "publisher": "Physically Based Database",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Eggs as Food",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Eggs_as_food&oldid=1271500408#Shell",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/egg-shell.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/egg-shell.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/egg-shell.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/egg-shell.avif"
+      }
+    ]
+  },
+  {
+    "name": "Eye (Cornea)",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [1, 1, 1]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0,
+    "ior": 1.376,
+    "transmission": 1,
+    "category": ["Human"],
+    "references": [
+      {
+        "title": "Cornea",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Cornea&oldid=1261809691",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "The refractive index of the human cornea: A review",
+        "author": "Patel, S., Tutchenko, L.",
+        "url": "https://www.contactlensjournal.com/article/S1367-0484(18)31045-2/abstract",
+        "publisher": "Contact Lens and Anterior Eye",
+        "volume": "42",
+        "issue": "5",
+        "pages": "575--580 ",
+        "year": "2019",
+        "doi": "https://doi.org/10.1016/j.clae.2019.04.018"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/eye-cornea.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/eye-cornea.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/eye-cornea.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/eye-cornea.avif"
+      }
+    ]
+  },
+  {
+    "name": "Eye (Lens)",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [1, 1, 1]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0,
+    "ior": 1.386,
+    "transmission": 1,
+    "category": ["Human"],
+    "description": "The refractive index of human lens varies from approximately 1.406 in the central layers down to 1.386 in less dense layers of the lens. This index gradient enhances the optical power of the lens.",
+    "references": [
+      {
+        "title": "Lens (vertebrate anatomy)",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Lens_(vertebrate_anatomy)&oldid=1252994339",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Refractive Index of the Human Lens Surface Measured with an Optic Fibre Sensor",
+        "author": "Pierscionek, K. B.",
+        "url": "https://karger.com/ore/article-abstract/26/1/32/257105/Refractive-Index-of-the-Human-Lens-Surface",
+        "publisher": "Ophthalmic Research",
+        "volume": "26",
+        "issue": "1",
+        "pages": "32--35 ",
+        "year": "1994",
+        "doi": "https://doi.org/10.1159/000267371"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/eye-lens.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/eye-lens.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/eye-lens.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/eye-lens.avif"
+      }
+    ]
+  },
+  {
+    "name": "Eye (Sclera)",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.652, 0.5, 0.394]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0,
+    "ior": 1.4,
+    "subsurfaceRadius": [0.482, 0.169, 0.109],
+    "category": ["Human"],
+    "references": [
+      {
+        "title": "Optical properties of human sclera in spectral range 370-2500 nm",
+        "author": "Bashkatov, A. N., Genina, E. A., Kochubey, V. I. & Tuchin, V. V.",
+        "url": "https://link.springer.com/article/10.1134/S0030400X10080084",
+        "publisher": "Optics and Spectroscopy",
+        "volume": "109",
+        "issue": "2",
+        "pages": "197--204 ",
+        "year": "2010",
+        "doi": "https://doi.org/10.1134/S0030400X10080084"
+      },
+      {
+        "title": "Next Generation Character Rendering",
+        "author": "Jimenez, J.",
+        "url": "http://www.iryoku.com/downloads/Next-Generation-Character-Rendering-v6.pptx",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "The Wikihuman Project",
+        "url": "https://vgl.ict.usc.edu/Data/DigitalEmily2/",
+        "publisher": "USC Institute for Creative Technologies",
+        "accessed": "2025-07-13"
+      },
+      {
+        "title": "Louise - A virtual Model Digital Double",
+        "url": "https://eisko.com/louise/",
+        "publisher": "Eisko",
+        "accessed": "2025-07-14"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/eye-sclera.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/eye-sclera.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/eye-sclera.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/eye-sclera.avif"
+      }
+    ]
+  },
+  {
+    "name": "Gasoline",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [1, 0.97, 0.617]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0,
+    "ior": 1.427,
+    "transmission": 1,
+    "density": [770],
+    "viscosity": [0.6],
+    "category": ["Liquid"],
+    "tags": ["petrol", "fuel"],
+    "references": [
+      {
+        "title": "Gasoline",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Gasoline&oldid=1269847763",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Development of a real-size optical injector nozzle for studies of cavitation, spray formation and flash-boiling at conditions relevant to direct-injection spark-ignition engines",
+        "author": "Butcher, A. J., Aleiferis, P. G. & Richardson, D.",
+        "url": "https://journals.sagepub.com/doi/10.1177/1468087413497004",
+        "publisher": "International Journal of Engine Research",
+        "volume": "14",
+        "issue": "6",
+        "pages": "557--577 ",
+        "year": "2013",
+        "doi": "https://doi.org/10.1177/1468087413497004"
+      },
+      {
+        "title": "Fuels - Densities and Specific Volumes",
+        "url": "https://www.engineeringtoolbox.com/fuels-densities-specific-volumes-d_166.html",
+        "publisher": "The Engineering ToolBox",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Viscosity of Liquids and Gases",
+        "author": "Nave, R. C.",
+        "url": "http://hyperphysics.phy-astr.gsu.edu/hbase/Tables/viscosity.html",
+        "publisher": "HyperPhysics",
+        "accessed": "2025-01-26"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/gasoline.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/gasoline.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/gasoline.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/gasoline.avif"
+      }
+    ]
+  },
+  {
+    "name": "Germanium",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.5, 0.517, 0.465]
+      },
+      {
+        "colorSpace": "acescg",
+        "color": [0.504, 0.515, 0.472]
+      }
+    ],
+    "metalness": 1,
+    "specularColor": [
+      {
+        "format": ["Gulbrandsen"],
+        "color": [
+          {
+            "colorSpace": "srgb-linear",
+            "color": [0.068, 0.179, 0.002]
+          },
+          {
+            "colorSpace": "acescg",
+            "color": [0.069, 0.175, 0.252]
+          }
+        ]
+      },
+      {
+        "format": ["F82"],
+        "color": [
+          {
+            "colorSpace": "srgb-linear",
+            "color": [0.62, 0.653, 0.701]
+          },
+          {
+            "colorSpace": "acescg",
+            "color": [0.635, 0.651, 0.694]
+          }
+        ]
+      }
+    ],
+    "roughness": 0,
+    "complexIor": [
+      {
+        "colorSpace": "srgb-linear",
+        "n": [5.63391, 5.06611, 4.81402],
+        "k": [1.44383, 2.25088, 0.279501]
+      },
+      {
+        "colorSpace": "acescg",
+        "n": [5.51092, 5.07691, 4.11938],
+        "k": [1.431, 2.22993, 2.23401]
+      }
+    ],
+    "density": [5327],
+    "category": ["Metal"],
+    "references": [
+      {
+        "title": "Refractive index database",
+        "author": "Polyanskiy, M. N.",
+        "url": "https://refractiveindex.info/?shelf=main&book=Ge&page=Aspnes",
+        "accessed": "2025-06-29"
+      },
+      {
+        "title": "Germanium",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Germanium&oldid=1294309596",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-06-29"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/germanium.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/germanium.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/germanium.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/germanium.avif"
+      }
+    ]
+  },
+  {
+    "name": "Glass",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [1, 1, 1]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0,
+    "ior": 1.52,
+    "transmission": 1,
+    "transmissionDispersion": 64,
+    "density": [2500],
+    "acousticAbsorption": [0.04, 0.04, 0.03, 0.03, 0.02, 0.02],
+    "category": ["Crystal"],
+    "references": [
+      {
+        "title": "Refractive index database",
+        "author": "Polyanskiy, M. N.",
+        "url": "https://refractiveindex.info/?shelf=3d&book=glass&page=soda-lime-clear",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Soda-lime Glass",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Soda%E2%80%93lime_glass&oldid=1262726109",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Density",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Density&oldid=1271894167",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Absorption coefficients of common building materials and finishes",
+        "author": "JCW Acoustic Supplies",
+        "url": "https://www.acoustic-supplies.com/absorption-coefficient-chart/",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Absorption Coefficients",
+        "author": "Acoustic Materials & Technologies Ltd.",
+        "url": "https://www.acoustic.ua/st/web_absorption_data_eng.pdf",
+        "accessed": "2025-01-26"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/glass.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/glass.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/glass.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/glass.avif"
+      }
+    ]
+  },
+  {
+    "name": "Gold",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [1.059, 0.773, 0.307]
+      },
+      {
+        "colorSpace": "acescg",
+        "color": [0.929, 0.788, 0.374]
+      }
+    ],
+    "metalness": 1,
+    "specularColor": [
+      {
+        "format": ["Gulbrandsen"],
+        "color": [
+          {
+            "colorSpace": "srgb-linear",
+            "color": [1.001, 0.985, 0.523]
+          },
+          {
+            "colorSpace": "acescg",
+            "color": [0.997, 0.987, 0.757]
+          }
+        ]
+      },
+      {
+        "format": ["F82"],
+        "color": [
+          {
+            "colorSpace": "srgb-linear",
+            "color": [0.971, 1.018, 0.994]
+          },
+          {
+            "colorSpace": "acescg",
+            "color": [0.987, 1.013, 0.997]
+          }
+        ]
+      }
+    ],
+    "roughness": 0,
+    "complexIor": [
+      {
+        "colorSpace": "srgb-linear",
+        "n": [0, 0.351563, 1.85894],
+        "k": [6.59401, 2.08143, 1.49631]
+      },
+      {
+        "colorSpace": "acescg",
+        "n": [0.190506, 0.330771, 1.35292],
+        "k": [3.04413, 2.11776, 1.76193]
+      }
+    ],
+    "density": [19320],
+    "category": ["Metal"],
+    "references": [
+      {
+        "title": "Refractive index database",
+        "author": "Polyanskiy, M. N.",
+        "url": "https://refractiveindex.info/?shelf=main&book=Ag&page=Babar",
+        "accessed": "2025-06-26"
+      },
+      {
+        "title": "Autodesk Arnold Documentation",
+        "author": "Arnold User Guide",
+        "publisher": "Autodesk Inc.",
+        "url": "https://help.autodesk.com/view/ARNOL/ENU/?guid=arnold_user_guide_ac_standard_surface_ac_standard_base_html#metalness",
+        "accessed": "2025-01-25"
+      },
+      {
+        "title": "Density",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Density&oldid=1271894167",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/gold.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/gold.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/gold.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/gold.avif"
+      }
+    ]
+  },
+  {
+    "name": "Gray Card",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.18, 0.18, 0.18]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0.9,
+    "ior": 1.5,
+    "category": ["Manmade"],
+    "description": "In photography and computer graphics, middle gray is a tone that is perceptually about halfway between black and white on a lightness scale. Light meters and cameras are often calibrated using an 18% gray card or a color reference card such as a ColorChecker. It is typically defined as 18% reflectance in visible light.",
+    "tags": ["grey", "middle gray"],
+    "references": [
+      {
+        "title": "Gray Card",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Gray_card&oldid=1244084939",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-05-17"
+      },
+      {
+        "title": "New Color Specifications for ColorChecker SG and Classic Charts",
+        "url": "https://www.xrite.com/service-support/new_color_specifications_for_colorchecker_sg_and_classic_charts",
+        "publisher": "X-Rite, Inc.",
+        "accessed": "2025-05-17"
+      },
+      {
+        "title": "The Colorchecker Pages",
+        "publisher": "The BabelColor Company",
+        "url": "https://babelcolor.com/colorchecker.htm",
+        "accessed": "2025-05-17"
+      },
+      {
+        "title": "Colour Rendition Chart",
+        "author": "Colour Developers",
+        "url": "https://github.com/colour-science/colour-nuke/tree/master/colour_nuke/resources/images/ColorChecker2014",
+        "accessed": "2025-05-17"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/gray-card.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/gray-card.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/gray-card.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/gray-card.avif"
+      }
+    ]
+  },
+  {
+    "name": "Honey (Liquid)",
+    "color": [
+      {
+        "colorSpace": "srgb-linear",
+        "color": [0.831, 0.571, 0.037]
+      }
+    ],
+    "metalness": 0,
+    "roughness": 0,
+    "ior": 1.504,
+    "transmission": 1,
+    "density": [1380, 1450, 1400],
+    "viscosity": [2000, 15000, 10000],
+    "category": ["Liquid"],
+    "description": "Variations in its water content alter its refractive index. Typically, the refractive index for honey ranges from 1.504 at 13% water content to 1.474 at 25%. Fresh honey is liquid and clear but with time it crystallizes and becomes thicker and less clear. The crystallization depends on temperature and the ratio of glucose and fructose.",
+    "references": [
+      {
+        "title": "Honey",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=Honey&oldid=1271742958",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "List of Viscosities",
+        "author": "Wikipedia contributors",
+        "url": "https://en.wikipedia.org/w/index.php?title=List_of_viscosities&oldid=1256671906",
+        "publisher": "Wikipedia, The Free Encyclopedia",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "The Color of Honey",
+        "url": "https://carolinahoneybees.com/the-color-of-honey/",
+        "publisher": "Carolina Honeybees",
+        "accessed": "2025-01-26"
+      },
+      {
+        "title": "Chemical and Functional Properties of Food Saccharides",
+        "author": "Tomasik, P. (Ed.)",
+        "url": "https://www.taylorfrancis.com/books/mono/10.1201/9780203495728/chemical-functional-properties-food-saccharides-piotr-tomasik",
+        "publisher": "CRC Press",
+        "pages": "74 ",
+        "year": "2003",
+        "doi": "https://doi.org/10.1201/9780203495728"
+      },
+      {
+        "title": "Viscosity of Flower Honey (Blended)",
+        "url": "https://wiki.anton-paar.com/en/flower-honey-blended/",
+        "publisher": "Anton Paar GmbH",
+        "accessed": "2025-01-26"
+      }
+    ],
+    "images": [
+      {
+        "format": "jpeg",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/honey-liquid.jpeg",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/honey-liquid.jpeg"
+      },
+      {
+        "format": "avif",
+        "300": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/300/honey-liquid.avif",
+        "600": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/images/renders/cycles/600/honey-liquid.avif"
+      }
+    ]
+  }
+]

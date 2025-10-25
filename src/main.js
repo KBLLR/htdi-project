@@ -65,6 +65,7 @@ import actionsSpec from '@config/actions.json';
     transition: transform .06s ease, opacity .12s ease;
     background: rgba(215,255,0,.18);
     box-shadow: 0 0 14px rgba(215,255,0,.45);
+    z-index: 10000;
   `;
   const root = document.documentElement;
   root.style.cursor = 'none';
@@ -169,7 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (import.meta.env.DEV) {
     import('@modules/TweakpaneManager.js').then(({ default: TweakpaneManager }) => {
       if (!window.__tpManager) {
-        window.__tpManager = new TweakpaneManager(experience, { title: 'HTDI Controls', expanded: true });
+        window.__tpManager = new TweakpaneManager(experience, { title: 'HTDI Controls', expanded: false });
       }
 
       if (import.meta?.hot) {

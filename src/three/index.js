@@ -20,7 +20,6 @@ import { initialiseMusicPlayer } from '@modules/musicPlayerUI.js';
 
 // Actions Bar: manager + concrete action initializers
 import { ActionsBarManager } from '@modules/actionsBar/ActionsBarManager.js';
-import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
 import { Water } from 'three/examples/jsm/objects/Water.js';
 import { BloomEffect, DepthOfFieldEffect, EffectComposer, EffectPass, RenderPass, FXAAEffect } from 'postprocessing';
 
@@ -59,23 +58,11 @@ export async function createExperience() {
 
   setupResize(camera, renderer);
 
-  // VR Button
-  const vrButtonElement = VRButton.createButton(renderer);
-  vrButtonElement.textContent = 'VR';
-  vrButtonElement.classList.add('glass-footer__btn', 'glass-footer__btn--vr');
-  vrButtonElement.setAttribute('data-tippy-content', 'Enter VR');
-  const connectGroup = document.querySelector('.glass-footer__group[data-label="Connect"]');
-  if (connectGroup) {
-    connectGroup.appendChild(vrButtonElement);
-  } else {
-    document.body.appendChild(vrButtonElement);
-  }
-
   // Lights
   const { directional, rotatingPoints, update: updateRotatingLights } = attachLightsToScene(scene);
   directional.visible = false; // Set directional light to off by default
-  register('lights', 'directional', directional);
-  register('lights', 'rotatingPoints', rotatingPoints);
+  register('lights', 'directional', { ref: directional });
+  register('lights', 'rotatingPoints', { ref: rotatingPoints });
 
   // Materials from JSON
   const loadedMaterials = await loadMaterialsFromJson('/materials.json');

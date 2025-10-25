@@ -15,7 +15,9 @@ export class SceneRegistry {
       textures: {},
       loaders: {},
       mixers: {},
-      videos: {}
+      videos: {},
+      postprocessing: {},
+      particles: {}
     };
   }
 

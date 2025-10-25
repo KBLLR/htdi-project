@@ -1,6 +1,27 @@
-/* Keep pane above canvas/UI and style for glassy look */
+/* Tweakpane container - position at bottom center with padding */
 .tp-dfwv {
-    z-index: 40 !important;
+    position: fixed !important;
+    bottom: 8px !important;
+    left: 8px !important;
+    right: 8px !important;
+    width: calc(100% - 16px) !important;
+    z-index: 9999 !important;
+    transition: all 0.3s ease !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+}
+
+/* Root pane element */
+.tp-dfwv .tp-rotv {
+    max-height: 50vh !important;
+    overflow-y: auto !important;
+    border-radius: 12px !important;
+}
+
+/* When folded, keep it minimal */
+.tp-dfwv:not(.expanded) .tp-rotv {
+    max-height: 48px !important;
+    overflow: hidden !important;
 }
 
 :root {

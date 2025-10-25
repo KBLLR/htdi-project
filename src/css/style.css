@@ -388,15 +388,16 @@ nav {
 
 .glass-footer {
   position: fixed;
-  left: 50%;
-  bottom: clamp(1.25rem, 4vh, 3rem);
-  transform: translateX(-50%);
+  left: clamp(1.25rem, 4vh, 3rem);
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 1500;
   display: inline-flex;
+  flex-direction: column; /* Change to vertical layout */
   align-items: center;
   gap: clamp(0.9rem, 2.5vw, 1.6rem);
-  padding: 0.85rem 1.25rem;
-  border-radius: 999px;
+  padding: 1.25rem 0.85rem; /* Adjust padding for vertical layout */
+  border-radius: 999px; /* Keep rounded corners */
   color: var(--ui-text-secondary, var(--gray5));
   background: var(--ui-surface-bg, rgba(8, 12, 18, 0.92));
   border: 1px solid var(--ui-surface-border, rgba(164, 210, 255, 0.12));
@@ -414,6 +415,7 @@ nav {
 .glass-footer__group {
   position: relative;
   display: inline-flex;
+  flex-direction: column; /* Change to vertical layout */
   align-items: center;
   gap: clamp(0.6rem, 2vw, 0.9rem);
 }
@@ -423,10 +425,10 @@ nav {
 }
 
 .glass-footer__divider {
-  width: 1px;
-  height: 2.2rem;
+  width: 2.2rem; /* Adjust width for horizontal divider */
+  height: 1px; /* Adjust height for horizontal divider */
   background: linear-gradient(
-    180deg,
+    90deg, /* Change gradient direction */
     rgba(132, 197, 255, 0) 0%,
     rgba(132, 197, 255, 0.6) 50%,
     rgba(132, 197, 255, 0) 100%
@@ -1423,14 +1425,30 @@ only screen and (min-device-pixel-ratio: 3),
 only screen and (min-resolution: 458dpi),
 only screen and (min-resolution: 3dppx) {}
 
-/* ****************************** /* Retina 2x Media Query*/
-@media only screen and (-webkit-min-device-pixel-ratio: 3),
-only screen and (min--moz-device-pixel-ratio: 3),
-only screen and (-o-min-device-pixel-ratio: 3/1),
-only screen and (min-device-pixel-ratio: 3),
-only screen and (min-resolution: 384dpi),
-only screen and (min-resolution: 3dppx) {
-  /* Retina styles here */
+/* Tweakpane Fullscreen Styles */
+.tp-dfwv {
+  position: fixed !important;
+  bottom: 0 !important; /* Position at the bottom */
+  left: 0 !important;
+  width: 100% !important;
+  height: 0 !important; /* Initially closed */
+  max-height: 50vh; /* Max height when open */
+  z-index: 9999 !important;
+  pointer-events: none; /* Allow interaction with elements below by default */
+  background-color: var(--tp-base-background-color); /* Use existing theme variable for transparency */
+  transition: height 0.3s ease-out; /* Smooth transition for height */
+}
+
+.tp-dfwv.expanded {
+  height: 50vh !important; /* Open to half view height */
+  pointer-events: auto !important; /* Enable interaction when expanded */
+}
+
+/* Ensure Tweakpane content is scrollable if it overflows and is interactive */
+.tp-dfwv .tp-rotv {
+  overflow-y: auto !important;
+  height: 100% !important;
+  pointer-events: auto !important; /* Ensure content is interactive */
 }
 
 /* ****************************** /* Retina 3x Media Query */

@@ -170,7 +170,7 @@ export class ParticleSystem extends THREE.Points {
       const textureLoader = new THREE.TextureLoader();
       const particleTexture = await new Promise((resolve, reject) => {
         textureLoader.load(
-          `/public/particles/${textureName}`,
+          `/particles/${textureName}`,
           resolve,
           undefined,
           reject

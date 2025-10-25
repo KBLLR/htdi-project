@@ -17,3 +17,6 @@
 
 /* Grid overlay */
 @import './grid.css';
+
+/* Tweakpane styles */
+@import './tweakpane.css';
