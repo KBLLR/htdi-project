@@ -18,7 +18,7 @@ export function initialiseScenePicker({ scenes, onSelect }) {
     card.title = scene.description ?? scene.name;
     card.innerHTML = `
       <div class="scene-card__thumb" aria-hidden="true">
-        ${scene.thumbnail ? `<img src="${scene.thumbnail}" alt="${scene.name} thumbnail" />` : `<div class="scene-card__thumb--placeholder"></div>`}
+        ${scene.thumbnail ? `<img src="${scene.thumbnail}" alt="${scene.name} thumbnail" />` : ''}
       </div>
       <div class="scene-card__body">
         <h2 class="scene-card__title">${scene.name}</h2>

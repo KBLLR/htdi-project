@@ -15,12 +15,12 @@ import { Tween, Easing } from '@tweenjs/tween.js';
  * @property {number} bokehScale
  */
 
-const BASE_CAMERA_FOV = 50;
+const BASE_CAMERA_FOV = 90;
 
 /** @type {Object.<string, CameraPresets>} */
 const CAMERA_PRESETS = {
   overview: {
-    position: { x: 3, y: -3, z: 3 },
+    position: { x: 0, y: 0, z: 0 },
     target: { x: 0, y: 0.05, z: 0 },
     fov: BASE_CAMERA_FOV
   },
@@ -54,10 +54,10 @@ let dofTween = null;
  * @param {number} aspect - Camera frustum aspect ratio.
  * @param {number} near - Camera frustum near plane.
  * @param {number} far - Camera frustum far plane.
- * @param {Vector3} [position=new Vector3(3, -3, 3)] - Initial camera position.
+ * @param {Vector3} [position=new Vector3(0, 0, 0)] - Initial camera position.
  * @returns {PerspectiveCamera} The created camera.
  */
-export function createCamera(fov, aspect, near, far, position = new Vector3(3, -3, 3)) {
+export function createCamera(fov, aspect, near, far, position = new Vector3(0, 0, 0)) {
   const camera = new PerspectiveCamera(fov, aspect, near, far);
   camera.position.copy(position);
   return camera;

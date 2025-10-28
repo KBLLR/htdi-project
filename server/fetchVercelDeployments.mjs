@@ -16,7 +16,7 @@ export async function fetchVercelDeployments(options = {}) {
   const {
     projectId = process.env.VERCEL_PROJECT_ID,
     teamId = process.env.VERCEL_TEAM_ID,
-    limit = 20,
+    limit = Infinity,
     readyState = 'READY'
   } = options;
 
@@ -34,40 +34,70 @@ export async function fetchVercelDeployments(options = {}) {
     });
   }
 
-  const query = new URLSearchParams({
-    projectId,
-    limit: String(Math.max(1, Math.min(Number(limit) || 20, 100)))
-  });
+  const requestedLimit = Number.isFinite(limit) && limit > 0 ? limit : Infinity;
+  const accumulated = [];
+  let nextFrom = undefined;
+  let remaining = requestedLimit;
 
-  if (readyState) {
-    query.set('state', readyState);
-  }
+  while (remaining > 0) {
+    const batchLimit = Number.isFinite(remaining) ? Math.min(remaining, 100) : 100;
+    const query = new URLSearchParams({
+      projectId,
+      limit: String(Math.max(1, Math.min(batchLimit, 100)))
+    });
 
-  if (teamId) {
-    query.set('teamId', teamId);
-  }
-
-  const response = await fetch(`${API_BASE}/v6/deployments?${query.toString()}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
+    if (readyState) {
+      query.set('state', readyState);
     }
-  });
 
-  if (!response.ok) {
-    const errorPayload = await safeJson(response);
-    const error = new Error(`Failed to fetch deployments: ${response.status} ${response.statusText}`);
-    error.statusCode = response.status;
-    error.details = errorPayload;
-    throw error;
+    if (teamId) {
+      query.set('teamId', teamId);
+    }
+
+    if (nextFrom) {
+      query.set('from', nextFrom);
+    }
+
+    const response = await fetch(`${API_BASE}/v6/deployments?${query.toString()}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorPayload = await safeJson(response);
+      const error = new Error(`Failed to fetch deployments: ${response.status} ${response.statusText}`);
+      error.statusCode = response.status;
+      error.details = errorPayload;
+      throw error;
+    }
+
+    const payload = await response.json();
+    const deployments = Array.isArray(payload.deployments) ? payload.deployments : [];
+    const readyDeployments = deployments.filter((deployment) => deployment.readyState === 'READY');
+
+    if (!readyDeployments.length) {
+      break;
+    }
+
+    accumulated.push(...readyDeployments.map((deployment) => mapDeployment(deployment)));
+
+    if (Number.isFinite(remaining)) {
+      remaining -= readyDeployments.length;
+      if (remaining <= 0) break;
+    }
+
+    const next = payload?.pagination?.next ?? null;
+    if (!next) {
+      break;
+    }
+    nextFrom = next;
   }
 
-  const payload = await response.json();
-
-  const deployments = Array.isArray(payload.deployments) ? payload.deployments : [];
-  const readyDeployments = deployments.filter((deployment) => deployment.readyState === 'READY');
-
-  return readyDeployments.map((deployment) => mapDeployment(deployment));
+  return Number.isFinite(requestedLimit)
+    ? accumulated.slice(0, requestedLimit)
+    : accumulated;
 }
 
 function mapDeployment(deployment) {

@@ -10,6 +10,11 @@ import {
   disposeAsset
 } from '@modules/assetRegistry.js';
 import { scenes } from '@data/scenes.js';
+import {
+  getRuntimeScenes,
+  addRuntimeScene,
+  ensureUniqueSceneId
+} from '@three/runtimeScenes.js';
 
 const THREE_CONSTANTS = {
   LinearFilter: THREE.LinearFilter,
@@ -20,6 +25,102 @@ const THREE_CONSTANTS = {
   SRGBColorSpace: THREE.SRGBColorSpace
 };
 
+function sanitiseKey(value) {
+  if (value === null || value === undefined) return '';
+  return value
+    .toString()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function ensureDirectoryPath(path, fallback = '') {
+  let value = path ?? '';
+  if (!value) value = fallback;
+  if (!value) return '';
+  if (!value.startsWith('/')) value = `/${value}`;
+  if (!value.endsWith('/')) value = `${value}/`;
+  return value;
+}
+
+function normaliseEnvironmentDefinition(definition) {
+  if (!definition) return null;
+
+  if (typeof definition === 'string') {
+    const file = definition.trim();
+    if (!file) return null;
+    const path = ensureDirectoryPath('/envs');
+    const id = sanitiseKey(`${path}${file}`) || sanitiseKey(file);
+    return {
+      id,
+      hdr: { file, path },
+      cubemap: null,
+      fallback: '#050505',
+      intensity: undefined
+    };
+  }
+
+  if (typeof definition === 'object') {
+    const hdrConfig = definition.hdr ?? definition;
+    const file = hdrConfig.file ?? hdrConfig.name ?? hdrConfig.src ?? hdrConfig.source ?? '';
+    if (!file) return null;
+    const path = ensureDirectoryPath(
+      hdrConfig.path ?? hdrConfig.directory ?? definition.path ?? definition.directory ?? '/envs'
+    );
+    const fallback = definition.fallback ?? hdrConfig.fallback ?? '#050505';
+    const intensityValue = definition.intensity ?? hdrConfig.intensity;
+    const intensity = typeof intensityValue === 'number' ? intensityValue : undefined;
+    let cubemap = null;
+
+    if (definition.cubemap) {
+      const cubeConfig = definition.cubemap;
+      let files = Array.isArray(cubeConfig.files)
+        ? cubeConfig.files
+        : Array.isArray(cubeConfig)
+          ? cubeConfig
+          : null;
+
+      if (!files && typeof cubeConfig === 'object' && Array.isArray(cubeConfig.items)) {
+        files = cubeConfig.items;
+      }
+
+      const normalisedFiles = Array.isArray(files)
+        ? files
+            .map((entry) => {
+              if (typeof entry === 'string') return entry.split('/').pop();
+              if (entry && typeof entry === 'object') {
+                const value = entry.file ?? entry.name ?? entry.source ?? '';
+                return value.split('/').pop();
+              }
+              return null;
+            })
+            .filter(Boolean)
+        : [];
+
+      if (normalisedFiles.length) {
+        cubemap = {
+          files: normalisedFiles,
+          path: ensureDirectoryPath(
+            cubeConfig.path ?? cubeConfig.directory ?? definition.cubemapPath ?? ''
+          ),
+        };
+      }
+    }
+
+    const idBase = definition.id ?? hdrConfig.id ?? `${path}${file}`;
+    const id = sanitiseKey(idBase) || sanitiseKey(`${path}${file}`);
+    return {
+      id,
+      hdr: { file, path },
+      cubemap,
+      fallback,
+      intensity
+    };
+  }
+
+  return null;
+}
+
 let sharedContext = {
   scene: null,
   renderer: null,
@@ -28,18 +129,49 @@ let sharedContext = {
 };
 
 const environmentMaterials = new Set();
+let environmentIntensity = 1;
 let kidMaterialAccessor = null;
 const kidMaterialWatchers = new Set();
 
 let activeSceneId = null;
 let activeSceneToken = 0;
+let currentSceneState = null;
+let currentSceneMeta = {
+  environment: null
+};
+
+function cloneScene(scene) {
+  return scene ? JSON.parse(JSON.stringify(scene)) : null;
+}
+
+function getAllScenes() {
+  return [...scenes, ...getRuntimeScenes()];
+}
+
+function findSceneById(sceneId) {
+  return getAllScenes().find((scene) => scene.id === sceneId) ?? null;
+}
 
 export function getScenes() {
-  return scenes.map(({ id, name, description }) => ({
+  return getAllScenes().map(({ id, name, description, thumbnail, metadata }) => ({
     id,
     name,
-    description
+    description,
+    thumbnail: thumbnail ?? null,
+    metadata: metadata ?? null
   }));
+}
+
+export function setEnvironmentIntensity(value = 1) {
+  const next = Number.isFinite(value) ? Math.max(0, value) : environmentIntensity;
+  environmentIntensity = next;
+  environmentMaterials.forEach((target) => applyEnvIntensityToTarget(target, environmentIntensity));
+  updateCurrentScene({ environment: { intensity: environmentIntensity } });
+  return environmentIntensity;
+}
+
+export function getEnvironmentIntensity() {
+  return environmentIntensity;
 }
 
 export function getActiveSceneId() {
@@ -64,27 +196,88 @@ export function setSceneContext({ scene, renderer, alphaMaterial, innerSphereMat
   console.log('sharedContext after setSceneContext:', sharedContext);
 }
 
-export async function setEnvironment(fileName) {
+export async function setEnvironment(definition) {
   ensureContext();
-  const hdrId = `env:hdr:${fileName}`;
-  const pmremId = `env:pmrem:${fileName}`;
+  const env = normaliseEnvironmentDefinition(definition);
+  if (!env) {
+    console.warn('setEnvironment received an invalid definition', definition);
+    return;
+  }
 
-  loadHDRTextureAsset(hdrId, fileName, {
-    path: '/envs/',
+  const targetIntensity =
+    typeof env.intensity === 'number' ? env.intensity : environmentIntensity;
+
+  const hdrId = `env:hdr:${env.id}`;
+  const pmremId = `env:pmrem:${env.id}`;
+
+  loadHDRTextureAsset(hdrId, env.hdr.file, {
+    path: env.hdr.path,
     mapping: THREE.EquirectangularReflectionMapping,
-    name: `${fileName}-hdr`
+    name: `${env.id}-hdr`
   });
 
   let environmentTexture = null;
   try {
-    environmentTexture = await resolvePMREMTexture({ id: fileName, environment: { hdr: { file: fileName, path: '/envs/' } } }, hdrId, pmremId);
+    environmentTexture = await resolvePMREMTexture(
+      {
+        id: env.id,
+        environment: {
+          hdr: {
+            file: env.hdr.file,
+            path: env.hdr.path
+          }
+        }
+      },
+      hdrId,
+      pmremId
+    );
   } catch (error) {
     console.warn('Failed to generate PMREM texture', error);
     environmentTexture = null;
   }
 
-  applyEnvironmentTexture(environmentTexture, '#050505');
-  sharedContext.scene.background = environmentTexture;
+  applyEnvironmentTexture(environmentTexture, env.fallback);
+  setEnvironmentIntensity(targetIntensity);
+
+  if (env.cubemap?.files?.length) {
+    const cubeKey = env.cubemap.path
+      ? `${env.cubemap.path}${env.cubemap.files.join('-')}`
+      : env.cubemap.files.join('-');
+    const cubemapId = `env:cubemap:${sanitiseKey(cubeKey) || env.id}`;
+
+    loadCubeTextureAsset(cubemapId, env.cubemap.files, {
+      path: env.cubemap.path,
+      colorSpace: THREE.SRGBColorSpace,
+      name: `${env.id}-cube`,
+      crossOrigin: 'anonymous'
+    });
+
+    try {
+      const cubeTexture = await waitForAsset(cubemapId);
+      sharedContext.scene.background = cubeTexture;
+    } catch (error) {
+      console.warn('Failed to load cubemap texture', error);
+      if (environmentTexture) {
+        sharedContext.scene.background = environmentTexture;
+      } else {
+        applyBackgroundFallback(env.fallback);
+      }
+    }
+  } else if (environmentTexture) {
+    sharedContext.scene.background = environmentTexture;
+  } else {
+    applyBackgroundFallback(env.fallback);
+  }
+
+  currentSceneMeta.environment = env;
+  updateCurrentScene({
+    environment: {
+      hdr: { file: env.hdr.file, path: env.hdr.path },
+      cubemap: env.cubemap ? { path: env.cubemap.path, files: [...(env.cubemap.files ?? [])] } : null,
+      fallback: env.fallback,
+      intensity: targetIntensity
+    }
+  });
 }
 
 export function registerEnvironmentTarget(target) {
@@ -94,6 +287,7 @@ export function registerEnvironmentTarget(target) {
   if (envTexture) {
     applyEnvTextureToTarget(target, envTexture);
   }
+  applyEnvIntensityToTarget(target, environmentIntensity);
 }
 
 export function registerKidMaterialAccessor(getter) {
@@ -132,10 +326,14 @@ export async function applyScene(sceneId, overrideContext) {
 
   ensureContext();
 
-  const sceneDef = scenes.find((scene) => scene.id === sceneId) ?? scenes[0];
+  const allScenes = getAllScenes();
+  const sceneDef = findSceneById(sceneId) ?? allScenes[0];
   if (!sceneDef) {
     throw new Error('No scene definitions available.');
   }
+
+  currentSceneState = cloneScene(sceneDef);
+  currentSceneMeta.environment = cloneScene(sceneDef.environment);
 
   const token = ++activeSceneToken;
 
@@ -160,7 +358,9 @@ export async function applyScene(sceneId, overrideContext) {
 
   const hdrId = `env:hdr:${sceneDef.id}`;
   const pmremId = `env:pmrem:${sceneDef.id}`;
-  const cubeId = `env:cubemap:${sceneDef.id}`;
+  const cubeId = sceneDef.environment.cubemap?.files?.length
+    ? `env:cubemap:${sceneDef.id}`
+    : null;
 
   loadHDRTextureAsset(hdrId, sceneDef.environment.hdr.file, {
     path: sceneDef.environment.hdr.path,
@@ -168,12 +368,14 @@ export async function applyScene(sceneId, overrideContext) {
     name: `${sceneDef.id}-hdr`
   });
 
-  loadCubeTextureAsset(cubeId, sceneDef.environment.cubemap.files, {
-    path: sceneDef.environment.cubemap.path,
-    colorSpace: THREE.SRGBColorSpace,
-    name: `${sceneDef.id}-cube`,
-    crossOrigin: 'anonymous'
-  });
+  if (cubeId) {
+    loadCubeTextureAsset(cubeId, sceneDef.environment.cubemap.files, {
+      path: sceneDef.environment.cubemap.path,
+      colorSpace: THREE.SRGBColorSpace,
+      name: `${sceneDef.id}-cube`,
+      crossOrigin: 'anonymous'
+    });
+  }
 
   let environmentTexture = null;
   try {
@@ -188,6 +390,11 @@ export async function applyScene(sceneId, overrideContext) {
   }
 
   applyEnvironmentTexture(environmentTexture, sceneDef.environment.fallback);
+  const sceneEnvIntensity =
+    typeof sceneDef.environment?.intensity === 'number'
+      ? sceneDef.environment.intensity
+      : environmentIntensity;
+  setEnvironmentIntensity(sceneEnvIntensity);
   await applySceneBackground(sceneDef, cubeId, token);
 
   await applyAlphaTexture(sceneDef, token);
@@ -198,6 +405,7 @@ export async function applyScene(sceneId, overrideContext) {
   activeSceneId = sceneDef.id;
   const endTime = performance.now();
   console.log(`Scene '${sceneId}' loaded in ${((endTime - startTime) / 1000).toFixed(2)} seconds.`);
+  return sceneDef;
 }
 
 function ensureContext() {
@@ -252,8 +460,13 @@ function applyEnvTextureToTarget(target, texture) {
   if (!target || !texture) {
     return;
   }
+  if (Array.isArray(target)) {
+    target.forEach((mat) => applyEnvTextureToTarget(mat, texture));
+    return;
+  }
   if (target.isMaterial) {
     target.envMap = texture;
+    applyEnvIntensityToTarget(target, environmentIntensity);
     target.needsUpdate = true;
     return;
   }
@@ -267,9 +480,94 @@ function applyEnvTextureToTarget(target, texture) {
   }
 }
 
+function applyEnvIntensityToTarget(target, intensity) {
+  if (!target) return;
+  if (Array.isArray(target)) {
+    target.forEach((mat) => applyEnvIntensityToTarget(mat, intensity));
+    return;
+  }
+  if (target.isMaterial) {
+    if (typeof target.envMapIntensity === 'number') {
+      target.envMapIntensity = intensity;
+      target.needsUpdate = true;
+    }
+    return;
+  }
+  if (target.isObject3D) {
+    target.traverse((child) => {
+      if (child.isMesh && child.material) {
+        applyEnvIntensityToTarget(child.material, intensity);
+      }
+    });
+  }
+}
+
 function applyBackgroundFallback(color) {
   const fallback = new THREE.Color(color ?? '#050505');
   sharedContext.scene.background = fallback;
+}
+
+export function getCurrentSceneState() {
+  return cloneScene(currentSceneState);
+}
+
+export function updateCurrentScene(partial = {}) {
+  if (!currentSceneState) return;
+  const next = cloneScene(currentSceneState) ?? {};
+
+  if (partial.id) next.id = partial.id;
+  if (partial.name) next.name = partial.name;
+  if (partial.description) next.description = partial.description;
+  if (partial.thumbnail !== undefined) next.thumbnail = partial.thumbnail;
+
+  if (partial.environment) {
+    next.environment = mergeSection(next.environment, partial.environment);
+  }
+  if (partial.alpha) {
+    next.alpha = mergeSection(next.alpha, partial.alpha);
+  }
+  if (partial.kid) {
+    next.kid = mergeSection(next.kid, partial.kid);
+  }
+  if (partial.innerSphere) {
+    next.innerSphere = mergeSection(next.innerSphere, partial.innerSphere);
+  }
+  if (partial.ui) {
+    next.ui = mergeSection(next.ui, partial.ui);
+  }
+  if (partial.character !== undefined) {
+    next.character = mergeSection(next.character, partial.character);
+  }
+  if (partial.fog !== undefined) {
+    next.fog = mergeSection(next.fog, partial.fog);
+  }
+  if (partial.lighting !== undefined) {
+    next.lighting = mergeSection(next.lighting, partial.lighting);
+  }
+  if (partial.metadata) {
+    next.metadata = mergeSection(next.metadata, partial.metadata);
+  }
+
+  currentSceneState = next;
+}
+
+export function saveScenePreset(sceneInput) {
+  if (!sceneInput) {
+    throw new Error('saveScenePreset requires a scene definition.');
+  }
+  const candidateId = sceneInput.id ?? sceneInput.name ?? `scene-${Date.now()}`;
+  const id = ensureUniqueSceneId(candidateId);
+  const input = {
+    ...cloneScene(sceneInput),
+    id,
+    metadata: {
+      ...(sceneInput.metadata ?? {}),
+      createdAt: sceneInput.metadata?.createdAt ?? new Date().toISOString(),
+      type: 'runtime'
+    }
+  };
+  const scene = addRuntimeScene(input);
+  return scene;
 }
 
 async function applySceneBackground(sceneDef, cubeId, token) {
@@ -297,10 +595,12 @@ async function applySceneBackground(sceneDef, cubeId, token) {
   }
 
   try {
-    const cubeTexture = await waitForAsset(cubeId);
-    if (token === activeSceneToken && cubeTexture) {
-      sharedContext.scene.background = cubeTexture;
-      return;
+    if (cubeId) {
+      const cubeTexture = await waitForAsset(cubeId);
+      if (token === activeSceneToken && cubeTexture) {
+        sharedContext.scene.background = cubeTexture;
+        return;
+      }
     }
   } catch (error) {
     console.warn(`Scene cubemap background failed for "${sceneDef.id}"`, error);
@@ -476,4 +776,27 @@ function resolveKidMaterial() {
     }
   }
   return null;
+}
+
+function mergeSection(target, source) {
+  if (source === null) return null;
+  if (source === undefined) return target ?? undefined;
+  if (Array.isArray(source)) return [...source];
+  if (typeof source === 'object') {
+    const base = target && typeof target === 'object' ? { ...target } : {};
+    Object.entries(source).forEach(([key, value]) => {
+      if (value === undefined) return;
+      if (value === null) {
+        base[key] = null;
+      } else if (Array.isArray(value)) {
+        base[key] = [...value];
+      } else if (typeof value === 'object') {
+        base[key] = mergeSection(base[key], value);
+      } else {
+        base[key] = value;
+      }
+    });
+    return base;
+  }
+  return source;
 }

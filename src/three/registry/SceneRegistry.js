@@ -15,10 +15,13 @@ export class SceneRegistry {
       textures: {},
       loaders: {},
       mixers: {},
+      characters: {},
       videos: {},
       postprocessing: {},
       particles: {}
     };
+    this.listeners = new Set();
+    this.categoryListeners = new Map();
   }
 
   /**
@@ -32,6 +35,7 @@ export class SceneRegistry {
       this.registry[category] = {};
     }
     this.registry[category][name] = data;
+    this.notify(category, name, data);
   }
 
   /**
@@ -56,5 +60,61 @@ export class SceneRegistry {
    */
   getAll() {
     return this.registry;
+  }
+
+  /**
+   * Subscribe to all register events.
+   * @param {(event: { category: string, name: string, data: object }) => void} handler
+   * @returns {() => void} Cleanup function.
+   */
+  onRegister(handler) {
+    if (typeof handler !== 'function') return () => {};
+    this.listeners.add(handler);
+    return () => this.listeners.delete(handler);
+  }
+
+  /**
+   * Subscribe to register events for a specific category.
+   * @param {string} category
+   * @param {(event: { category: string, name: string, data: object }) => void} handler
+   * @returns {() => void} Cleanup function.
+   */
+  onRegisterCategory(category, handler) {
+    if (!category || typeof handler !== 'function') return () => {};
+    const key = category.toString();
+    const subscribers = this.categoryListeners.get(key) ?? new Set();
+    subscribers.add(handler);
+    this.categoryListeners.set(key, subscribers);
+    return () => {
+      const set = this.categoryListeners.get(key);
+      if (!set) return;
+      set.delete(handler);
+      if (set.size === 0) {
+        this.categoryListeners.delete(key);
+      }
+    };
+  }
+
+  notify(category, name, data) {
+    if (this.listeners.size > 0) {
+      for (const handler of this.listeners) {
+        try {
+          handler({ category, name, data });
+        } catch (error) {
+          console.error('SceneRegistry listener failed', error);
+        }
+      }
+    }
+
+    const subscribers = this.categoryListeners.get(category);
+    if (subscribers?.size) {
+      for (const handler of subscribers) {
+        try {
+          handler({ category, name, data });
+        } catch (error) {
+          console.error(`SceneRegistry listener failed for category "${category}"`, error);
+        }
+      }
+    }
   }
 }

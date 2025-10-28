@@ -1,17 +1,37 @@
 // src/modules/assetRegistry.js
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader.js';
 
 const assets = new Map();
 const listeners = new Map();
 
+export let ktx2Loader = null;
+
+export function setKTX2Loader(loader) {
+  ktx2Loader = loader;
+  if (loaders.gltf.setKTX2Loader && ktx2Loader) {
+    loaders.gltf.setKTX2Loader(ktx2Loader);
+  }
+}
+
 const loaders = {
   texture: new THREE.TextureLoader(),
   cube: new THREE.CubeTextureLoader(),
   hdr: new HDRLoader(),
-  gltf: new GLTFLoader(),
+  gltf: (() => {
+    const loader = new GLTFLoader();
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('/draco/gltf/');
+    loader.setDRACOLoader(dracoLoader);
+    if (ktx2Loader) {
+      loader.setKTX2Loader(ktx2Loader);
+    }
+    return loader;
+  })(),
   fbx: new FBXLoader(),
 };
 
@@ -457,7 +477,6 @@ export function loadVideoTextureAsset(id, options = {}) {
 
   const handleCanPlay = () => {
     cleanup();
-    console.log(`Video element readyState for '${id}': ${video.readyState}`);
     if (options.autoplay !== false) {
       video.play().catch((error) => {
         console.warn(`Autoplay failed for video asset "${id}"`, error);
@@ -497,6 +516,39 @@ export function loadVideoTextureAsset(id, options = {}) {
   });
 
   return resource;
+}
+
+/* ──────────────────────────────
+   Texture Atlas (image + JSON UVs)
+   ────────────────────────────── */
+export function loadTextureAtlasImage(id, url, options = {}) {
+  return loadTextureAsset(id, url, options);
+}
+
+export async function loadTextureAtlasJson(id, url) {
+  const existing = assets.get(id);
+  if (existing) return existing.resource;
+
+  const { promise: ready, resolve, reject } = createDeferred();
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Failed to load JSON atlas from ${url}: ${response.statusText}`);
+    const json = await response.json();
+    registerAsset(id, json, {
+      type: 'json-atlas',
+      source: url,
+      metadata: { ready },
+      ready: Promise.resolve(json),
+    });
+    resolve(json);
+    return json;
+  } catch (error) {
+    reject(error);
+    assets.delete(id);
+    notifyErrorListeners(id, error);
+    throw error;
+  }
 }
 
 /* ──────────────────────────────

@@ -3,6 +3,7 @@
   "license": "MIT",
   "name": "htdi-project",
   "version": "1.0.1",
+  "type": "module",
   "description": "Hard To Debug Issues Project - Various experiments and projects focusing on 3D, WebGL, creative coding, and interactive experiences using libraries like Three.js, Pixi.js, A-Frame, and more.",
   "author": "David Caballero",
   "engines": {
@@ -15,7 +16,10 @@
     "preview": "vite preview --port 4173",
     "start": "npm run dev",
     "lint": "eslint \"src/**/*.js\"",
-    "test": "echo \"No tests configured\" && exit 0"
+    "test": "echo \"No tests configured\" && exit 0",
+    "generate:assets": "node scripts/updateAssets.mjs",
+    "fbx:glb": "BLENDER_BIN=\"/Applications/Blender.app/Contents/MacOS/Blender\" zsh scripts/convert_fbx_with_blender.zsh ./assets/fbx ./assets/gltf glb --recursive --verbose",
+    "fbx:gltf:separate": "BLENDER_BIN=\"/Applications/Blender.app/Contents/MacOS/Blender\" zsh scripts/convert_fbx_with_blender.zsh ./assets/fbx ./assets/gltf gltf_separate --recursive --verbose"
   },
   "dependencies": {
     "@cloudinary/url-gen": "^1.22.0",
@@ -50,6 +54,9 @@
   "devDependencies": {
     "@tweakpane/plugin-essentials": "0.2.1",
     "eslint": "^9.38.0",
+    "ktx2-encoder": "^0.5.0",
+    "potpack": "^2.1.0",
+    "sharp": "^0.34.4",
     "tweakpane": "^4.0.5",
     "vite": "^7.1.10",
     "vite-plugin-static-copy": "^3.1.4"

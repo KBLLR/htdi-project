@@ -15,6 +15,14 @@
       "duration": "2:00",
       "file": "/music/i_keep_on_walking.mp3",
       "description": "An uplifting and energetic track with a driving beat."
+    },
+    {
+      "id": "spin-around",
+      "title": "Spin Around",
+      "artist": "KBLLR",
+      "duration": "5:57",
+      "file": "/music/spin_around.wav",
+      "description": "An uplifting and energetic track with a driving beat."
     }
   ]
 }

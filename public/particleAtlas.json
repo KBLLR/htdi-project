@@ -1,0 +1,147 @@
+{
+  "meta": {
+    "app": "make_atlas.mjs",
+    "version": 1,
+    "image": "particleAtlas.webp",
+    "size": {
+      "w": 1024,
+      "h": 1024
+    },
+    "format": "webp",
+    "padding": 4,
+    "pot": true,
+    "packFill": 0.793
+  },
+  "frames": {
+    "public/particles/star_07.png": {
+      "frame": {
+        "x": 4,
+        "y": 4,
+        "w": 293,
+        "h": 600
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 293,
+        "h": 600
+      },
+      "sourceSize": {
+        "w": 293,
+        "h": 600
+      },
+      "uv": {
+        "u0": 0.00390625,
+        "v0": 0.00390625,
+        "u1": 0.2900390625,
+        "v1": 0.58984375
+      }
+    },
+    "public/particles/star_01.png": {
+      "frame": {
+        "x": 305,
+        "y": 4,
+        "w": 160,
+        "h": 484
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 484
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 484
+      },
+      "uv": {
+        "u0": 0.2978515625,
+        "v0": 0.00390625,
+        "u1": 0.4541015625,
+        "v1": 0.4765625
+      }
+    },
+    "public/particles/star_02.png": {
+      "frame": {
+        "x": 473,
+        "y": 4,
+        "w": 160,
+        "h": 484
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 484
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 484
+      },
+      "uv": {
+        "u0": 0.4619140625,
+        "v0": 0.00390625,
+        "u1": 0.6181640625,
+        "v1": 0.4765625
+      }
+    },
+    "public/particles/star_0.png": {
+      "frame": {
+        "x": 4,
+        "y": 612,
+        "w": 394,
+        "h": 394
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 394,
+        "h": 394
+      },
+      "sourceSize": {
+        "w": 394,
+        "h": 394
+      },
+      "uv": {
+        "u0": 0.00390625,
+        "v0": 0.59765625,
+        "u1": 0.388671875,
+        "v1": 0.982421875
+      }
+    },
+    "public/particles/star_03.png": {
+      "frame": {
+        "x": 406,
+        "y": 612,
+        "w": 10,
+        "h": 24
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 10,
+        "h": 24
+      },
+      "sourceSize": {
+        "w": 10,
+        "h": 24
+      },
+      "uv": {
+        "u0": 0.396484375,
+        "v0": 0.59765625,
+        "u1": 0.40625,
+        "v1": 0.62109375
+      }
+    }
+  }
+}

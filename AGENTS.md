@@ -12,6 +12,7 @@
 - `npm run dev` — Vite dev server with HMR; opens automatically.
 - `npm run build` — Vite production build into `dist/`.
 - `npm run preview` — serve the `dist/` build locally.
+- `npm run generate:assets` — regenerate `src/config/assets.js` + asset catalog metadata from `public/`.
 
 ## Coding Style & Naming Conventions
 - JavaScript: ES modules, 2‑space indentation, semicolons. Variables/functions `camelCase`; classes `PascalCase` (see `src/js/Navigation.js`).
@@ -33,3 +34,10 @@
 ## Security & Assets
 - Respect third‑party licenses (fonts, models, audio). Store large binaries under `static/`; reference them from code.
 - Never commit secrets. No API keys required by default.
+
+## Asset Pipeline
+- Public assets are indexed automatically via `scripts/assetManifest.mjs`; do not hand-edit `src/config/assets.js`.
+- Additional metadata lives in `src/config/assetCatalog.js` and powers Tweakpane selectors (HDRIs, cubemaps, gobos, PBR sets).
+- Maintain texture/particle atlases with `scripts/make_atlas.mjs`; update accompanying `.json` manifests when adding sprites.
+- Use KTX2/WebP helpers in `scripts/convertImageToKTX2.mjs` and `scripts/convertImageToWebP.mjs` for new textures.
+- Blender FBX→GLB conversions rely on `scripts/convert_fbx_with_blender.zsh`; set `BLENDER_BIN` before running.

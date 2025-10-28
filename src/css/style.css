@@ -390,7 +390,7 @@ nav {
   position: fixed;
   left: clamp(1.25rem, 4vh, 3rem);
   top: 50%;
-  transform: translateY(-50%);
+  transform: translate3d(0, -50%, 0);
   z-index: 1500;
   display: inline-flex;
   flex-direction: column; /* Change to vertical layout */
@@ -403,7 +403,12 @@ nav {
   border: 1px solid var(--ui-surface-border, rgba(164, 210, 255, 0.12));
   box-shadow: 0 18px 36px rgba(6, 10, 18, 0.38);
   backdrop-filter: blur(20px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition:
+    opacity 0.28s ease,
+    transform 0.42s cubic-bezier(0.33, 0.06, 0.17, 0.99),
+    filter 0.42s cubic-bezier(0.33, 0.06, 0.17, 0.99);
+  filter: none;
+  will-change: transform, opacity, filter;
   opacity: 0;
 }
 
@@ -886,18 +891,23 @@ nav {
   width: 100%;
   aspect-ratio: 16 / 10;
   border-radius: 18px;
-  background: linear-gradient(135deg, rgba(132, 197, 255, 0.35), rgba(13, 24, 33, 0.2));
+  /* Removed background gradient to allow image to show */
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  display: flex; /* Use flexbox to center image if it doesn't cover */
+  align-items: center;
+  justify-content: center;
 }
 
-.scene-card__thumb--era {
-  background: linear-gradient(135deg, rgba(156, 232, 255, 0.9), rgba(17, 38, 63, 0.6));
+.scene-card__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-.scene-card__thumb--omega {
-  background: linear-gradient(135deg, rgba(255, 155, 246, 0.8), rgba(42, 13, 59, 0.7));
-}
+/* Removed specific background gradients as images are now used */
 
 .scene-card__body {
   display: grid;
@@ -920,14 +930,30 @@ nav {
 }
 
 .deployment-timeline {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: clamp(0.85rem, 2vw, 1.5rem);
-  margin-top: 0.5rem;
+  position: relative;
+  display: block;
   overflow-x: auto;
-  padding-bottom: 0.75rem;
+  overflow-y: hidden;
+  padding: clamp(2.4rem, 4.8vw, 3.6rem) clamp(2.4rem, 6vw, 4.2rem);
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  width: calc(100vw - clamp(2rem, 6vw, 7rem));
+  max-width: 1600px;
+  margin: 0 auto;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.deployment-timeline::-webkit-scrollbar {
+  height: 6px;
+}
+
+.deployment-timeline::-webkit-scrollbar-thumb {
+  background: rgba(213, 255, 126, 0.35);
+  border-radius: 999px;
 }
 
 .deployment-timeline__status {
@@ -937,73 +963,204 @@ nav {
   letter-spacing: 0.08em;
 }
 
-.deployment-card {
-  background: var(--ui-card-bg, var(--grayDark8));
-  border: 1px solid var(--ui-card-border, var(--grayDark9));
-  padding: 1.1rem 1.25rem;
-  display: grid;
-  gap: 0.6rem;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
-  min-width: clamp(15rem, 50vw, 20rem);
-  scroll-snap-align: start;
-}
-
-.deployment-card__header {
+.deployment-timeline__track {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  align-items: baseline;
-  justify-content: space-between;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: clamp(2.4rem, 4.8vw, 3.6rem);
+  min-height: clamp(19.5rem, 44vh, 24rem);
+  padding-bottom: clamp(1.8rem, 3.6vw, 2.4rem);
+  width: max(100%, calc(320px * 6));
 }
 
-.deployment-card__actions {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
+.deployment-timeline__track::before {
+  content: "";
+  position: absolute;
+  inset-inline: clamp(-50vw, -6rem, -2rem);
+  bottom: clamp(1rem, 2.8vw, 1.6rem);
+  height: 2px;
+  width: calc(100% + clamp(100vw, 12rem, 240px));
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, rgba(213, 255, 126, 0) 0%, rgba(213, 255, 126, 0.8) 20%, rgba(213, 255, 126, 0.98) 50%, rgba(213, 255, 126, 0.8) 80%, rgba(213, 255, 126, 0) 100%);
+  pointer-events: none;
 }
 
-.deployment-card__context {
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
+.deployment-timeline__entry {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: clamp(320px, 28vw, 360px);
+  scroll-snap-align: center;
+  gap: clamp(1.2rem, 2.8vw, 1.8rem);
+}
+
+.deployment-timeline__marker {
+  position: absolute;
+  bottom: clamp(0.8rem, 2.5vw, 1.3rem);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(6, 10, 18, 0.92);
+  border: 2px solid rgba(213, 255, 126, 0.9);
+  box-shadow: 0 0 12px rgba(213, 255, 126, 0.45);
+}
+
+.deployment-timeline__marker::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 2px;
+  height: clamp(1.6rem, 4vw, 2.4rem);
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(213, 255, 126, 0.55) 0%, rgba(213, 255, 126, 0) 100%);
+}
+
+.deployment-timeline__label {
+  margin-top: clamp(0.45rem, 1.6vw, 0.8rem);
+  font-family: "Pirulen", sans-serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--ui-accent, var(--yellow9));
+  color: rgba(238, 248, 255, 0.85);
+  text-align: center;
 }
 
-.deployment-card__date {
-  font-size: 0.75rem;
-  color: var(--ui-text-secondary, var(--gray7));
+.deployment-timeline__sentinel {
+  width: 1px;
+  height: 1px;
+}
+
+
+.deployment-card {
+  background: rgba(14, 18, 26, 0.95);
+  border: 1px solid rgba(213, 255, 126, 0.16);
+  border-radius: 22px;
+  padding: clamp(1rem, 2.8vw, 1.6rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.9rem, 2.4vw, 1.2rem);
+  box-shadow: 0 12px 22px rgba(4, 8, 16, 0.28);
+  width: clamp(280px, 32vw, 360px);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.deployment-card--tip {
+  transform-origin: bottom center;
+}
+
+.deployment-card:hover,
+.deployment-card:focus-within {
+  transform: translateY(-6px);
+  border-color: rgba(213, 255, 126, 0.35);
+  box-shadow: 0 16px 32px rgba(10, 18, 30, 0.45);
+}
+
+.deployment-card__preview {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: clamp(1rem, 2vw, 1.4rem);
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 35%, rgba(213, 255, 126, 0.12), rgba(8, 14, 22, 0.9));
+}
+
+.deployment-card__preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: saturate(110%) contrast(105%);
+}
+
+.deployment-card__preview-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: clamp(0.75rem, 2vw, 1rem);
+  background: linear-gradient(180deg, rgba(4, 8, 14, 0.75) 0%, rgba(4, 8, 14, 0) 70%);
+  pointer-events: none;
 }
 
 .deployment-card__favorite {
+  position: absolute;
+  right: clamp(0.7rem, 2vw, 1rem);
+  bottom: clamp(0.7rem, 2vw, 1rem);
   border: none;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.45);
-  font-size: 1.2rem;
+  background: rgba(8, 14, 22, 0.65);
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 1.3rem;
   line-height: 1;
   cursor: pointer;
-  transition: color 0.2s ease, transform 0.2s ease;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  transition: color 0.2s ease, transform 0.2s ease, background 0.2s ease;
 }
 
 .deployment-card__favorite:hover {
   color: var(--ui-accent, var(--yellow9));
-  transform: scale(1.1);
+  background: rgba(8, 14, 22, 0.85);
+  transform: scale(1.08);
 }
 
 .deployment-card__favorite.is-active {
   color: var(--ui-accent, var(--yellow9));
-  text-shadow: 0 0 12px rgba(213, 255, 126, 0.4);
+  text-shadow: 0 0 14px rgba(213, 255, 126, 0.55);
+}
+
+.deployment-card__context {
+  font-family: "Henke", sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ui-accent, var(--yellow9));
+  background: rgba(8, 12, 20, 0.65);
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  box-shadow: 0 0 14px rgba(213, 255, 126, 0.2);
+  pointer-events: auto;
+}
+
+.deployment-card__date {
+  font-family: "Pirulen", sans-serif;
+  font-size: 0.7rem;
+  color: rgba(230, 240, 255, 0.8);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(8, 12, 20, 0.55);
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  pointer-events: auto;
+}
+
+.deployment-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 2vw, 1.2rem);
 }
 
 .deployment-card__title {
-  font-family: "Pirulen";
-  font-size: 1rem;
-  line-height: 1.2;
+  font-family: "Pirulen", sans-serif;
+  font-size: clamp(1.05rem, 2.4vw, 1.25rem);
+  line-height: 1.3;
   color: var(--ui-text-primary, var(--gray2));
+  letter-spacing: 0.08em;
 }
 
 .deployment-card__summary {
-  font-size: 0.8rem;
-  line-height: 1.4;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-size: clamp(0.85rem, 1.9vw, 0.98rem);
+  line-height: 1.6;
   color: var(--ui-text-secondary, var(--gray5));
 }
 
@@ -1011,15 +1168,21 @@ nav {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  align-items: center;
-  font-size: 0.7rem;
+  font-family: "Henke", sans-serif;
+  font-size: 0.74rem;
   color: var(--ui-text-secondary, var(--gray6));
 }
 
 .deployment-card__meta-item {
   background: rgba(255, 255, 255, 0.08);
   border-radius: 999px;
-  padding: 0.3rem 0.55rem;
+  padding: 0.38rem 0.7rem;
+}
+
+.deployment-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
 }
 
 .deployment-card__link {
@@ -1029,44 +1192,34 @@ nav {
   background: transparent;
   color: var(--ui-accent, var(--yellow8));
   text-decoration: none;
-  padding: 0.35rem 0.6rem;
+  padding: 0.4rem 0.75rem;
   border-radius: 999px;
-  border: 1px solid var(--ui-card-border, rgba(255, 255, 255, 0.25));
-  transition: background 0.2s ease, color 0.2s ease;
+  border: 1px solid rgba(213, 255, 126, 0.26);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   font-family: "Pirulen";
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
 }
 
 .deployment-card__link:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--ui-accent, var(--yellow4));
+  background: rgba(213, 255, 126, 0.16);
+  color: var(--ui-accent, var(--yellow3));
+  border-color: rgba(213, 255, 126, 0.45);
 }
 
 .deployment-card__link--inline {
-  background: rgba(255, 255, 255, 0.06);
-  margin-right: 0.25rem;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .deployment-card__link--inline:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(213, 255, 126, 0.2);
 }
 
-.modal--deployments .deployment-timeline {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: clamp(1.2rem, 3vw, 1.8rem);
-  max-height: min(72vh, 600px);
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 0.4rem;
-}
-
-.modal--deployments .deployment-card {
-  min-width: 0;
-  width: 100%;
+.deployment-timeline__marker,
+.deployment-timeline__label {
+  display: none;
 }
 
 .modal--music .modal__surface {
@@ -1246,7 +1399,8 @@ nav {
 .modal-open .glass-footer {
   opacity: 0;
   pointer-events: none;
-  transform: translateX(-50%) translateY(12px);
+  transform: translate3d(-140%, -50%, 0);
+  filter: blur(14px);
 }
 
 @media (max-width: 48em) {
@@ -1275,9 +1429,6 @@ nav {
     grid-auto-columns: minmax(220px, 80vw);
   }
 
-  .modal--deployments .deployment-timeline {
-    max-height: none;
-  }
 }
 
 body.deployment-viewer-open {
@@ -1465,3 +1616,106 @@ only screen and (min-resolution: 2dppx) {
 @media only screen and (orientation:portrait) {}
 
 @media only screen and (orientation:landscape) {}
+.deployment-timeline-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1800;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+
+.deployment-timeline-overlay.is-visible {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+
+.deployment-timeline-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 10, 18, 0.92);
+}
+
+.deployment-timeline-overlay__panel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: clamp(3rem, 8vw, 5rem);
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  pointer-events: none; /* Default to none */
+}
+
+.deployment-timeline-overlay.is-visible .deployment-timeline-overlay__panel {
+  pointer-events: auto; /* Enable when visible */
+}
+
+.deployment-timeline-overlay__panel > * {
+  /* Remove this overly broad rule, interactive elements will have pointer-events: auto; when visible */
+}
+
+.deployment-timeline-overlay__header {
+  position: absolute;
+  top: clamp(2rem, 6vw, 3.5rem);
+  left: clamp(2rem, 6vw, 3.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-width: min(28ch, 40vw);
+}
+
+.deployment-timeline-overlay__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.deployment-timeline-overlay__title {
+  font-family: "Pirulen";
+  font-size: clamp(1rem, 2.8vw, 1.35rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ui-text-primary, var(--gray1));
+}
+
+.deployment-timeline-overlay__lede {
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--ui-text-secondary, var(--gray6));
+  max-width: 42ch;
+}
+
+.deployment-timeline-overlay__close {
+  margin-top: 0.75rem;
+  align-self: flex-start;
+  border: 1px solid rgba(213, 255, 126, 0.4);
+  background: rgba(7, 12, 18, 0.55);
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+}
+
+.deployment-timeline-overlay__close:hover {
+  transform: scale(1.08);
+  border-color: rgba(213, 255, 126, 0.8);
+  background: rgba(10, 18, 26, 0.8);
+}
+.deployment-timeline-overlay.is-visible,
+body.deployment-timeline-overlay-open {
+  overflow: hidden;
+}
+
+body.deployment-timeline-overlay-open {
+  touch-action: pan-y;
+  cursor: auto;
+}

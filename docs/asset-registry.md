@@ -22,9 +22,9 @@ import {
 
 ### Loading and re-using assets
 
-- **Textures**: `const map = loadTextureAsset('texture:ui:grid', '/textures/ui/grid.png');`
-- **Cubemaps**: `loadCubeTextureAsset('env:cube:noche', ['px.png', ...], { path: '/textures/cube/noche/' });`
-- **HDR files**: `loadHDRTextureAsset('env:hdr:studio', 'studio.hdr', { path: '/textures/equirectangular/' });`
+- **Textures**: `const map = loadTextureAsset('texture:ui:grid', '/pbrmaps/ui/grid.png');`
+- **Cubemaps**: `loadCubeTextureAsset('env:cube:noche', ['px.png', ...], { path: '/pbrmaps/cube/noche/' });`
+- **HDR files**: `loadHDRTextureAsset('env:hdr:studio', 'studio.hdr', { path: '/pbrmaps/equirectangular/' });`
 - **GLTF / FBX**: the loader returns a promise — await the result, then add it to the scene.
 - **Videos**: `const eye = loadVideoTextureAsset('video:eye', { src: '/vid/eye.webm' });` returns `{ element, texture, ready }`.
 

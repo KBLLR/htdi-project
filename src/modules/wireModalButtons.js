@@ -1,5 +1,10 @@
 // Deduped modal button wiring (no top-level const collisions; HMR-safe)
-export function wireModalButtons({ openModal, musicPlayer, ensureMusicLibraryLoaded }) {
+export function wireModalButtons({
+  openModal,
+  toggleDeploymentTimeline,
+  musicPlayer,
+  ensureMusicLibraryLoaded,
+}) {
   const $ = (id) => /** @type {HTMLElement|null} */ (document.getElementById(id));
 
   const showBtn        = null; // Replaced by DevLog
@@ -20,17 +25,19 @@ export function wireModalButtons({ openModal, musicPlayer, ensureMusicLibraryLoa
   //   openModal('changelog', { focusTarget: '#changelog-timeline' })
   // );
   wireOnce(tasksBtn, 'click', () =>
-    openModal('tasks', { focusTarget: '#tasks-board' })
+    openModal?.('tasks', { focusTarget: '#tasks-board' })
   );
   wireOnce(scenePickerBtn, 'click', () =>
-    openModal('scenes', { focusTarget: '#scene-picker' })
+    openModal?.('scenes', { focusTarget: '#scene-picker' })
   );
-  wireOnce(deploymentsBtn, 'click', () =>
-    openModal('deployments', { focusTarget: '#deployment-gallery' })
-  );
+  if (typeof toggleDeploymentTimeline !== 'function') {
+    wireOnce(deploymentsBtn, 'click', () =>
+      openModal?.('deployments', { focusTarget: '#deployment-gallery' })
+    );
+  }
   wireOnce(soundBtn, 'click', () => {
     const shouldAutoSelect = !musicPlayer?.getCurrentTrack?.();
     ensureMusicLibraryLoaded?.({ autoSelectFirst: shouldAutoSelect });
-    openModal('music', { focusTarget: '#music-player' });
+    openModal?.('music', { focusTarget: '#music-player' });
   });
 }

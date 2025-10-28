@@ -1,66 +1,58 @@
 {
-  "name": "DKnight",
+  "name": "Hard To Debug Issues",
+  "short_name": "HTDI",
+  "id": "/HTDI",
+  "description": "Interactive HTDI WebGL experience with scene presets, PBR tooling, and tweakable controls.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#060912",
+  "theme_color": "#0f1726",
   "icons": [
     {
-      "src": "/icons/appIcon-vector.svg",
-      "type": "image/svg+xml",
-      "sizes": "512x512"
-    },{
-      "src": "/icons/appIcon-60@3x.png",
+      "src": "/icon-192.png",
+      "sizes": "192x192",
       "type": "image/png",
-      "sizes": "180x180"
-    },{
-      "src": "/icons/appIcon-76@2x.png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
       "type": "image/png",
-      "sizes": "152x152"
-    },{
-      "src": "/icons/appIcon-40@3x.png",
-      "type": "image/png",
-      "sizes": "120x120"
-    },{
-      "src": "/icons/appIcon-29@3x.png",
-      "type": "image/png",
-      "sizes": "87x87"
-    },{
-      "src": "/icons/appIcon-40@2x.png",
-      "type": "image/png",
-      "sizes": "80x80"
-    },{
-      "src": "/icons/appIcon-76@1x.png",
-      "type": "image/png",
-      "sizes": "76x76"
-    },{
-      "src": "/icons/appIcon-20@3x.png",
-      "type": "image/png",
-      "sizes": "58x58"
-    },{
-      "src": "/icons/appIcon-29@2x.png",
-      "type": "image/png",
-      "sizes": "60x60"
-    },{
-      "src": "/icons/appIcon-20@2x.png",
-      "type": "image/png",
-      "sizes": "40x40"
-    },{
-      "src": "/icons/appIcon-29@1x.png",
-      "type": "image/png",
-      "sizes": "29x29"
-    },{
-      "src": "/icons/appIcon-1024@1x.png",
-      "type": "image/png",
-      "sizes": "1024x1024"
-    },{
-      "src": "/icons/appIcon@3x.png",
-      "type": "image/png",
-      "sizes": "576x576"
-    },{
-      "src": "/icons/appIcon@2x.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },{
-      "src": "/icons/appIcon.png",
-      "type": "image/png",
-      "sizes": "192x192"
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/thumbnails/omega.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Omega Gradient Scene"
+    },
+    {
+      "src": "/thumbnails/era.jpg",
+      "sizes": "720x1280",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Era of Reflection Scene"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Explore Scenes",
+      "short_name": "Scenes",
+      "description": "Jump directly to scene selection.",
+      "url": "/?action=scenes",
+      "icons": [{ "src": "/icons/appIcon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Music Player",
+      "short_name": "Music",
+      "description": "Access the in-app music player.",
+      "url": "/?action=music",
+      "icons": [{ "src": "/icons/appIcon-192.png", "sizes": "192x192" }]
     }
   ]
-  }
+}

@@ -26,7 +26,11 @@ export function createScene(config) {
     alpha: buildAlpha(config.alpha ?? {}),
     kid: buildKid(config.kid ?? {}),
     innerSphere: buildInnerSphere(config.innerSphere ?? {}),
-    ui: buildUI(config.ui ?? {})
+    ui: buildUI(config.ui ?? {}),
+    fog: buildFog(config.fog ?? {}),
+    lighting: buildLighting(config.lighting ?? {}),
+    character: buildCharacter(config.character ?? null),
+    metadata: config.metadata ? { ...config.metadata } : {}
   };
 }
 
@@ -35,7 +39,7 @@ function buildEnvironment(environment) {
   const hdrPath =
     environment?.hdr?.path ??
     environment?.hdr?.directory ??
-    '/textures/equirectangular/';
+    '/pbrmaps/equirectangular/';
 
   const cubemapDirectory =
     environment?.cubemap?.path ??
@@ -115,4 +119,70 @@ function buildUI(ui) {
     textPrimary: ui?.textPrimary ?? '#F4FBFF',
     textSecondary: ui?.textSecondary ?? '#96A3B3'
   };
+}
+
+function buildCharacter(character) {
+  if (!character) return null;
+  if (typeof character === 'string') {
+    return { id: character };
+  }
+  if (character && typeof character === 'object') {
+    return {
+      id: character.id ?? null,
+      label: character.label ?? null
+    };
+  }
+  return null;
+}
+
+function buildFog(fog) {
+  const enabled = Boolean(fog?.enabled);
+  const type = fog?.type === 'linear' ? 'linear' : 'exp2';
+  return {
+    enabled,
+    type,
+    color: fog?.color ?? '#1a2430',
+    density: fog?.density ?? 0.02,
+    near: fog?.near ?? 2,
+    far: fog?.far ?? 60
+  };
+}
+
+function buildLighting(lighting) {
+  const spotlightConfig = lighting?.spotlight ?? lighting;
+  return {
+    spotlight: buildSpotlight(spotlightConfig)
+  };
+}
+
+function buildSpotlight(spotlight) {
+  if (!spotlight) return null;
+  return {
+    color: spotlight.color ?? '#ffffff',
+    intensity: spotlight.intensity ?? 2.5,
+    angle: spotlight.angle ?? Math.PI / 5,
+    penumbra: spotlight.penumbra ?? 0.4,
+    decay: spotlight.decay ?? 1,
+    distance: spotlight.distance ?? 35,
+    position: toArray(spotlight.position, [2.5, 5.5, 2.5]),
+    target: toArray(spotlight.target, [0, 0.6, 0]),
+    gobo: buildGobo(spotlight.gobo ?? null)
+  };
+}
+
+function buildGobo(gobo) {
+  if (!gobo) return null;
+  if (typeof gobo === 'string') return { id: gobo };
+  if (gobo?.id) return { id: gobo.id };
+  return null;
+}
+
+function toArray(value, fallback = []) {
+  if (Array.isArray(value) && value.length === 3) {
+    return value.map((component, index) => {
+      const parsed = Number(component);
+      return Number.isFinite(parsed) ? parsed : fallback[index] ?? 0;
+    });
+  }
+  return [...fallback];
 }

@@ -1,21 +1,39 @@
-/* Tweakpane container - position at bottom center with padding */
+/* Tweakpane container - docked to the right with 8px gutter */
 .tp-dfwv {
     position: fixed !important;
-    bottom: 8px !important;
-    left: 8px !important;
+    top: 8px !important;
     right: 8px !important;
-    width: calc(100% - 16px) !important;
+    bottom: 8px !important;
+    left: auto !important;
+    transform: none !important;
+    width: min(360px, calc(100vw - 16px)) !important;
+    max-height: calc(100vh - 16px) !important;
     z-index: 9999 !important;
-    transition: all 0.3s ease !important;
+    transition: transform 0.3s ease, opacity 0.3s ease !important;
     border-radius: 12px !important;
+    pointer-events: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
     overflow: hidden !important;
+}
+
+.tp-dfwv.is-hidden {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translate3d(calc(100% + 32px), 0, 0) !important;
+}
+
+.tp-dfwv.is-hidden .tp-rotv {
+    pointer-events: none !important;
 }
 
 /* Root pane element */
 .tp-dfwv .tp-rotv {
-    max-height: 50vh !important;
+    max-height: calc(100vh - 16px) !important;
     overflow-y: auto !important;
     border-radius: 12px !important;
+    padding-right: 4px !important; /* accommodate scrollbar */
+    flex: 1 1 auto !important;
 }
 
 /* When folded, keep it minimal */

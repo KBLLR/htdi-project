@@ -21,7 +21,7 @@ devlog.info('Booting…');
 
 // Feature modules (aliased)
 import { initialiseDeploymentTimeline } from '@modules/deploymentTimelineUI.js';
-import { getScenes, applyScene, setSceneContext } from '@three/sceneManager.js';
+import { getScenes, applyScene, setSceneContext, getActiveSceneId } from '@three/sceneManager.js';
 import { initialiseScenePicker } from '@modules/scenePickerUI.js';
 import { initDeploymentViewer } from '@modules/deploymentViewer.js';
 import { initialiseMusicPlayer } from '@modules/musicPlayerUI.js';
@@ -35,13 +35,15 @@ import { initMusicAction } from '@modules/actionsBar/actions/musicAction.js';
 import { initSceneGeneratorAction } from '@modules/actionsBar/actions/sceneGeneratorAction.js';
 import { initAIAction } from '@modules/actionsBar/actions/aiAction.js';
 import { initDataAction } from '@modules/actionsBar/actions/dataAction.js';
+import { initDeploymentTimelineOverlay } from '@modules/deploymentTimelineOverlay.js';
 import { wireModalButtons } from '@modules/wireModalButtons.js';
+import { createCustomCursor } from '@modules/customCursor.js';
 
 // Sound button helper (no globals; HMR-safe)
 import { setupSoundButton } from '@modules/soundButtonUI.js';
 
 // Modal service (EventBus-driven)
-import { initModalService } from '@modules/modalService.js';
+import { initModalService } from '@shared/modalService.js';
 
 // Tweakpane v4.0.5
 
@@ -52,48 +54,13 @@ import { createExperience } from '@three/index.js';
 // Actions config (JSON-driven registration)
 import actionsSpec from '@config/actions.json';
 
-/* ──────────────────────────────────────────────────────────────────────────
-   Custom cursor (minimal)
-────────────────────────────────────────────────────────────────────────── */
-{
-  const CURSOR_COLOR = '#D7FF00';
-  const cur = document.createElement('div');
-  cur.style.cssText = `
-    border: 2px solid ${CURSOR_COLOR};
-    width: 18px; height: 18px; border-radius: 50%;
-    position: fixed; left: 0; top: 0; pointer-events: none;
-    transition: transform .06s ease, opacity .12s ease;
-    background: rgba(215,255,0,.18);
-    box-shadow: 0 0 14px rgba(215,255,0,.45);
-    z-index: 10000;
-  `;
-  const root = document.documentElement;
-  root.style.cursor = 'none';
-  root.appendChild(cur);
-
-  const move = (e) => {
-    cur.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-    cur.style.opacity = '1';
-  };
-  root.addEventListener('mousemove', move, { passive: true });
-  root.addEventListener(
-    'mousedown',
-    (e) => {
-      cur.style.transform = `translate(${e.clientX}px, ${e.clientY}px) scale(3)`;
-      cur.style.background = 'rgba(215,255,0,.32)';
-    },
-    { passive: true }
-  );
-  root.addEventListener(
-    'mouseup',
-    (e) => {
-      cur.style.transform = `translate(${e.clientX}px, ${e.clientY}px) scale(1.8)`;
-      cur.style.background = 'rgba(215,255,0,.18)';
-    },
-    { passive: true }
-  );
-  root.addEventListener('mouseleave', () => { cur.style.opacity = '0'; }, { passive: true });
-}
+const customCursor = createCustomCursor({
+  color: '#D7FF00',
+  size: 18,
+  borderWidth: 2,
+  hoverScale: 1.8,
+  pressScale: 3,
+});
 
 /* ──────────────────────────────────────────────────────────────────────────
    Tooltips (with a small registry so we can update titles dynamically)
@@ -104,6 +71,9 @@ const tips = tippy('[data-tippy-content]', {
   duration: 0,
   arrow: true,
   delay: [400, 200],
+  placement: 'right',
+  offset: [0, 12],
+  moveTransition: 'transform 0.2s ease-out',
   animateFill: true,
   inertia: true,
   plugins: [animateFill],
@@ -120,6 +90,7 @@ const updateTooltipContent = (el, content) => {
    Three Experience
 ────────────────────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', async () => {
+  const eventBus = new EventBus();
   const experience = await createExperience();
   console.log('Experience object after creation:', experience);
   const {
@@ -132,9 +103,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     innerSphereMaterial,
     // materialLibrary,
     // applyMaterialPreset,
-    applyControlsState,
-    animateCameraPreset,
-    animateDepthOfField,
+    activateCameraPreset,
     // setDepthOfFieldPreset,
     // stopCameraTween,
     // stopDofTween,
@@ -151,16 +120,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   /* ──────────────────────────────────────────────────────────────────────────
      Modal service hooks
   ────────────────────────────────────────────────────────────────────────── */
-  initModalService({
+  const modalService = initModalService(eventBus, {
     focusCameraOnModal: () => {
-      applyControlsState('focus');
-      animateCameraPreset('focus', { duration: 1800, easing: Easing.Cubic.InOut });
-      animateDepthOfField('focus', { duration: 1500 });
+      activateCameraPreset('focus', {
+        camera: { duration: 1800, easing: Easing.Cubic.InOut },
+        dof: { duration: 1500 },
+      });
     },
     resetCameraFromModal: () => {
-      applyControlsState('overview');
-      animateCameraPreset('overview', { duration: 1600, easing: Easing.Cubic.InOut });
-      animateDepthOfField('overview', { duration: 1400 });
+      activateCameraPreset('overview', {
+        camera: { duration: 1600, easing: Easing.Cubic.InOut },
+        dof: { duration: 1400 },
+      });
     },
   });
 
@@ -171,6 +142,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     import('@modules/TweakpaneManager.js').then(({ default: TweakpaneManager }) => {
       if (!window.__tpManager) {
         window.__tpManager = new TweakpaneManager(experience, { title: 'HTDI Controls', expanded: false });
+        window.__tpManager.hidePane?.();
+      } else {
+        window.__tpManager.hidePane?.();
+      }
+
+      window.dispatchEvent(new CustomEvent('htdi:tweakpane-ready', { detail: { manager: window.__tpManager } }));
+
+      const dataButton = document.getElementById('data-btn');
+      if (dataButton) {
+        dataButton.classList.remove('is-active');
+        dataButton.setAttribute('aria-pressed', 'false');
       }
 
       if (import.meta?.hot) {
@@ -211,13 +193,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   /* ──────────────────────────────────────────────────────────────────────────
      Actions Bar — JSON-driven registration (config/actions/actions.json)
   ────────────────────────────────────────────────────────────────────────── */
-  const eventBus = new EventBus();
   const actions = new ActionsBarManager({ target: actionsBarTarget, eventBus });
+  let toggleDeploymentTimeline = () => { };
   // Map action id -> initializer
   const ACTION_INITS = {
     devlog: (mgr, spec) => initDevlogAction(mgr, { buttonId: spec.buttonId, ...spec.params }),
     tasks: (mgr, spec) => initTasksAction(mgr, { buttonId: spec.buttonId, ...spec.params }),
-    deployments: (mgr, spec) => initDeploymentsAction(mgr, { buttonId: spec.buttonId, ...spec.params }),
+    deployments: (mgr, spec) =>
+      initDeploymentsAction(mgr, {
+        buttonId: spec.buttonId,
+        toggleTimeline: () => toggleDeploymentTimeline?.(),
+        ...spec.params,
+      }),
     music: (mgr, spec) =>
       initMusicAction(mgr, {
         buttonId: spec.buttonId,
@@ -256,28 +243,61 @@ document.addEventListener('DOMContentLoaded', async () => {
   setSceneContext({ scene, renderer, alphaMaterial, innerSphereMaterial });
 
   const deploymentViewer = initDeploymentViewer();
+  const deploymentTimelineOverlay = initDeploymentTimelineOverlay({
+    onOpen: () => customCursor.disable?.(),
+    onClose: () => customCursor.enable?.(),
+  });
+  toggleDeploymentTimeline = deploymentTimelineOverlay.toggle;
 
-  const availableScenes = getScenes();
-  const scenePicker = initialiseScenePicker({
-    scenes: availableScenes,
-    onSelect: (sceneId) => {
-      if (!sceneId) return;
-      applyScene(sceneId)
-        .then(() => scenePicker.setActive(sceneId))
-        .catch((e) => console.error('Failed to apply scene', e));
-    },
+  const handleSceneSelect = (sceneId) => {
+    if (!sceneId) return;
+    applyScene(sceneId)
+      .then((sceneDef) => {
+        scenePicker.setActive(sceneId);
+        if (sceneDef?.character?.id && typeof experience.setCharacter === 'function') {
+          experience.setCharacter(sceneDef.character.id);
+        }
+      })
+      .catch((e) => console.error('Failed to apply scene', e));
+  };
+
+  let scenePicker = initialiseScenePicker({
+    scenes: getScenes(),
+    onSelect: handleSceneSelect,
   });
 
+  const rebuildScenePicker = (activeScene) => {
+    scenePicker = initialiseScenePicker({
+      scenes: getScenes(),
+      onSelect: handleSceneSelect,
+    });
+    if (activeScene) {
+      scenePicker.setActive(activeScene);
+    }
+  };
+
   const PREFERRED_START_SCENE = 'omega';
+  const initialScenes = getScenes();
   const defaultSceneId =
-    availableScenes.find((s) => s.id === PREFERRED_START_SCENE)?.id ??
-    availableScenes[0]?.id;
+    initialScenes.find((s) => s.id === PREFERRED_START_SCENE)?.id ??
+    initialScenes[0]?.id;
 
   if (defaultSceneId) {
     applyScene(defaultSceneId)
-      .then(() => scenePicker.setActive(defaultSceneId))
+      .then((sceneDef) => {
+        scenePicker.setActive(defaultSceneId);
+        if (sceneDef?.character?.id && typeof experience.setCharacter === 'function') {
+          experience.setCharacter(sceneDef.character.id);
+        }
+      })
       .catch((e) => console.error('Failed to load default scene', e));
   }
+
+  window.addEventListener('htdi:scenes-changed', (event) => {
+    const detail = event.detail ?? {};
+    const active = detail.scene?.id ?? getActiveSceneId();
+    rebuildScenePicker(active);
+  });
 
   initialiseDeploymentTimeline({
     onOpenDeployment: (url) => deploymentViewer.open(url),
@@ -285,7 +305,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Wire up modal buttons
   wireModalButtons({
-    openModal: initModalService({}).openModal, // Assuming initModalService returns an object with openModal
+    openModal: modalService.openModal,
+    toggleDeploymentTimeline: deploymentTimelineOverlay.toggle,
     musicPlayer,
     ensureMusicLibraryLoaded,
   });

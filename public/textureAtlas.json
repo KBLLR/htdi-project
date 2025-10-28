@@ -1,0 +1,407 @@
+{
+  "meta": {
+    "app": "make_atlas.mjs",
+    "version": 1,
+    "image": "textureAtlas.webp",
+    "size": {
+      "w": 4096,
+      "h": 8192
+    },
+    "format": "webp",
+    "padding": 4,
+    "pot": true,
+    "packFill": 0.829
+  },
+  "frames": {
+    "public/gobos/Underwater_Caustics_01.png": {
+      "frame": {
+        "x": 4,
+        "y": 4,
+        "w": 1024,
+        "h": 1024
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 1024,
+        "h": 1024
+      },
+      "sourceSize": {
+        "w": 1024,
+        "h": 1024
+      },
+      "uv": {
+        "u0": 0.0009765625,
+        "v0": 0.00048828125,
+        "u1": 0.2509765625,
+        "v1": 0.12548828125
+      }
+    },
+    "public/gobos/Underwater_Caustics_02.png": {
+      "frame": {
+        "x": 1036,
+        "y": 4,
+        "w": 1024,
+        "h": 1024
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 1024,
+        "h": 1024
+      },
+      "sourceSize": {
+        "w": 1024,
+        "h": 1024
+      },
+      "uv": {
+        "u0": 0.2529296875,
+        "v0": 0.00048828125,
+        "u1": 0.5029296875,
+        "v1": 0.12548828125
+      }
+    },
+    "public/gobos/Underwater_Caustics_03.png": {
+      "frame": {
+        "x": 2068,
+        "y": 4,
+        "w": 1024,
+        "h": 1024
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 1024,
+        "h": 1024
+      },
+      "sourceSize": {
+        "w": 1024,
+        "h": 1024
+      },
+      "uv": {
+        "u0": 0.5048828125,
+        "v0": 0.00048828125,
+        "u1": 0.7548828125,
+        "v1": 0.12548828125
+      }
+    },
+    "public/gobos/Tree_02.png": {
+      "frame": {
+        "x": 4,
+        "y": 1036,
+        "w": 984,
+        "h": 981
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 984,
+        "h": 981
+      },
+      "sourceSize": {
+        "w": 984,
+        "h": 981
+      },
+      "uv": {
+        "u0": 0.0009765625,
+        "v0": 0.12646484375,
+        "u1": 0.2412109375,
+        "v1": 0.2462158203125
+      }
+    },
+    "public/gobos/Window_01.png": {
+      "frame": {
+        "x": 996,
+        "y": 1036,
+        "w": 579,
+        "h": 978
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 579,
+        "h": 978
+      },
+      "sourceSize": {
+        "w": 579,
+        "h": 978
+      },
+      "uv": {
+        "u0": 0.2431640625,
+        "v0": 0.12646484375,
+        "u1": 0.384521484375,
+        "v1": 0.245849609375
+      }
+    },
+    "public/gobos/Canopy_PalmTree_01.png": {
+      "frame": {
+        "x": 1583,
+        "y": 1036,
+        "w": 980,
+        "h": 962
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 980,
+        "h": 962
+      },
+      "sourceSize": {
+        "w": 980,
+        "h": 962
+      },
+      "uv": {
+        "u0": 0.386474609375,
+        "v0": 0.12646484375,
+        "u1": 0.625732421875,
+        "v1": 0.243896484375
+      }
+    },
+    "public/gobos/Window_Blinds_01.png": {
+      "frame": {
+        "x": 2571,
+        "y": 1036,
+        "w": 430,
+        "h": 925
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 430,
+        "h": 925
+      },
+      "sourceSize": {
+        "w": 430,
+        "h": 925
+      },
+      "uv": {
+        "u0": 0.627685546875,
+        "v0": 0.12646484375,
+        "u1": 0.732666015625,
+        "v1": 0.2393798828125
+      }
+    },
+    "public/gobos/Canopy_01.png": {
+      "frame": {
+        "x": 4,
+        "y": 2025,
+        "w": 927,
+        "h": 909
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 927,
+        "h": 909
+      },
+      "sourceSize": {
+        "w": 927,
+        "h": 909
+      },
+      "uv": {
+        "u0": 0.0009765625,
+        "v0": 0.2471923828125,
+        "u1": 0.227294921875,
+        "v1": 0.358154296875
+      }
+    },
+    "public/gobos/Canopy_01_sharp.png": {
+      "frame": {
+        "x": 939,
+        "y": 2025,
+        "w": 908,
+        "h": 906
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 908,
+        "h": 906
+      },
+      "sourceSize": {
+        "w": 908,
+        "h": 906
+      },
+      "uv": {
+        "u0": 0.229248046875,
+        "v0": 0.2471923828125,
+        "u1": 0.450927734375,
+        "v1": 0.3577880859375
+      }
+    },
+    "public/gobos/StainedGlass_01.png": {
+      "frame": {
+        "x": 1855,
+        "y": 2025,
+        "w": 368,
+        "h": 860
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 368,
+        "h": 860
+      },
+      "sourceSize": {
+        "w": 368,
+        "h": 860
+      },
+      "uv": {
+        "u0": 0.452880859375,
+        "v0": 0.2471923828125,
+        "u1": 0.542724609375,
+        "v1": 0.3521728515625
+      }
+    },
+    "public/gobos/Tree_03.png": {
+      "frame": {
+        "x": 2231,
+        "y": 2025,
+        "w": 893,
+        "h": 849
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 893,
+        "h": 849
+      },
+      "sourceSize": {
+        "w": 893,
+        "h": 849
+      },
+      "uv": {
+        "u0": 0.544677734375,
+        "v0": 0.2471923828125,
+        "u1": 0.7626953125,
+        "v1": 0.350830078125
+      }
+    },
+    "public/gobos/Window_02.png": {
+      "frame": {
+        "x": 4,
+        "y": 2942,
+        "w": 911,
+        "h": 845
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 911,
+        "h": 845
+      },
+      "sourceSize": {
+        "w": 911,
+        "h": 845
+      },
+      "uv": {
+        "u0": 0.0009765625,
+        "v0": 0.359130859375,
+        "u1": 0.223388671875,
+        "v1": 0.4622802734375
+      }
+    },
+    "public/gobos/Window_Blinds_02.png": {
+      "frame": {
+        "x": 923,
+        "y": 2942,
+        "w": 911,
+        "h": 823
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 911,
+        "h": 823
+      },
+      "sourceSize": {
+        "w": 911,
+        "h": 823
+      },
+      "uv": {
+        "u0": 0.225341796875,
+        "v0": 0.359130859375,
+        "u1": 0.44775390625,
+        "v1": 0.4595947265625
+      }
+    },
+    "public/gobos/PalmTree_01.png": {
+      "frame": {
+        "x": 1842,
+        "y": 2942,
+        "w": 820,
+        "h": 822
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 820,
+        "h": 822
+      },
+      "sourceSize": {
+        "w": 820,
+        "h": 822
+      },
+      "uv": {
+        "u0": 0.44970703125,
+        "v0": 0.359130859375,
+        "u1": 0.64990234375,
+        "v1": 0.45947265625
+      }
+    },
+    "public/gobos/PalmTree_02.png": {
+      "frame": {
+        "x": 4,
+        "y": 3795,
+        "w": 971,
+        "h": 807
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 971,
+        "h": 807
+      },
+      "sourceSize": {
+        "w": 971,
+        "h": 807
+      },
+      "uv": {
+        "u0": 0.0009765625,
+        "v0": 0.4632568359375,
+        "u1": 0.238037109375,
+        "v1": 0.561767578125
+      }
+    }
+  }
+}

@@ -5,14 +5,14 @@ export const scenes = [
     id: 'era',
     name: 'Era of Reflection',
     description: 'Celestial teal ambience with aurora glass panels.',
-    thumbnail: '/thumbnails/era.jpg',
+    thumbnail: '/thumbnails/era.png',
     environment: {
       hdr: { file: 'era-7.hdr', directory: '/envs' },
-      cubemap: { directory: '/cubes/cube001' },
+      cubemap: { directory: '/cubes/cube005' },
       fallback: '#050505'
     },
     alpha: {
-      src: '/alphamaps/alpha-001.png'
+      src: '/alphamaps/alpha-003.png'
     },
     kid: {
       baseColor: {
@@ -41,7 +41,7 @@ export const scenes = [
     id: 'omega',
     name: 'Omega Gradient',
     description: 'Iridescent dusk hues with crystalline reflections.',
-    thumbnail: '/thumbnails/omega.jpg',
+    thumbnail: '/thumbnails/omega.png',
     environment: {
       hdr: { file: 'OMEGA.hdr', directory: '/envs' },
       cubemap: { directory: '/cubes/cube002' },

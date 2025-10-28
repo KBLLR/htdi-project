@@ -1,5 +1,21 @@
 import '@css/style.css'
 
+// Helper function to generate a random number within a range
+const random = (min, max) => Math.random() * (max - min) + min;
+
+// Helper function to convert HSL to Hex
+// This is a simplified version; a more robust conversion might be needed for full accuracy
+const hsl = (h, s, l) => {
+  l /= 100;
+  const a = s * Math.min(l, 1 - l) / 100;
+  const f = (n) => {
+    const k = (n + h / 30) % 12;
+    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    return Math.round(255 * color).toString(16).padStart(2, '0');
+  };
+  return `#${f(0)}${f(8)}${f(4)}`;
+};
+
 export default class UiColorPalette {
   constructor() {
     this.setColors();
@@ -57,22 +73,4 @@ export default class UiColorPalette {
   }
 }
 
-sound.onmousemove = (e) => {
-  const colors = [
-    'MintCream',
-    'DodgerBlue',
-    'Aqua',
-    'Chartreuse',
-    'Coral',
-    'GoldenRod',
-    'GhostWhite',
-    'DarkSalmon',
-    'DarkTurquoise',
-    'HotPink',
-    'MediumSpringGreen',
-    'PeachPuff',
-    'Teal'
-  ]
-  const random = () => colors[Math.floor(Math.random() * colors.length)];
-  document.documentElement.style.cssText = ` --hue: ${random()}; `
-}
+

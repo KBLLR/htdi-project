@@ -12,6 +12,8 @@ const CONFIG = {
         {
           type: 'folder',
           title: 'Camera',
+          expanded: false,
+          expanded: false,
           children: [
             { type: 'binding', path: 'camera.position', label: 'Position' },
             {
@@ -26,13 +28,13 @@ const CONFIG = {
             {
               type: 'button',
               title: 'Overview Preset',
-              handler: 'animateCameraPreset',
+              handler: 'activateCameraPreset',
               args: ['overview'],
             },
             {
               type: 'button',
               title: 'Focus Preset',
-              handler: 'animateCameraPreset',
+              handler: 'activateCameraPreset',
               args: ['focus'],
             },
           ],
@@ -82,6 +84,7 @@ const CONFIG = {
         {
           type: 'folder',
           title: 'Lights',
+          expanded: false,
           children: [
             {
               type: 'binding',
@@ -98,6 +101,7 @@ const CONFIG = {
         {
           type: 'folder',
           title: 'Environment',
+          expanded: false,
           children: [
             // Environment controls will be added dynamically
           ],
@@ -112,10 +116,12 @@ const CONFIG = {
         {
           type: 'folder',
           title: 'Post-processing',
+          expanded: false,
           children: [
             {
               type: 'folder',
               title: 'Bloom',
+              expanded: false,
               children: [
                 { type: 'binding', path: 'sceneRegistry.postprocessing.bloomEffect.ref.enabled', label: 'Enabled' },
                 {
@@ -147,6 +153,7 @@ const CONFIG = {
             {
               type: 'folder',
               title: 'Depth of Field',
+              expanded: false,
               children: [
                 { type: 'binding', path: 'sceneRegistry.postprocessing.depthOfFieldEffect.ref.enabled', label: 'Enabled' },
                 {
@@ -170,6 +177,7 @@ const CONFIG = {
             {
               type: 'folder',
               title: 'FXAA',
+              expanded: false,
               children: [
                 { type: 'binding', path: 'sceneRegistry.postprocessing.fxaaEffect.ref.enabled', label: 'Enabled' },
               ],
@@ -179,6 +187,7 @@ const CONFIG = {
         {
           type: 'folder',
           title: 'Tone Mapping',
+          expanded: false,
           children: [
             {
               type: 'binding',
@@ -200,20 +209,47 @@ const CONFIG = {
         {
           type: 'folder',
           title: 'Models',
+          expanded: false,
           children: [
             // Models will be added dynamically
           ],
         },
         {
           type: 'folder',
+          title: 'Characters',
+          expanded: false,
+          children: [
+            // Character selector added dynamically
+          ],
+        },
+        {
+          type: 'folder',
           title: 'Material Library',
+          expanded: false,
           children: [
             // Materials will be added dynamically
           ],
         },
         {
           type: 'folder',
+          title: 'Kid Skins',
+          expanded: false,
+          children: [
+            // Kid skins will be added dynamically
+          ],
+        },
+        {
+          type: 'folder',
+          title: 'Textures',
+          expanded: false,
+          children: [
+            // Texture controls will be added dynamically
+          ],
+        },
+        {
+          type: 'folder',
           title: 'Particles',
+          expanded: false,
           children: [
             // Particle controls will be added here
           ],

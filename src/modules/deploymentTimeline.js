@@ -38,7 +38,7 @@ const FALLBACK_CONTEXT = {
  */
 export async function fetchDeploymentTimeline({ limit } = {}) {
   const search = new URLSearchParams();
-  if (limit) {
+  if (Number.isFinite(limit) && limit > 0) {
     search.set('limit', String(limit));
   }
   const endpoint = `/api/vercel-deployments${search.toString() ? `?${search.toString()}` : ''}`;

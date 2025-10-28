@@ -39,9 +39,6 @@
         <!-- Canvas Web GL ------------>
         <canvas as class="webgl" id="container"></canvas>
 
-        <!-- Canvas SHADER BG Color  ------------>
-        <canvas class="webgl" id="noiseContainer"></canvas>
-
         <!--DATA ASSETS---------------------------------->
 
         <div id="data-assets" style="display: none">
@@ -57,17 +54,11 @@
         </div>
 
         <!-- BG music #1 -->
-        <audio class="audioTrack" autoplay loop id="music" preload="metadata">
+        <audio class="audioTrack" loop id="music" preload="metadata">
             <source
                 src="/sounds/ES_Lucid_Space-Joseph_Beg.ogg"
                 type="audio/ogg"
             />
-        </audio>
-
-        <!-- BG music #2 -->
-        <audio class="audioTrack" loop id="music2" preload="metadata">
-            <source src="/sounds/344_audio/Lo-Fi_Rumble.ogg" type="audio/ogg" />
-            <source src="/sounds/344_audio/Lo-Fi_Rumble.mp3" type="audio/mp3" />
         </audio>
 
         <!-- .HEADER -------------------------------------->
@@ -81,109 +72,6 @@
                 <span class="bar"></span>
             </a>
         </header>
-
-        <!-- grid5x5 -------------------------------------->
-        <div class="parent" id="grid">
-            <div class="div1">
-                <div class="cell">
-                    <div class="door">
-                        <div class="outer">
-                            <div class="inner" id="in01">
-                                <div class="cavern"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="div2">
-                <div class="cell">
-                    <div class="door">
-                        <div class="outer">
-                            <div class="inner" id="in01">
-                                <div class="cavern"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="div3">
-                <div class="cell">
-                    <div class="door">
-                        <div class="outer">
-                            <div class="inner" id="in01">
-                                <div class="cavern"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="div4">
-                <div class="cell">
-                    <div class="door">
-                        <div class="outer">
-                            <div class="inner" id="in01">
-                                <div class="cavern"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="div5">
-                <div class="cell">
-                    <div class="door">
-                        <div class="outer">
-                            <div class="inner" id="in01">
-                                <div class="cavern"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="div6">
-                <div class="cell">
-                    <div class="door">
-                        <div class="outer">
-                            <div class="inner" id="in01">
-                                <div class="cavern"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="div7">
-                <div class="cell">
-                    <div class="door">
-                        <div class="outer">
-                            <div class="inner" id="in01">
-                                <div class="cavern"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="div8">
-                <div class="cell">
-                    <div class="door">
-                        <div class="outer">
-                            <div class="inner" id="in01">
-                                <div class="cavern"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="div9">
-                <div class="cell">
-                    <div class="door">
-                        <div class="outer">
-                            <div class="inner" id="in01">
-                                <div class="cavern"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <footer class="glass-footer">
             <div class="glass-footer__group" data-label="UI">
@@ -317,23 +205,119 @@
                         />
                     </svg>
                 </button>
-                <button class="glass-footer__btn" data-tippy-content="Deployments" id="deployments-btn" aria-label="Open deployments" type="button">
-                    <svg width="30" height="20" viewBox="0 0 30 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="1" y="1" width="28" height="18" rx="3" stroke="white" stroke-width="2"></rect>
-                        <path d="M6 8H14" stroke="white" stroke-width="2" stroke-linecap="round"></path>
-                        <path d="M6 12H18" stroke="white" stroke-width="2" stroke-linecap="round"></path>
+                <button
+                    class="glass-footer__btn"
+                    data-tippy-content="Deployments"
+                    id="deployments-btn"
+                    aria-label="Open deployments"
+                    type="button"
+                >
+                    <svg
+                        width="30"
+                        height="20"
+                        viewBox="0 0 30 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <rect
+                            x="1"
+                            y="1"
+                            width="28"
+                            height="18"
+                            rx="3"
+                            stroke="white"
+                            stroke-width="2"
+                        ></rect>
+                        <path
+                            d="M6 8H14"
+                            stroke="white"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                        ></path>
+                        <path
+                            d="M6 12H18"
+                            stroke="white"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                        ></path>
                         <circle cx="23" cy="10" r="2" fill="white"></circle>
                     </svg>
                 </button>
-                <button class="glass-footer__btn" data-tippy-content="AI Actions" id="ai-btn" aria-label="Open AI actions" type="button">
-                    <img src="/svg/ai-btn.svg" alt="AI Icon" width="24" height="24">
+                <button
+                    class="glass-footer__btn"
+                    data-tippy-content="AI Actions"
+                    id="ai-btn"
+                    aria-label="Open AI actions"
+                    type="button"
+                >
+                    <img
+                        src="/svg/ai-btn.svg"
+                        alt="AI Icon"
+                        width="24"
+                        height="24"
+                    />
                 </button>
-                <button class="glass-footer__btn" data-tippy-content="Data Actions" id="data-btn" aria-label="Open data actions" type="button">
-                    <img src="/svg/data-btn.svg" alt="Data Icon" width="24" height="24">
+                <button
+                    class="glass-footer__btn"
+                    data-tippy-content="Debug Panel"
+                    id="data-btn"
+                    aria-label="Open debug panel"
+                    type="button"
+                >
+                    <img
+                        src="/svg/debug-btn.svg"
+                        alt="Debug Panel Icon"
+                        width="24"
+                        height="24"
+                    />
                 </button>
-                <button class="glass-footer__btn" data-tippy-content="Database Actions" id="db-btn" aria-label="Open database actions" type="button">
-                    <img src="/svg/db-btn.svg" alt="DB Icon" width="24" height="24">
+                <button
+                    class="glass-footer__btn"
+                    data-tippy-content="Database Actions"
+                    id="db-btn"
+                    aria-label="Open database actions"
+                    type="button"
+                >
+                    <img
+                        src="/svg/db-btn.svg"
+                        alt="DB Icon"
+                        width="24"
+                        height="24"
+                    />
                 </button>
+                <span class="glass-footer__divider" aria-hidden="true"></span>
+                <a
+                    class="glass-footer__btn"
+                    data-tippy-content="CodePen"
+                    id="codepen-btn"
+                    aria-label="Open CodePen profile"
+                    href="https://codepen.io/kaballero_"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <img
+                        src="/svg/codepen-btn.svg"
+                        alt="CodePen Icon"
+                        width="24"
+                        height="24"
+                    />
+                </a>
+                <a
+                    class="glass-footer__btn"
+                    data-tippy-content="GitHub"
+                    id="github-btn"
+                    aria-label="Open GitHub profile"
+                    href="https://github.com/KBLLR"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <img
+                        src="/svg/github-btn.svg"
+                        alt="GitHub Icon"
+                        width="24"
+                        height="24"
+                    />
+                </a>
             </div>
             <div class="glass-footer__group">
                 <a
@@ -446,7 +430,7 @@
             aria-hidden="true"
             data-modal-id="changelog"
         >
-            <div class="modal__scanlines" aria-hidden="true"></div>
+            <div class="modal__scanlines" aria-hidden="false"></div>
             <div
                 class="modal__surface"
                 role="dialog"
@@ -473,6 +457,7 @@
                         />
                     </svg>
                 </button>
+
                 <section class="modal__section">
                     <header class="modal__header">
                         <h1 class="modal__text" id="modal-changelog-title">
@@ -693,60 +678,75 @@
         </div>
 
         <div
-            class="modal modal--deployments"
-            id="modal-deployments"
+            class="deployment-timeline-overlay"
+            id="deployment-timeline-overlay"
             aria-hidden="true"
-            data-modal-id="deployments"
         >
-            <div class="modal__scanlines" aria-hidden="true"></div>
             <div
-                class="modal__surface"
+                class="deployment-timeline-overlay__backdrop"
+                data-overlay-close
+                aria-hidden="true"
+            ></div>
+            <div
+                class="deployment-timeline-overlay__panel"
                 role="dialog"
-                aria-labelledby="modal-deployments-title"
-                aria-modal="true"
+                aria-labelledby="deployment-timeline-overlay-title"
+                aria-modal="false"
                 tabindex="-1"
             >
-                <button
-                    class="modal__close button"
-                    type="button"
-                    aria-label="Close panel"
-                    data-modal-close
-                >
-                    <svg
-                        width="28"
-                        height="20"
-                        viewBox="0 0 28 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            d="M13.79 0.319824C10.02 0.319824 6.6575 1.84732 4.105 3.47732L5.18 5.16232C7.535 3.65732 10.565 2.31982 13.79 2.31982C16.95 2.31982 19.925 3.60482 22.2575 5.07482L23.3225 3.37982C20.79 1.78482 17.485 0.319824 13.79 0.319824ZM25.7125 7.95232C23.5225 9.91482 18.89 13.3198 13.79 13.3198C8.75 13.3198 4.1675 9.99732 1.9475 8.02232L0.62 9.51732C1.0625 9.90982 1.9675 10.4198 2.5725 10.8873L0 14.1998L1.58 15.4248L4.21 12.0373C5.2 12.6873 6.0475 13.2348 7.2675 13.7723L5.8475 17.7848L7.7325 18.4523L9.1225 14.5248C10.2775 14.8923 11.51 15.0823 12.79 15.1748V19.3198H14.79V15.1723C16.0675 15.0798 17.305 14.8948 18.46 14.5298L19.8475 18.4523L21.7325 17.7848L20.3125 13.7698C21.52 13.2398 22.3625 12.7023 23.345 12.0573L26.005 15.4323L27.575 14.1923L24.98 10.9023C25.6275 10.4023 26.585 9.85482 27.045 9.43982L25.7125 7.95232Z"
-                            fill="#D3F5D4"
-                        />
-                    </svg>
-                </button>
-                <section class="modal__section">
-                    <header class="modal__header">
-                        <h1 class="modal__text" id="modal-deployments-title">
-                            Deployments
+                <header class="deployment-timeline-overlay__header">
+                    <div class="deployment-timeline-overlay__intro">
+                        <h1
+                            class="deployment-timeline-overlay__title"
+                            id="deployment-timeline-overlay-title"
+                        >
+                            Deployment Timeline
                         </h1>
-                        <p class="modal__lede">
-                            Browse builds, previews, and promotion history.
-                        </p>
-                    </header>
-                    <div
-                        class="deployment-timeline"
-                        id="deployment-gallery"
-                        data-deployment-timeline
-                        data-layout="grid"
-                        data-state="loading"
-                        aria-live="polite"
-                    >
-                        <p class="deployment-timeline__status">
-                            Loading latest deployment timeline…
+                        <p class="deployment-timeline-overlay__lede">
+                            Slide across the releases to revisit every milestone
+                            without leaving the scene.
                         </p>
                     </div>
-                </section>
+                    <button
+                        class="deployment-timeline-overlay__close"
+                        type="button"
+                        aria-label="Hide deployment timeline"
+                        data-overlay-close
+                    >
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M15.8332 4.1665L4.1665 15.8332"
+                                stroke="#D5FF7E"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                            />
+                            <path
+                                d="M4.1665 4.1665L15.8332 15.8332"
+                                stroke="#D5FF7E"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                            />
+                        </svg>
+                    </button>
+                </header>
+                <div
+                    class="deployment-timeline"
+                    id="deployment-gallery"
+                    data-deployment-timeline
+                    data-layout="timeline"
+                    data-state="loading"
+                    aria-live="polite"
+                >
+                    <p class="deployment-timeline__status">
+                        Loading latest deployment timeline…
+                    </p>
+                </div>
             </div>
         </div>
         <div

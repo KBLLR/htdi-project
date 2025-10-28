@@ -6,7 +6,7 @@ export class ParticleSystem extends THREE.Points {
       count: 500,
       color: '#31FF9C',
       size: 0.2,
-      textureName: 'star_0.png',
+      textureName: 'star_0.png', // Keep textureName for lookup in atlas
       velocityFactor: 1,
       emissionRate: 10,
       maxAge: 5,
@@ -16,7 +16,7 @@ export class ParticleSystem extends THREE.Points {
       count: 1000,
       color: '#FFD700',
       size: 0.1,
-      textureName: 'star_01.png',
+      textureName: 'star_01.png', // Keep textureName for lookup in atlas
       velocityFactor: 2,
       emissionRate: 20,
       maxAge: 3,
@@ -26,7 +26,7 @@ export class ParticleSystem extends THREE.Points {
       count: 300,
       color: '#A9A9A9',
       size: 0.5,
-      textureName: 'star_07.png',
+      textureName: 'star_07.png', // Keep textureName for lookup in atlas
       velocityFactor: 0.5,
       emissionRate: 5,
       maxAge: 8,
@@ -39,12 +39,17 @@ export class ParticleSystem extends THREE.Points {
       count = 500, 
       color = '#31FF9C', 
       size = 0.2, 
-      textureName = 'star_0.png',
       velocityFactor = 1,
       emissionRate = 10,
       maxAge = 5,
       areaSize = 10,
+      particleAtlasTexture,
+      particleAtlasJson,
     } = options;
+
+    if (!particleAtlasTexture || !particleAtlasJson) {
+      throw new Error('ParticleSystem requires particleAtlasTexture and particleAtlasJson.');
+    }
 
     const particlesGeometry = new THREE.BufferGeometry();
     const particlesMaterial = new THREE.PointsMaterial({
@@ -55,6 +60,8 @@ export class ParticleSystem extends THREE.Points {
       depthWrite: false,
       blending: THREE.AdditiveBlending,
       vertexColors: true,
+      map: particleAtlasTexture,
+      alphaMap: particleAtlasTexture,
     });
 
     super(particlesGeometry, particlesMaterial);
@@ -67,40 +74,15 @@ export class ParticleSystem extends THREE.Points {
     this.emissionRate = emissionRate;
     this.maxAge = maxAge;
     this.areaSize = areaSize;
-    this.textureName = textureName;
+    this.particleAtlasTexture = particleAtlasTexture;
+    this.particleAtlasJson = particleAtlasJson;
 
     this.velocities = new Float32Array(this.count * 3);
     this.ages = new Float32Array(this.count);
     this.initialPositions = new Float32Array(this.count * 3);
 
     this.initializeAttributes();
-    this.loadTexture(this.textureName);
-
-    this.material.onBeforeCompile = (shader) => {
-      shader.vertexShader = `
-        attribute float age;
-        attribute vec3 velocity;
-        varying float vAge;
-        ${shader.vertexShader}
-      `;
-      shader.vertexShader = shader.vertexShader.replace(
-        '#include <begin_vertex>',
-        `
-          #include <begin_vertex>
-          vAge = age;
-        `
-      );
-      shader.fragmentShader = `
-        varying float vAge;
-        ${shader.fragmentShader}
-      `;
-      shader.fragmentShader = shader.fragmentShader.replace(
-        'gl_FragColor = vec4( outgoingLight, diffuseColor.a );',
-        `
-          gl_FragColor = vec4( outgoingLight, diffuseColor.a * (1.0 - vAge / ${this.maxAge}.0) );
-        `
-      );
-    };
+    this.updateParticleTextureUVs(ParticleSystem.PRESETS.default.textureName);
   }
 
   applyPreset(presetName) {
@@ -117,20 +99,43 @@ export class ParticleSystem extends THREE.Points {
     this.emissionRate = preset.emissionRate;
     this.maxAge = preset.maxAge;
     this.areaSize = preset.areaSize;
-    this.textureName = preset.textureName;
+    this.textureName = preset.textureName; // Store textureName for UV lookup
 
-    // Reinitialize attributes and reload texture based on new preset
+    // Reinitialize attributes and update texture UVs based on new preset
     this.geometry.dispose();
     this.geometry = new THREE.BufferGeometry();
     this.velocities = new Float32Array(this.count * 3);
     this.ages = new Float32Array(this.count);
     this.initialPositions = new Float32Array(this.count * 3);
     this.initializeAttributes();
-    this.loadTexture(this.textureName);
+    this.updateParticleTextureUVs(this.textureName);
 
     this.material.size = this.particleSize;
     this.material.color.copy(this.particleColor).convertSRGBToLinear();
     this.material.needsUpdate = true;
+  }
+
+  updateParticleTextureUVs(textureName) {
+    if (!this.particleAtlasJson || !this.particleAtlasJson.frames) {
+      console.warn('Particle atlas JSON data not available.');
+      return;
+    }
+
+    const frameKey = `/public/particles/${textureName}`;
+    const frame = this.particleAtlasJson.frames[frameKey];
+
+    if (!frame) {
+      console.warn(`Particle texture frame not found in atlas: ${frameKey}`);
+      return;
+    }
+
+    const { u0, v0, u1, v1 } = frame.uv;
+    this.material.map.repeat.set(u1 - u0, v1 - v0);
+    this.material.map.offset.set(u0, v0);
+    this.material.alphaMap.repeat.set(u1 - u0, v1 - v0);
+    this.material.alphaMap.offset.set(u0, v0);
+    this.material.map.needsUpdate = true;
+    this.material.alphaMap.needsUpdate = true;
   }
 
   initializeAttributes() {
@@ -163,26 +168,6 @@ export class ParticleSystem extends THREE.Points {
     this.geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     this.geometry.setAttribute('velocity', new THREE.BufferAttribute(this.velocities, 3));
     this.geometry.setAttribute('age', new THREE.BufferAttribute(this.ages, 1));
-  }
-
-  async loadTexture(textureName) {
-    try {
-      const textureLoader = new THREE.TextureLoader();
-      const particleTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(
-          `/particles/${textureName}`,
-          resolve,
-          undefined,
-          reject
-        );
-      });
-
-      this.material.map = particleTexture;
-      this.material.alphaMap = particleTexture;
-      this.material.needsUpdate = true;
-    } catch (error) {
-      console.warn('Could not load particle texture:', error);
-    }
   }
 
   update(deltaTime) {

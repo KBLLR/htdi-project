@@ -6,6 +6,7 @@ import { Vector3 } from 'three';
  * @property {boolean} autoRotate
  * @property {boolean} enableZoom
  * @property {boolean} [enablePan]
+ * @property {boolean} [enableDamping]
  * @property {number} minDistance
  * @property {number} maxDistance
  * @property {number} dampingFactor
@@ -16,7 +17,8 @@ const DEFAULT_CONTROLS_STATE = {
   autoRotate: true,
   enableZoom: true,
   enablePan: true,
-  minDistance: 0.1,
+  enableDamping: true,
+  minDistance: 0.01,
   maxDistance: 3,
   dampingFactor: 0.05
 };
@@ -26,7 +28,8 @@ const FOCUS_CONTROLS_STATE = {
   autoRotate: false,
   enableZoom: false,
   enablePan: false,
-  minDistance: 0.05,
+  enableDamping: true,
+  minDistance: 0.01,
   maxDistance: 1.1,
   dampingFactor: 0.08
 };
@@ -49,6 +52,7 @@ export function createControls(camera, domElement, options = {}) {
 
   Object.assign(controls, DEFAULT_CONTROLS_STATE, options);
 
+  controls.enableDamping = options.enableDamping ?? true;
   controls.autoRotateSpeed = options.autoRotateSpeed ?? 0.5;
   controls.minPolarAngle = options.minPolarAngle ?? -4;
   controls.maxPolarAngle = options.maxPolarAngle ?? Math.PI / 2.1;
@@ -70,6 +74,7 @@ export function applyControlsState(controls, presetName) {
   if (typeof preset.autoRotate === 'boolean') controls.autoRotate = preset.autoRotate;
   if (typeof preset.enableZoom === 'boolean') controls.enableZoom = preset.enableZoom;
   if (typeof preset.enablePan === 'boolean' && 'enablePan' in controls) controls.enablePan = preset.enablePan;
+  if (typeof preset.enableDamping === 'boolean') controls.enableDamping = preset.enableDamping;
   if (typeof preset.minDistance === 'number') controls.minDistance = preset.minDistance;
   if (typeof preset.maxDistance === 'number') controls.maxDistance = preset.maxDistance;
   if (typeof preset.dampingFactor === 'number') controls.dampingFactor = preset.dampingFactor;

@@ -1,7 +1,10 @@
 // vite.config.mjs
 import { defineConfig, loadEnv } from 'vite';
 import { fileURLToPath, URL } from 'node:url';
+import path from 'node:path';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 import { fetchVercelDeployments, deploymentEntrySchema } from './server/fetchVercelDeployments.mjs';
+import { writeAssetManifest } from './scripts/assetManifest.mjs';
 
 export default defineConfig(({ mode }) => {
   Object.assign(process.env, loadEnv(mode, process.cwd(), ''));
@@ -79,6 +82,15 @@ export default defineConfig(({ mode }) => {
     },
 
     plugins: [
+      viteStaticCopy({
+        targets: [
+          {
+            src: 'node_modules/three/examples/jsm/libs/basis/*',
+            dest: 'basis',
+          },
+        ],
+      }),
+      assetManifestPlugin(),
       vercelDeploymentsPlugin(),
     ],
 
@@ -135,6 +147,60 @@ function vercelDeploymentsPlugin() {
     // `vite preview` support
     configurePreviewServer(server) {
       server.middlewares.use('/api/vercel-deployments', handler);
+    },
+  };
+}
+
+function assetManifestPlugin({ output = 'src/config/assets.js' } = {}) {
+  let rootDir = process.cwd();
+  let publicDir = path.resolve(rootDir, 'public');
+  let outputFile = path.resolve(rootDir, output);
+  let lastSignature = null;
+  let debounceTimer = null;
+
+  const runGenerate = async () => {
+    try {
+      const { signature } = await writeAssetManifest({
+        publicDir,
+        outputFile,
+        previousSignature: lastSignature,
+      });
+      lastSignature = signature;
+    } catch (error) {
+      console.error('[asset-manifest] Failed to update manifest', error);
+    }
+  };
+
+  const scheduleGenerate = () => {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      debounceTimer = null;
+      runGenerate();
+    }, 75);
+  };
+
+  return {
+    name: 'htdi-asset-manifest',
+    configResolved(config) {
+      rootDir = config.root;
+      publicDir = path.resolve(rootDir, config.publicDir ?? 'public');
+      outputFile = path.resolve(rootDir, output);
+    },
+    async buildStart() {
+      await runGenerate();
+    },
+    configureServer(server) {
+      const watcher = server.watcher;
+      const handleChange = (file) => {
+        if (!file) return;
+        const normalized = path.resolve(file);
+        if (normalized.startsWith(publicDir)) {
+          scheduleGenerate();
+        }
+      };
+      watcher.on('add', handleChange);
+      watcher.on('unlink', handleChange);
+      watcher.on('change', handleChange);
     },
   };
 }
