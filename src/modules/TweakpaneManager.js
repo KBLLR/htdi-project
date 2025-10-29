@@ -478,6 +478,10 @@ export default class TweakpaneManager {
       const presetMaterial = materials[state.preset]?.ref;
 
       if (targetMaterial && presetMaterial) {
+        // Ensure presetMaterial.color is a THREE.Color instance before copying
+        if (presetMaterial.color && !(presetMaterial.color instanceof THREE.Color)) {
+          presetMaterial.color = new THREE.Color(presetMaterial.color);
+        }
         targetMaterial.copy(presetMaterial);
         targetMaterial.needsUpdate = true;
         console.log(`[materials] applied '${state.preset}' to '${state.target}'`);

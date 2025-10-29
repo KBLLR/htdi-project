@@ -12,13 +12,11 @@ import { WebGLRenderer, SRGBColorSpace, ACESFilmicToneMapping, PCFSoftShadowMap 
  * @returns {WebGLRenderer} The created and configured renderer.
  */
 export function createRenderer(canvas, options = {}) {
-  const {
-    antialias = true,
-    alpha = false,
-    powerPreference = "high-performance",
-    width = window.innerWidth,
-    height = window.innerHeight,
-  } = options;
+  const antialias = options.antialias ?? true;
+  const alpha = options.alpha ?? false;
+  const powerPreference = options.powerPreference ?? "high-performance";
+  const width = options.width ?? window.innerWidth;
+  const height = options.height ?? window.innerHeight;
 
   const renderer = new WebGLRenderer({
     canvas,
