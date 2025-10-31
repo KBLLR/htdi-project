@@ -7,7 +7,7 @@ export function wireModalButtons({
 }) {
   const $ = (id) => /** @type {HTMLElement|null} */ (document.getElementById(id));
 
-  const showBtn        = null; // Replaced by DevLog
+  const infoBtn        = $('info-btn');
   const tasksBtn       = $('tasks-btn');
   const scenePickerBtn = $('scene-picker-btn');
   const deploymentsBtn = $('deployments-btn');
@@ -23,7 +23,9 @@ export function wireModalButtons({
 
   // wireOnce(showBtn, 'click', () => // Removed
   //   openModal('changelog', { focusTarget: '#changelog-timeline' })
-  // );
+  wireOnce(infoBtn, 'click', () =>
+    openModal?.('info', { focusTarget: '#modal-info' })
+  );
   wireOnce(tasksBtn, 'click', () =>
     openModal?.('tasks', { focusTarget: '#tasks-board' })
   );

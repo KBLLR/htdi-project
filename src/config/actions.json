@@ -1,14 +1,7 @@
 {
   "version": 1,
   "modules": [
-    {
-      "id": "devlog",
-      "title": "DevLog",
-      "buttonId": "info-btn",
-      "params": {
-        "logLevel": { "type": "enum", "options": ["debug", "info", "warn", "error"], "value": "debug" }
-      }
-    },
+
     {
       "id": "tasks",
       "title": "Tasks",

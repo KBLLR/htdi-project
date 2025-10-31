@@ -11,13 +11,6 @@ import { Easing } from '@tweenjs/tween.js';
 
 import { EventBus } from '@shared/EventBus.js';
 
-import { enableOverlay, installConsoleTap, devlog } from '@modules/devlog.js';
-
-// Show overlay and mirror console into it
-installConsoleTap({ level: 'debug' });
-enableOverlay();
-
-devlog.info('Booting…');
 
 // Feature modules (aliased)
 import { initialiseDeploymentTimeline } from '@modules/deploymentTimelineUI.js';
@@ -28,7 +21,6 @@ import { initialiseMusicPlayer } from '@modules/musicPlayerUI.js';
 
 // Actions Bar: manager + concrete action initializers
 import { ActionsBarManager } from '@modules/actionsBar/ActionsBarManager.js';
-import { initDevlogAction } from '@modules/actionsBar/actions/devlogAction.js';
 import { initTasksAction } from '@modules/actionsBar/actions/tasksAction.js';
 import { initDeploymentsAction } from '@modules/actionsBar/actions/deploymentsAction.js';
 import { initMusicAction } from '@modules/actionsBar/actions/musicAction.js';
@@ -197,7 +189,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   let toggleDeploymentTimeline = () => { };
   // Map action id -> initializer
   const ACTION_INITS = {
-    devlog: (mgr, spec) => initDevlogAction(mgr, { buttonId: spec.buttonId, ...spec.params }),
     tasks: (mgr, spec) => initTasksAction(mgr, { buttonId: spec.buttonId, ...spec.params }),
     deployments: (mgr, spec) =>
       initDeploymentsAction(mgr, {

@@ -13,7 +13,6 @@ const CONFIG = {
           type: 'folder',
           title: 'Camera',
           expanded: false,
-          expanded: false,
           children: [
             { type: 'binding', path: 'camera.position', label: 'Position' },
             {
@@ -211,6 +210,7 @@ const CONFIG = {
           title: 'Models',
           expanded: false,
           children: [
+            { type: 'binding', path: 'sceneRegistry.meshes.outerMesh.ref.visible', label: 'Outer Mesh Visible' },
             // Models will be added dynamically
           ],
         },

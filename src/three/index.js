@@ -133,7 +133,7 @@ export async function createExperience() {
     gobo: defaultSpotlightGobo ? { id: defaultSpotlightGobo } : null
   });
 
-  const camera = createCamera(90, window.innerWidth / window.innerHeight, 0.01, 1000, new THREE.Vector3(0, 0, 0));
+  const camera = createCamera(50, window.innerWidth / window.innerHeight, 0.01, 1000, new THREE.Vector3(0.5, 0.5, 0.5));
   scene.add(camera);
   register('cameras', 'main', { ref: camera, type: 'PerspectiveCamera', fov: camera.fov, aspect: camera.aspect, near: camera.near, far: camera.far, position: camera.position.toArray() });
 
@@ -153,6 +153,7 @@ export async function createExperience() {
   const particleAtlasJson = await loadTextureAtlasJson('json:particleAtlas', '/particleAtlas.json');
 
   const controls = createControls(camera, canvas);
+  controls.maxDistance = 12.0;
   register('controls', 'orbit', { enabled: controls.enabled, enableDamping: controls.enableDamping, dampingFactor: controls.dampingFactor, autoRotate: controls.autoRotate, autoRotateSpeed: controls.autoRotateSpeed, enableZoom: controls.enableZoom, minDistance: controls.minDistance, maxDistance: controls.maxDistance, minPolarAngle: controls.minPolarAngle, maxPolarAngle: controls.maxPolarAngle, target: controls.target.toArray() });
 
   setupResize(camera, renderer);
@@ -238,6 +239,8 @@ export async function createExperience() {
   let ringsAM = 104;
   const alphaGeo = new THREE.SphereGeometry(radiusAM, segmentsAM, ringsAM);
   const outer_Mesh = new THREE.Mesh(alphaGeo, alphaMat);
+  outer_Mesh.visible = false;
+  outer_Mesh.scale.set(100, 100, 100);
   outer_Mesh.rotation.x = -Math.PI / 4;
   outer_Mesh.position.y = 0.1;
   outer_Mesh.receiveShadow = true;
@@ -314,7 +317,7 @@ export async function createExperience() {
         obj.receiveShadow = true;
       }
     });
-    kidObject.scale.set(0.0014, 0.0014, 0.0014);
+    kidObject.scale.set(0.20, 0.20, 0.20);
     kidObject.position.set(0, 0.007, 0);
     kidObject.rotation.set(0, 0, 0);
     kidObject.addEventListener('click', (event) => {
@@ -450,6 +453,7 @@ export async function createExperience() {
   loadGLTFAsset('gltf:cFlow4', 'models/glb/flow4/cFlow4.glb')
     .then((gltf) => {
       creativeFlow = gltf.scene;
+      creativeFlow.visible = false;
       creativeFlow.scale.set(0.002, 0.002, 0.002);
       creativeFlow.position.set(0, 0.24, 0.);
       creativeFlow.rotation.set(0, 0, 0);
@@ -663,13 +667,6 @@ export async function createExperience() {
 
   // Particles
   const particles = new ParticleSystem({
-    count: 500,
-    color: '#31FF9C',
-    size: 0.2,
-    velocityFactor: 1,
-    emissionRate: 10,
-    maxAge: 5,
-    areaSize: 10,
     particleAtlasTexture,
     particleAtlasJson,
   });

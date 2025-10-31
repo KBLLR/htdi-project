@@ -373,8 +373,28 @@ export default [
     "data": {},
     "items": [
       {
+        "name": "envs_blaubeuren_night_2k_hdr",
+        "source": "/envs/blaubeuren_night_2k.hdr",
+        "type": "hdr"
+      },
+      {
+        "name": "envs_creepy_bathroom_2k_hdr",
+        "source": "/envs/creepy_bathroom_2k.hdr",
+        "type": "hdr"
+      },
+      {
+        "name": "envs_env_club_1k_hdr",
+        "source": "/envs/env_club_1k.hdr",
+        "type": "hdr"
+      },
+      {
         "name": "envs_era_7_hdr",
         "source": "/envs/era-7.hdr",
+        "type": "hdr"
+      },
+      {
+        "name": "envs_kloppenheim_02_2k_hdr",
+        "source": "/envs/kloppenheim_02_2k.hdr",
         "type": "hdr"
       },
       {
@@ -383,8 +403,38 @@ export default [
         "type": "hdr"
       },
       {
+        "name": "envs_misty_farm_road_2k_hdr",
+        "source": "/envs/misty_farm_road_2k.hdr",
+        "type": "hdr"
+      },
+      {
+        "name": "envs_moonless_golf_2k_hdr",
+        "source": "/envs/moonless_golf_2k.hdr",
+        "type": "hdr"
+      },
+      {
+        "name": "envs_night_bridge_2k_hdr",
+        "source": "/envs/night_bridge_2k.hdr",
+        "type": "hdr"
+      },
+      {
+        "name": "envs_night2k_hdr",
+        "source": "/envs/night2k.hdr",
+        "type": "hdr"
+      },
+      {
         "name": "envs_OMEGA_hdr",
         "source": "/envs/OMEGA.hdr",
+        "type": "hdr"
+      },
+      {
+        "name": "envs_overcast_soil_puresky_2k_hdr",
+        "source": "/envs/overcast_soil_puresky_2k.hdr",
+        "type": "hdr"
+      },
+      {
+        "name": "envs_shanghai_bund_2k_hdr",
+        "source": "/envs/shanghai_bund_2k.hdr",
         "type": "hdr"
       },
       {
@@ -1010,6 +1060,87 @@ export default [
     ]
   },
   {
+    "name": "particles",
+    "data": {},
+    "items": [
+      {
+        "name": "particles_p_001_png",
+        "source": "/particles/p_001.png",
+        "type": "image"
+      },
+      {
+        "name": "particles_p_002_png",
+        "source": "/particles/p_002.png",
+        "type": "image"
+      },
+      {
+        "name": "particles_p_003_png",
+        "source": "/particles/p_003.png",
+        "type": "image"
+      },
+      {
+        "name": "particles_p_004_png",
+        "source": "/particles/p_004.png",
+        "type": "image"
+      },
+      {
+        "name": "particles_p_005_png",
+        "source": "/particles/p_005.png",
+        "type": "image"
+      },
+      {
+        "name": "particles_p_006_png",
+        "source": "/particles/p_006.png",
+        "type": "image"
+      },
+      {
+        "name": "particles_p_007_png",
+        "source": "/particles/p_007.png",
+        "type": "image"
+      },
+      {
+        "name": "particles_p_008_png",
+        "source": "/particles/p_008.png",
+        "type": "image"
+      },
+      {
+        "name": "particles_p_009_png",
+        "source": "/particles/p_009.png",
+        "type": "image"
+      },
+      {
+        "name": "particles_p_010_png",
+        "source": "/particles/p_010.png",
+        "type": "image"
+      },
+      {
+        "name": "particles_p_011_png",
+        "source": "/particles/p_011.png",
+        "type": "image"
+      },
+      {
+        "name": "particles_p_012_png",
+        "source": "/particles/p_012.png",
+        "type": "image"
+      },
+      {
+        "name": "particles_p_013_png",
+        "source": "/particles/p_013.png",
+        "type": "image"
+      },
+      {
+        "name": "particles_p_014_png",
+        "source": "/particles/p_014.png",
+        "type": "image"
+      },
+      {
+        "name": "particles_p_015_png",
+        "source": "/particles/p_015.png",
+        "type": "image"
+      }
+    ]
+  },
+  {
     "name": "root",
     "data": {},
     "items": [
@@ -1039,11 +1170,6 @@ export default [
         "type": "svg"
       },
       {
-        "name": "manifest_webmanifest",
-        "source": "/manifest.webmanifest",
-        "type": "asset"
-      },
-      {
         "name": "materials_json",
         "source": "/materials.json",
         "type": "json"
@@ -1057,6 +1183,11 @@ export default [
         "name": "particleAtlas_webp",
         "source": "/particleAtlas.webp",
         "type": "image"
+      },
+      {
+        "name": "site_webmanifest",
+        "source": "/site.webmanifest",
+        "type": "asset"
       },
       {
         "name": "textureAtlas_json",

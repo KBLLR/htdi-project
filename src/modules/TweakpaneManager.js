@@ -1245,29 +1245,72 @@ export default class TweakpaneManager {
   }
 
   addParticles() {
-    const particlesFolder = this.pane.children.find((child) => child.title === 'Assets')?.children.find((child) => child.title === 'Particles');
+    const particlesFolder = this.getFolder(['Assets', 'Particles']);
     if (!particlesFolder) return;
 
-    const particles = this.experience.sceneRegistry?.particles?.main?.ref;
-    if (!particles) {
+    const particleSystem = this.experience.sceneRegistry?.particles?.main?.ref;
+    if (!particleSystem) {
       this.addMessage(particlesFolder, 'ParticleSystem not found');
       return;
     }
 
-    const presetNames = Object.keys(ParticleSystem.PRESETS);
-    const presetOptions = presetNames.map((name) => ({ text: name, value: name }));
-    particlesFolder.addBinding({ preset: 'default' }, 'preset', { label: 'Preset', options: presetOptions }).on('change', (ev) => {
-      particles.applyPreset(ev.value);
+    const emitterTypes = Object.keys(ParticleSystem.EMITTER_TYPES);
+    const emitterOptions = emitterTypes.map((id) => ({
+      text: ParticleSystem.EMITTER_TYPES[id].label,
+      value: id,
+    }));
+
+    const particleState = { activeEmitter: particleSystem.activeEmitterId };
+
+    particlesFolder.addBinding(particleState, 'activeEmitter', { label: 'Emitter Type', options: emitterOptions }).on('change', (ev) => {
+      particleSystem.setActiveEmitter(ev.value);
+      this.updateParticleEmitterControls(particlesFolder, particleSystem.getActiveEmitter());
     });
 
-    this.addBinding(particlesFolder, { path: 'sceneRegistry.particles.main.ref.visible', label: 'Visible' });
-    this.addBinding(particlesFolder, { path: 'sceneRegistry.particles.main.ref.particleSize', label: 'Size', min: 0.01, max: 1, step: 0.01 });
-    this.addBinding(particlesFolder, { path: 'sceneRegistry.particles.main.ref.particleColor', label: 'Color' });
-    this.addBinding(particlesFolder, { path: 'sceneRegistry.particles.main.ref.particleOpacity', label: 'Opacity', min: 0, max: 1, step: 0.01 });
-    this.addBinding(particlesFolder, { path: 'sceneRegistry.particles.main.ref.velocityFactor', label: 'Velocity Factor', min: 0, max: 5, step: 0.1 });
-    this.addBinding(particlesFolder, { path: 'sceneRegistry.particles.main.ref.emissionRate', label: 'Emission Rate', min: 1, max: 100, step: 1 });
-    this.addBinding(particlesFolder, { path: 'sceneRegistry.particles.main.ref.maxAge', label: 'Max Age', min: 1, max: 20, step: 1 });
-    this.addBinding(particlesFolder, { path: 'sceneRegistry.particles.main.ref.areaSize', label: 'Area Size', min: 1, max: 50, step: 1 });
+    this.addBinding(particlesFolder, { path: 'sceneRegistry.particles.main.ref.visible', label: 'System Visible' });
+
+    // Initial setup of controls for the active emitter
+    this.updateParticleEmitterControls(particlesFolder, particleSystem.getActiveEmitter());
+
+    // Listen for changes in active emitter to update controls dynamically
+    const unsubscribe = particleSystem.onActiveEmitterChange((newEmitter) => {
+      this.updateParticleEmitterControls(particlesFolder, newEmitter);
+    });
+    this.cleanups.push(unsubscribe);
+  }
+
+  updateParticleEmitterControls(container, emitter) {
+    // Clear previous emitter controls
+    if (this.currentEmitterControls) {
+      this.currentEmitterControls.forEach(ctrl => ctrl.dispose());
+      this.currentEmitterControls = [];
+    }
+
+    if (!emitter) return;
+
+    const controls = [];
+
+    controls.push(container.addBinding(emitter, 'visible', { label: 'Emitter Visible' }));
+    controls.push(container.addBinding(emitter, 'particleSize', { label: 'Size', min: 0.01, max: 1, step: 0.01 }));
+    controls.push(container.addBinding(emitter, 'particleColor', { label: 'Color', view: 'color' }));
+    controls.push(container.addBinding(emitter, 'material.opacity', { label: 'Opacity', min: 0, max: 1, step: 0.01 }));
+    controls.push(container.addBinding(emitter, 'velocityRange', { label: 'Velocity', min: 0, max: 0.5, step: 0.01 }));
+    controls.push(container.addBinding(emitter, 'lifespan', { label: 'Lifespan', min: 1, max: 20, step: 1 }));
+    controls.push(container.addBinding(emitter, 'emissionRate', { label: 'Emission Rate', min: 1, max: 100, step: 1 }));
+    controls.push(container.addBinding(emitter, 'areaSize', { label: 'Area Size', min: 1, max: 50, step: 1 }));
+    controls.push(container.addBinding(emitter, 'emitterShape', { label: 'Shape', options: ['box', 'sphere', 'point'] }));
+    controls.push(container.addBinding(emitter.emitterPosition, 'x', { label: 'Pos X', min: -20, max: 20, step: 0.1 }));
+    controls.push(container.addBinding(emitter.emitterPosition, 'y', { label: 'Pos Y', min: -20, max: 20, step: 0.1 }));
+    controls.push(container.addBinding(emitter.emitterPosition, 'z', { label: 'Pos Z', min: -20, max: 20, step: 0.1 }));
+
+    const textureNames = Object.keys(this.experience.particleAtlasJson.frames).map(key => key.replace('public/particles/', ''));
+    const textureOptions = textureNames.map(name => ({ text: name, value: name }));
+
+    controls.push(container.addBinding(emitter, 'textureName', { label: 'Particle Texture', options: textureOptions }).on('change', (ev) => {
+      emitter.updateParticleTextureUVs(ev.value);
+    }));
+
+    this.currentEmitterControls = controls;
   }
 
   addEnvironmentControls() {

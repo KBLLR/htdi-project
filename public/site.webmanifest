@@ -25,16 +25,16 @@
   ],
   "screenshots": [
     {
-      "src": "/thumbnails/omega.jpg",
+      "src": "/thumbnails/omega.png",
       "sizes": "1280x720",
-      "type": "image/jpeg",
+      "type": "image/png",
       "form_factor": "wide",
       "label": "Omega Gradient Scene"
     },
     {
-      "src": "/thumbnails/era.jpg",
+      "src": "/thumbnails/era.png",
       "sizes": "720x1280",
-      "type": "image/jpeg",
+      "type": "image/png",
       "form_factor": "narrow",
       "label": "Era of Reflection Scene"
     }

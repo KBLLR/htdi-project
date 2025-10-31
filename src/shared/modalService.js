@@ -1,6 +1,6 @@
 export function initModalService(eventBus, { focusCameraOnModal, resetCameraFromModal, registry } = {}) {
   const modals = registry ?? {
-    changelog: document.getElementById('modal-changelog'),
+    info: document.getElementById('modal-info'),
     tasks: document.getElementById('modal-tasks'),
     scenes: document.getElementById('modal-scenes'),
     music: document.getElementById('modal-music'),

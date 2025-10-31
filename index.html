@@ -27,7 +27,7 @@
             content="Artwork from Creative Developer and Technical Artist, David Caballero"
         />
         <!-- Styles are imported from src/main.js via Vite -->
-        <link rel="manifest" href="/manifest.webmanifest" />
+        <link rel="manifest" href="/site.webmanifest" />
         <link rel="apple-touch-icon" href="/icons/appIcon.png" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     </head>
@@ -77,9 +77,9 @@
             <div class="glass-footer__group" data-label="UI">
                 <button
                     class="glass-footer__btn"
-                    data-tippy-content="Changes Log"
+                    data-tippy-content="Project Info"
                     id="info-btn"
-                    aria-label="Open change log"
+                    aria-label="Open project information"
                     type="button"
                 >
                     <svg
@@ -425,16 +425,16 @@
         </footer>
 
         <div
-            class="modal modal--changelog"
-            id="modal-changelog"
+            class="modal modal--info"
+            id="modal-info"
             aria-hidden="true"
-            data-modal-id="changelog"
+            data-modal-id="info"
         >
             <div class="modal__scanlines" aria-hidden="false"></div>
             <div
                 class="modal__surface"
                 role="dialog"
-                aria-labelledby="modal-changelog-title"
+                aria-labelledby="modal-info-title"
                 aria-modal="true"
                 tabindex="-1"
             >
@@ -460,25 +460,13 @@
 
                 <section class="modal__section">
                     <header class="modal__header">
-                        <h1 class="modal__text" id="modal-changelog-title">
-                            Changes Log
+                        <h1 class="modal__text" id="modal-info-title">
+                            Project Information
                         </h1>
                         <p class="modal__lede">
-                            Live deployment history and highlights.
+                            An interactive WebGL experience with various 3D scenes and creative coding experiments.
                         </p>
                     </header>
-                    <div
-                        class="deployment-timeline"
-                        id="changelog-timeline"
-                        data-deployment-timeline
-                        data-layout="timeline"
-                        data-state="loading"
-                        aria-live="polite"
-                    >
-                        <p class="deployment-timeline__status">
-                            Loading latest deployment timeline…
-                        </p>
-                    </div>
                 </section>
             </div>
         </div>

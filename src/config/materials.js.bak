@@ -1,4 +1,4 @@
-const materials = [
+export default [
   {
     "name": "Aluminum",
     "color": [
