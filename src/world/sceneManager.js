@@ -14,7 +14,7 @@ import {
   getRuntimeScenes,
   addRuntimeScene,
   ensureUniqueSceneId
-} from '@three/runtimeScenes.js';
+} from '@world/runtimeScenes.js';
 
 const THREE_CONSTANTS = {
   LinearFilter: THREE.LinearFilter,

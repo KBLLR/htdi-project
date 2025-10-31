@@ -1,5 +1,5 @@
 // src/three/runtimeScenes.js
-import { createScene } from '@three/sceneFactory.js';
+import { createScene } from '@world/sceneFactory.js';
 import { scenes as defaultScenes } from '@data/scenes.js';
 
 const STORAGE_KEY = 'htdi:runtime-scenes:v1';

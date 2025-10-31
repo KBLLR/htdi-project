@@ -10,7 +10,7 @@ The codebase has several potential areas for performance optimization, primarily
     *   **Model Formats:** Convert FBX models to GLTF, and ensure all GLTF models utilize Draco compression. The `public/draco` directory suggests Draco is available, but its integration with `GLTFLoader` should be verified.
     *   **Texture Optimization:** Convert photographic PNG images to more efficient formats like WebP or AVIF. Ensure all images are optimally compressed. Consider using KTX2/Basis Universal for advanced texture compression.
     *   **Texture Atlases:** Combine small, frequently used textures (e.g., gobos, particles) into atlases to reduce draw calls.
-    *   **Unused Assets:** Identify and remove any assets listed in `src/config/assets.js` that are not actively used.
+    *   **Unused Assets:** Identify and remove any assets listed in `src/config/assetCatalog.js` that are not actively used.
 
 2.  **Critical Path Rendering & Loading:**
     *   **Decouple UI from 3D Experience:** The `createExperience()` call in `src/main.js` is a blocking operation. Explore initializing and rendering non-3D UI elements earlier to improve perceived load time.
@@ -27,7 +27,7 @@ The codebase has several potential areas for performance optimization, primarily
 
 4.  **Bundle Size Reduction:**
     *   **Tree Shaking & Code Splitting:** Confirm Vite is effectively tree-shaking unused code. Consider manual code splitting for large, non-critical modules or scenes.
-    *   **Dependency Review:** Re-evaluate the necessity of all third-party dependencies listed in `package.json` to identify any that could be removed or replaced with lighter alternatives.
+    *   **Dependency Review:** Unnecessary third-party dependencies have been removed from `package.json` to significantly reduce bundle size.
 
 5.  **Runtime Performance:**
     *   **Custom Cursor:** Monitor the performance of the custom cursor's DOM manipulations; consider a CSS-only solution if it becomes a bottleneck.

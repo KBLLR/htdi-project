@@ -19,7 +19,7 @@ import { wireModalButtons } from '@modules/wireModalButtons.js';
 import { initModalService } from '@modules/modalService.js';
 import { initialiseScenePicker } from '@modules/scenePickerUI.js';
 
-import { getScenes, applyScene, setSceneContext, getActiveSceneId } from '@three/sceneManager.js';
+import { getScenes, applyScene, setSceneContext, getActiveSceneId } from '@world/sceneManager.js';
 
 import actionsSpec from '@config/actions.json';
 

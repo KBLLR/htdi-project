@@ -28,15 +28,15 @@ export default defineConfig(({ mode }) => {
         '@modules': fileURLToPath(new URL('./src/modules', import.meta.url)),
         '@shared': fileURLToPath(new URL('./src/shared', import.meta.url)),
 
-        // Three domain
-        '@three': fileURLToPath(new URL('./src/three', import.meta.url)),
-        '@three/core': fileURLToPath(new URL('./src/three/core', import.meta.url)),
-        '@three/lighting': fileURLToPath(new URL('./src/three/lighting', import.meta.url)),
-        '@three/materials': fileURLToPath(new URL('./src/three/materials', import.meta.url)),
-        '@three/objects': fileURLToPath(new URL('./src/three/objects', import.meta.url)),
-        '@three/post': fileURLToPath(new URL('./src/three/postprocessing', import.meta.url)),
-        '@three/registry': fileURLToPath(new URL('./src/three/registry', import.meta.url)),
-        '@three/utils': fileURLToPath(new URL('./src/three/utils', import.meta.url)),
+        // World domain
+        '@world': fileURLToPath(new URL('./src/world', import.meta.url)),
+        '@world/core': fileURLToPath(new URL('./src/world/core', import.meta.url)),
+        '@world/lighting': fileURLToPath(new URL('./src/world/lighting', import.meta.url)),
+        '@world/materials': fileURLToPath(new URL('./src/world/materials', import.meta.url)),
+        '@world/objects': fileURLToPath(new URL('./src/world/objects', import.meta.url)),
+        '@world/post': fileURLToPath(new URL('./src/world/postprocessing', import.meta.url)),
+        '@world/registry': fileURLToPath(new URL('./src/world/registry', import.meta.url)),
+        '@world/utils': fileURLToPath(new URL('./src/world/utils', import.meta.url)),
 
         // Misc roots
         '@controllers': fileURLToPath(new URL('./src/controllers', import.meta.url)),

@@ -11,15 +11,12 @@ import { Easing } from '@tweenjs/tween.js';
 
 import { EventBus } from '@shared/EventBus.js';
 
-
-// Feature modules (aliased)
 import { initialiseDeploymentTimeline } from '@modules/deploymentTimelineUI.js';
-import { getScenes, applyScene, setSceneContext, getActiveSceneId } from '@three/sceneManager.js';
+import { getScenes, applyScene, setSceneContext, getActiveSceneId } from '@world/sceneManager.js';
 import { initialiseScenePicker } from '@modules/scenePickerUI.js';
 import { initDeploymentViewer } from '@modules/deploymentViewer.js';
 import { initialiseMusicPlayer } from '@modules/musicPlayerUI.js';
 
-// Actions Bar: manager + concrete action initializers
 import { ActionsBarManager } from '@modules/actionsBar/ActionsBarManager.js';
 import { initTasksAction } from '@modules/actionsBar/actions/tasksAction.js';
 import { initDeploymentsAction } from '@modules/actionsBar/actions/deploymentsAction.js';
@@ -31,19 +28,11 @@ import { initDeploymentTimelineOverlay } from '@modules/deploymentTimelineOverla
 import { wireModalButtons } from '@modules/wireModalButtons.js';
 import { createCustomCursor } from '@modules/customCursor.js';
 
-// Sound button helper (no globals; HMR-safe)
 import { setupSoundButton } from '@modules/soundButtonUI.js';
-
-// Modal service (EventBus-driven)
 import { initModalService } from '@shared/modalService.js';
 
-// Tweakpane v4.0.5
+import { createExperience } from '@world/index.js';
 
-
-// Three (refactored domain)
-import { createExperience } from '@three/index.js';
-
-// Actions config (JSON-driven registration)
 import actionsSpec from '@config/actions.json';
 
 const customCursor = createCustomCursor({
@@ -54,9 +43,6 @@ const customCursor = createCustomCursor({
   pressScale: 3,
 });
 
-/* ──────────────────────────────────────────────────────────────────────────
-   Tooltips (with a small registry so we can update titles dynamically)
-────────────────────────────────────────────────────────────────────────── */
 const tips = tippy('[data-tippy-content]', {
   animation: 'scale',
   theme: 'translucent',
@@ -71,47 +57,33 @@ const tips = tippy('[data-tippy-content]', {
   plugins: [animateFill],
 });
 const tipMap = new Map();
-tips.forEach((inst) => { if (inst?.reference instanceof HTMLElement) tipMap.set(inst.reference, inst); });
+tips.forEach((inst) => {
+  if (inst?.reference instanceof HTMLElement) tipMap.set(inst.reference, inst);
+});
 const updateTooltipContent = (el, content) => {
   if (!el) return;
   el.setAttribute('data-tippy-content', content);
   tipMap.get(el)?.setContent(content);
 };
 
-/* ──────────────────────────────────────────────────────────────────────────
-   Three Experience
-────────────────────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', async () => {
   const eventBus = new EventBus();
   const experience = await createExperience();
-  console.log('Experience object after creation:', experience);
+
+  // ✅ now safe: depthOfFieldEffect is initialized inside createExperience
+  experience.activateCameraPreset('maxZoomOut');
+
   const {
     scene,
     renderer,
-    // camera,
-    // controls,
-    // sceneRegistry,
     alphaMaterial,
     innerSphereMaterial,
-    // materialLibrary,
-    // applyMaterialPreset,
     activateCameraPreset,
-    // setDepthOfFieldPreset,
-    // stopCameraTween,
-    // stopDofTween,
-    // start: startExperience, // Removed as loop is started internally
   } = experience;
 
-  // Actions Bar
   const actionsBarTarget = document.querySelector('.glass-footer');
-  console.log('Actions Bar Target:', actionsBarTarget);
-
-  // Make the actions bar visible and clickable after the experience is ready
   actionsBarTarget.classList.add('is-ready');
 
-  /* ──────────────────────────────────────────────────────────────────────────
-     Modal service hooks
-  ────────────────────────────────────────────────────────────────────────── */
   const modalService = initModalService(eventBus, {
     focusCameraOnModal: () => {
       activateCameraPreset('focus', {
@@ -127,9 +99,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     },
   });
 
-  /* ──────────────────────────────────────────────────────────────────────────
-     Tweakpane v4.0.5 (JSON + dynamic Materials)
-  ────────────────────────────────────────────────────────────────────────── */
   if (import.meta.env.DEV) {
     import('@modules/TweakpaneManager.js').then(({ default: TweakpaneManager }) => {
       if (!window.__tpManager) {
@@ -157,9 +126,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  /* ──────────────────────────────────────────────────────────────────────────
-     Music player + sound button (FIXED)
-  ────────────────────────────────────────────────────────────────────────── */
   const { reflectSoundButtonState, updateSoundButtonMetadata } = setupSoundButton({
     updateTooltipContent,
     buttonId: 'sound-btn',
@@ -173,21 +139,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     },
   });
 
-  // ✅ FIXED: this was previously broken (the call lived outside the function)
   const ensureMusicLibraryLoaded = ({ autoSelectFirst = false } = {}) =>
-    musicPlayer
-      .loadTracks({ autoSelectFirst })
-      .catch((err) => console.error('[music] load failed', err));
+    musicPlayer.loadTracks({ autoSelectFirst }).catch((err) => console.error('[music] load failed', err));
 
   updateSoundButtonMetadata(musicPlayer.getCurrentTrack());
   reflectSoundButtonState(false);
 
-  /* ──────────────────────────────────────────────────────────────────────────
-     Actions Bar — JSON-driven registration (config/actions/actions.json)
-  ────────────────────────────────────────────────────────────────────────── */
   const actions = new ActionsBarManager({ target: actionsBarTarget, eventBus });
   let toggleDeploymentTimeline = () => { };
-  // Map action id -> initializer
+
   const ACTION_INITS = {
     tasks: (mgr, spec) => initTasksAction(mgr, { buttonId: spec.buttonId, ...spec.params }),
     deployments: (mgr, spec) =>
@@ -208,7 +168,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     data: (mgr, spec) => initDataAction(mgr, { buttonId: spec.buttonId, ...spec.params }),
   };
 
-  // Register what the JSON says to expose
   try {
     const modules = Array.isArray(actionsSpec?.modules) ? actionsSpec.modules : [];
     modules.forEach((spec) => {
@@ -223,14 +182,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error('[actions] Failed to register from actions.json', e);
   }
 
-  /* ──────────────────────────────────────────────────────────────────────────
-     Scenes & Deployments
-  ────────────────────────────────────────────────────────────────────────── */
-  console.log('Debugging scene context:');
-  console.log('scene:', scene);
-  console.log('renderer:', renderer);
-  console.log('alphaMaterial:', alphaMaterial);
-  console.log('innerSphereMaterial:', innerSphereMaterial);
   setSceneContext({ scene, renderer, alphaMaterial, innerSphereMaterial });
 
   const deploymentViewer = initDeploymentViewer();
@@ -270,8 +221,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const PREFERRED_START_SCENE = 'omega';
   const initialScenes = getScenes();
   const defaultSceneId =
-    initialScenes.find((s) => s.id === PREFERRED_START_SCENE)?.id ??
-    initialScenes[0]?.id;
+    initialScenes.find((s) => s.id === PREFERRED_START_SCENE)?.id ?? initialScenes[0]?.id;
 
   if (defaultSceneId) {
     applyScene(defaultSceneId)
@@ -294,7 +244,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     onOpenDeployment: (url) => deploymentViewer.open(url),
   });
 
-  // Wire up modal buttons
   wireModalButtons({
     openModal: modalService.openModal,
     toggleDeploymentTimeline: deploymentTimelineOverlay.toggle,

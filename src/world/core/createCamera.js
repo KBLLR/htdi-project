@@ -18,7 +18,7 @@ import { Tween, Easing } from '@tweenjs/tween.js';
 const BASE_CAMERA_FOV = 90;
 
 /** @type {Object.<string, CameraPresets>} */
-const CAMERA_PRESETS = {
+export const CAMERA_PRESETS = {
   overview: {
     position: { x: 0, y: 0, z: 0 },
     target: { x: 0, y: 0.05, z: 0 },
@@ -28,6 +28,11 @@ const CAMERA_PRESETS = {
     position: { x: 0.022, y: 0.072, z: 0.034 },
     target: { x: 0, y: 0.11, z: 0.008 },
     fov: 110
+  },
+  maxZoomOut: {
+    position: { x: 0, y: 0.05, z: 12.0 },
+    target: { x: 0, y: 0.05, z: 0 },
+    fov: BASE_CAMERA_FOV
   }
 };
 
