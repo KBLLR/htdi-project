@@ -1048,6 +1048,11 @@ export default [
         "type": "audio"
       },
       {
+        "name": "music_lucid_space_ogg",
+        "source": "/music/lucid_space.ogg",
+        "type": "audio"
+      },
+      {
         "name": "music_playlist_json",
         "source": "/music/playlist.json",
         "type": "json"
@@ -1218,11 +1223,6 @@ export default [
       {
         "name": "sounds_344_audio_Lo_Fi_Rumble_ogg",
         "source": "/sounds/344_audio/Lo-Fi_Rumble.ogg",
-        "type": "audio"
-      },
-      {
-        "name": "sounds_ES_Lucid_Space_Joseph_Beg_ogg",
-        "source": "/sounds/ES_Lucid_Space-Joseph_Beg.ogg",
         "type": "audio"
       }
     ]

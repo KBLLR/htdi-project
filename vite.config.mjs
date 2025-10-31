@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
         modules: fileURLToPath(new URL('./src/modules', import.meta.url)),
 
         // Preferred aliases
-        '@app': fileURLToPath(new URL('./src/app', import.meta.url)),
+        '@apps': fileURLToPath(new URL('./src/apps', import.meta.url)),
         '@config': fileURLToPath(new URL('./src/config', import.meta.url)),
         '@css': fileURLToPath(new URL('./src/css', import.meta.url)),
         '@data': fileURLToPath(new URL('./src/data', import.meta.url)),

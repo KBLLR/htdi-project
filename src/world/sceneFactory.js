@@ -1,3 +1,5 @@
+// src/world/sceneFactory.js
+// tiny tweak: innerSphere is optional
 const DEFAULT_CUBEMAP_FILES = ['px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png'];
 
 function normalisePathSegment(segment) {
@@ -25,50 +27,63 @@ export function createScene(config) {
     environment: buildEnvironment(config.environment ?? {}),
     alpha: buildAlpha(config.alpha ?? {}),
     kid: buildKid(config.kid ?? {}),
-    innerSphere: buildInnerSphere(config.innerSphere ?? {}),
+    // innerSphere is optional, but we include the node so UI can still edit it
+    innerSphere: config.innerSphere ? buildInnerSphere(config.innerSphere) : null,
     ui: buildUI(config.ui ?? {}),
     fog: buildFog(config.fog ?? {}),
     lighting: buildLighting(config.lighting ?? {}),
     character: buildCharacter(config.character ?? null),
-    metadata: config.metadata ? { ...config.metadata } : {}
+    // NEW: bind to micro-app
+    app: config.app ? buildApp(config.app) : null,
+    music: config.music ? buildMusic(config.music) : null,
+    metadata: config.metadata ? { ...config.metadata } : {},
   };
 }
 
 function buildEnvironment(environment) {
+  // allow pure color env
+  if (!environment.hdr && !environment.cubemap && environment.fallback) {
+    return {
+      hdr: null,
+      cubemap: null,
+      fallback: environment.fallback,
+      background: null,
+    };
+  }
+
   const hdrFile = environment?.hdr?.file ?? 'default.hdr';
   const hdrPath =
-    environment?.hdr?.path ??
-    environment?.hdr?.directory ??
-    '/pbrmaps/equirectangular/';
+    environment?.hdr?.path ?? environment?.hdr?.directory ?? '/pbrmaps/equirectangular/';
 
   const cubemapDirectory =
     environment?.cubemap?.path ??
     environment?.cubemap?.directory ??
     (environment?.cubemap?.folder ? `cubes/${environment.cubemap.folder}` : 'cubes');
 
-  const cubemapFiles =
-    ensureArray(environment?.cubemap?.files, DEFAULT_CUBEMAP_FILES);
+  const cubemapFiles = ensureArray(environment?.cubemap?.files, DEFAULT_CUBEMAP_FILES);
 
   const background = environment?.background ?? null;
   const backgroundConfig = background
     ? {
-        texture: background.texture ?? background.file ?? null,
-        path: background.path ?? background.directory ?? null,
-        color: background.color ?? null
-      }
+      texture: background.texture ?? background.file ?? null,
+      path: background.path ?? background.directory ?? null,
+      color: background.color ?? null,
+    }
     : null;
 
   return {
-    hdr: {
-      file: hdrFile,
-      path: normalisePathSegment(hdrPath)
-    },
+    hdr: hdrFile
+      ? {
+        file: hdrFile,
+        path: normalisePathSegment(hdrPath),
+      }
+      : null,
     cubemap: {
       path: normalisePathSegment(cubemapDirectory),
-      files: cubemapFiles
+      files: cubemapFiles,
     },
     fallback: environment?.fallback ?? '#000000',
-    background: backgroundConfig
+    background: backgroundConfig,
   };
 }
 
@@ -80,8 +95,8 @@ function buildAlpha(alpha) {
       magFilter: alpha?.settings?.magFilter ?? 'NearestFilter',
       wrapS: alpha?.settings?.wrapS,
       wrapT: alpha?.settings?.wrapT ?? 'RepeatWrapping',
-      repeat: alpha?.settings?.repeat ?? { x: 1, y: 1 }
-    }
+      repeat: alpha?.settings?.repeat ?? { x: 1, y: 1 },
+    },
   };
 }
 
@@ -89,15 +104,15 @@ function buildKid(kid) {
   return {
     baseColor: {
       src: kid?.baseColor?.src ?? '',
-      colorSpace: kid?.baseColor?.colorSpace ?? 'SRGBColorSpace'
+      colorSpace: kid?.baseColor?.colorSpace ?? 'SRGBColorSpace',
     },
     roughness: {
-      src: kid?.roughness?.src ?? kid?.roughness ?? ''
+      src: kid?.roughness?.src ?? kid?.roughness ?? '',
     },
     normal: {
-      src: kid?.normal?.src ?? kid?.normal ?? ''
+      src: kid?.normal?.src ?? kid?.normal ?? '',
     },
-    color: kid?.color ?? '#ffffff'
+    color: kid?.color ?? '#ffffff',
   };
 }
 
@@ -105,7 +120,7 @@ function buildInnerSphere(innerSphere) {
   return {
     emissive: innerSphere?.emissive ?? '#ffffff',
     emissiveIntensity: innerSphere?.emissiveIntensity ?? 2.5,
-    opacity: innerSphere?.opacity ?? 0.6
+    opacity: innerSphere?.opacity ?? 0.6,
   };
 }
 
@@ -117,7 +132,7 @@ function buildUI(ui) {
     cardBorder: ui?.cardBorder ?? 'rgba(132, 197, 255, 0.18)',
     accent: ui?.accent ?? '#D5FF7E',
     textPrimary: ui?.textPrimary ?? '#F4FBFF',
-    textSecondary: ui?.textSecondary ?? '#96A3B3'
+    textSecondary: ui?.textSecondary ?? '#96A3B3',
   };
 }
 
@@ -129,7 +144,7 @@ function buildCharacter(character) {
   if (character && typeof character === 'object') {
     return {
       id: character.id ?? null,
-      label: character.label ?? null
+      label: character.label ?? null,
     };
   }
   return null;
@@ -144,14 +159,14 @@ function buildFog(fog) {
     color: fog?.color ?? '#1a2430',
     density: fog?.density ?? 0.02,
     near: fog?.near ?? 2,
-    far: fog?.far ?? 60
+    far: fog?.far ?? 60,
   };
 }
 
 function buildLighting(lighting) {
   const spotlightConfig = lighting?.spotlight ?? lighting;
   return {
-    spotlight: buildSpotlight(spotlightConfig)
+    spotlight: buildSpotlight(spotlightConfig),
   };
 }
 
@@ -166,7 +181,7 @@ function buildSpotlight(spotlight) {
     distance: spotlight.distance ?? 35,
     position: toArray(spotlight.position, [2.5, 5.5, 2.5]),
     target: toArray(spotlight.target, [0, 0.6, 0]),
-    gobo: buildGobo(spotlight.gobo ?? null)
+    gobo: buildGobo(spotlight.gobo ?? null),
   };
 }
 
@@ -185,4 +200,23 @@ function toArray(value, fallback = []) {
     });
   }
   return [...fallback];
+}
+
+function buildApp(app) {
+  if (typeof app === 'string') return { id: app };
+  return {
+    id: app.id ?? null,
+    params: app.params ?? {},
+  };
+}
+
+function buildMusic(music) {
+  if (typeof music === 'string') {
+    return { id: music, volume: 1, loop: true };
+  }
+  return {
+    id: music.id ?? null,
+    volume: music.volume ?? 1,
+    loop: music.loop ?? true,
+  };
 }

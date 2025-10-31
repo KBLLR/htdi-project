@@ -1,0 +1,45 @@
+/* src/css/tokens.css */
+
+:root {
+  /* Tweakpane Theme Tokens */
+  --tp-base-background-color: hsla(0, 0%, 10%, 0.8);
+  --tp-base-shadow-color: hsla(0, 0%, 0%, 0.2);
+  --tp-button-background-color: hsla(0, 0%, 80%, 1);
+  --tp-button-background-color-active: hsla(0, 0%, 100%, 1);
+  --tp-button-background-color-focus: hsla(0, 0%, 95%, 1);
+  --tp-button-background-color-hover: hsla(0, 0%, 85%, 1);
+  --tp-button-foreground-color: hsla(0, 0%, 0%, 0.8);
+  --tp-container-background-color: hsla(0, 0%, 0%, 0.3);
+  --tp-container-background-color-active: hsla(0, 0%, 0%, 0.6);
+  --tp-container-background-color-focus: hsla(0, 0%, 0%, 0.5);
+  --tp-container-background-color-hover: hsla(0, 0%, 0%, 0.4);
+  --tp-container-foreground-color: hsla(0, 0%, 100%, 0.5);
+  --tp-groove-foreground-color: hsla(0, 0%, 0%, 0.2);
+  --tp-input-background-color: hsla(0, 0%, 0%, 0.3);
+  --tp-input-background-color-active: hsla(0, 0%, 0%, 0.6);
+  --tp-input-background-color-focus: hsla(0, 0%, 0%, 0.5);
+  --tp-input-background-color-hover: hsla(0, 0%, 0%, 0.4);
+  --tp-input-foreground-color: hsla(0, 0%, 100%, 0.5);
+  --tp-label-foreground-color: hsla(0, 0%, 100%, 0.5);
+  --tp-monitor-background-color: hsla(0, 0%, 0%, 0.3);
+  --tp-monitor-foreground-color: hsla(0, 0%, 100%, 0.3);
+
+  /* Animation Tokens */
+  --easeOutExpo: cubic-bezier(0.19, 1, 0.22, 1);
+
+  /* UI Theme Tokens */
+  --ui-surface-bg: rgba(8, 12, 18, 0.92);
+  --ui-surface-border: rgba(164, 210, 255, 0.12);
+  --ui-card-bg: rgba(13, 24, 33, 0.9);
+  --ui-card-border: rgba(132, 197, 255, 0.18);
+  --ui-accent: var(--yellow9);
+  --ui-text-primary: var(--gray2);
+  --ui-text-secondary: var(--gray6);
+
+  /* Font Family Tokens */
+  --font-family-primary: 'Pirulen', sans-serif;
+  --font-family-secondary: 'Roboto', sans-serif;
+  --font-family-accent: 'Henke', sans-serif;
+  --font-family-flowa: 'Flowa', sans-serif;
+  --font-family-pilowlava: 'Pilowlava', sans-serif;
+}
