@@ -36,3 +36,8 @@
 - Refactored TweakpaneManager for improved organization of scene settings, post-processing, and models.
 - Implemented scene-specific asset disposal to reduce memory usage during scene transitions.
 - Resolved various linting errors in modified files.
+
+## chore: modular history & music reorg
+- Moved deployment timeline UI/viewer modules into `src/modules/history` and added a dedicated alias for cleaner imports.
+- Relocated the music player stack under `src/music` with a `@music` alias to prepare for upcoming AI integrations.
+- Shifted particle utilities into `src/extras`, refreshed Vite aliases, and widened Tweakpane scale controls around the enlarged outer mesh.

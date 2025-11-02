@@ -26,6 +26,9 @@ export default defineConfig(({ mode }) => {
         '@css': fileURLToPath(new URL('./src/css', import.meta.url)),
         '@data': fileURLToPath(new URL('./src/data', import.meta.url)),
         '@modules': fileURLToPath(new URL('./src/modules', import.meta.url)),
+        '@music': fileURLToPath(new URL('./src/music', import.meta.url)),
+        '@history': fileURLToPath(new URL('./src/modules/history', import.meta.url)),
+        '@extras': fileURLToPath(new URL('./src/extras', import.meta.url)),
         '@shared': fileURLToPath(new URL('./src/shared', import.meta.url)),
 
         // World domain

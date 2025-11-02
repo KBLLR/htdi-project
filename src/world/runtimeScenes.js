@@ -93,8 +93,16 @@ export function addRuntimeScene(sceneInput) {
     throw new Error('Runtime scenes require an id.');
   }
   const normalised = createScene(sceneInput);
-  runtimeSceneInputs.push(clone(sceneInput));
-  runtimeScenes.push(normalised);
+  const clonedInput = clone(sceneInput);
+
+  const existingIndex = runtimeSceneInputs.findIndex((entry) => entry.id === sceneInput.id);
+  if (existingIndex >= 0) {
+    runtimeSceneInputs.splice(existingIndex, 1, clonedInput);
+    runtimeScenes.splice(existingIndex, 1, normalised);
+  } else {
+    runtimeSceneInputs.push(clonedInput);
+    runtimeScenes.push(normalised);
+  }
   persist();
   return clone(normalised);
 }
@@ -106,4 +114,15 @@ export function sanitiseId(value) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '') || 'scene';
+}
+
+export function removeRuntimeScene(id) {
+  hydrate();
+  if (!id) return false;
+  const index = runtimeSceneInputs.findIndex((entry) => entry.id === id);
+  if (index === -1) return false;
+  runtimeSceneInputs.splice(index, 1);
+  runtimeScenes.splice(index, 1);
+  persist();
+  return true;
 }

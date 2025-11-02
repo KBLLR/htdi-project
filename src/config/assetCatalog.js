@@ -365,6 +365,17 @@ export function getPbrMaterialSetById(id) {
   return pbrMaterialSetById.get(id) ?? null;
 }
 
+export function registerPbrMaterialSet(set) {
+  if (!set?.id) return null;
+  const existing = pbrMaterialSetById.get(set.id);
+  if (existing) {
+    return existing;
+  }
+  pbrMaterialSetById.set(set.id, set);
+  pbrMaterialSets.push(set);
+  return set;
+}
+
 export function toOptions(entries) {
   return entries.map((entry) => ({ text: entry.label, value: entry.id }));
 }

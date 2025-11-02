@@ -169,14 +169,26 @@ export function createWater({
     uniforms.alpha.value = mergedOptions.alpha;
   }
 
-  const timeSpeed = mergedOptions.timeSpeed ?? 1;
+  const waterState = {
+    timeSpeed: typeof mergedOptions.timeSpeed === 'number' ? mergedOptions.timeSpeed : 1,
+    reflectionIntensity:
+      typeof mergedOptions.reflectionIntensity === 'number' ? mergedOptions.reflectionIntensity : 0,
+  };
+
   const frameMonitor = uniforms.time
     ? {
         begin: ({ deltaTime }) => {
-          uniforms.time.value += deltaTime * timeSpeed;
+          uniforms.time.value += deltaTime * waterState.timeSpeed;
         },
       }
     : null;
+
+  water.userData = water.userData ?? {};
+  water.userData.htdiWater = {
+    uniforms,
+    state: waterState,
+    frameMonitor,
+  };
 
   return {
     water,

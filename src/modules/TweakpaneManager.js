@@ -4,7 +4,7 @@ import { Pane } from 'tweakpane';
 import * as Essentials from '@tweakpane/plugin-essentials';
 import { get } from 'lodash';
 import TweakpaneConfig from '../config/tweakpane-config';
-import { ParticleSystem } from '@modules/Particles.js';
+import { ParticleSystem } from '@extras/Particles.js';
 import { loadTextureAsset } from '@modules/assetRegistry.js';
 import { initialisePaneShell, hidePaneElement, showPaneElement } from '@modules/tweakpane/paneVisibility.js';
 import {
@@ -44,6 +44,17 @@ const DEFAULT_SPOTLIGHT_STATE = {
   position: [2.5, 5.5, 2.5],
   target: [0, 0.6, 0],
   gobo: null,
+};
+
+const DEFAULT_WATER_STATE = {
+  alpha: 0.82,
+  waterColor: '#2580c0',
+  sunColor: '#e9f6ff',
+  sunDirection: [0.48, 0.78, 0.36],
+  distortionScale: 1.9,
+  size: 3.2,
+  timeSpeed: 0.14,
+  reflectionIntensity: 0.4,
 };
 
 function slugifyId(value) {
@@ -118,6 +129,12 @@ export default class TweakpaneManager {
     this.spotlightTargetState = null;
     this.fpsMonitorCleanup = null;
     this.updatePbrMapInfo = () => { };
+    this.waterState = this.captureWaterState();
+    this.waterDirectionState = {
+      x: this.waterState.sunDirection[0] ?? 0,
+      y: this.waterState.sunDirection[1] ?? 0,
+      z: this.waterState.sunDirection[2] ?? 0,
+    };
     this.pbrMaterialState = {
       setId: pbrMaterialSets[0]?.id ?? null,
       target: 'character:active',
@@ -240,14 +257,17 @@ export default class TweakpaneManager {
       this.cleanups.push(unregisterMeshes);
     }
 
-    const unregisterMaterials = this.experience.sceneRegistryApi?.onRegisterCategory?.('materials', ({ name } = {}) => {
-      const key = this.normalisePbrTarget(`material:${name}`);
-      if (this.pbrAssignments.has(key)) {
-        this.applyPbrMaterialToTarget(key, { material: this.activePbrMaterial }).catch((error) => {
-          console.warn('[pbr] failed to reapply material to material target', error);
-        });
-      }
-    });
+    const unregisterMaterials = this.experience.sceneRegistryApi?.onRegisterCategory?.(
+      'materials',
+      ({ name } = {}) => {
+        const key = this.normalisePbrTarget(`material:${name}`);
+        if (this.pbrAssignments.has(key)) {
+          this.applyPbrMaterialToTarget(key, { material: this.activePbrMaterial }).catch((error) => {
+            console.warn('[pbr] failed to reapply material to material target', error);
+          });
+        }
+      },
+    );
     if (typeof unregisterMaterials === 'function') {
       this.cleanups.push(unregisterMaterials);
     }
@@ -255,13 +275,14 @@ export default class TweakpaneManager {
     // build UI
     this.buildPaneFromConfig(TweakpaneConfig.children, this.pane);
     this.addEnvironmentControls();
+    this.addWaterControls();
     this.addLightingControls();
     this.addModels();
     this.addCharacters();
     this.addMaterials();
     this.addKidSkins();
     this.addTextures();
-    this.addParticles(); // ✅ guarded now
+    this.addParticles();
     this.addPbrMaterials();
     this.addVideoControls();
 
@@ -276,7 +297,7 @@ export default class TweakpaneManager {
       }
     });
 
-    // reset DATA button
+    // reset button
     const dataButton = document.getElementById('data-btn');
     if (dataButton) {
       dataButton.classList.remove('is-active');
@@ -312,19 +333,43 @@ export default class TweakpaneManager {
     });
   }
 
+  /**
+   * If we are in a minimal experience (like the one you just scaffolded) we might not
+   * have `experience.controls` set, but we DO have a factory/getter.
+   */
+  ensureControls() {
+    if (!this.experience.controls && typeof this.experience.getControls === 'function') {
+      const c = this.experience.getControls();
+      if (c) {
+        this.experience.controls = c;
+      }
+    }
+  }
+
   addBinding(container, { path, label, min, max, step, onChange }) {
+    // special: controls.* → try to hydrate first
+    if (path?.startsWith('controls.')) {
+      this.ensureControls();
+    }
+
+    // registry paths still go through the registry logic
     if (path?.startsWith('sceneRegistry.')) {
       this.addSceneRegistryBinding(container, { path, label, min, max, step, onChange });
       return;
     }
+
     const { target, key } = this.resolvePath(path);
-    if (target && key in target) {
-      const binding = container.addBinding(target, key, { label, min, max, step });
-      if (onChange) {
-        binding.on('change', () => onChange(target));
-      }
-    } else {
-      this.addMessage(container, `Invalid binding path: ${path}`);
+
+    // ⛔ before: we added a "⚠ Invalid binding" folder for everything
+    // ✅ now: if there is no target, we just skip silently
+    if (!target || !(key in target)) {
+      // console.debug(`[tweakpane] skip missing path "${path}"`);
+      return;
+    }
+
+    const binding = container.addBinding(target, key, { label, min, max, step });
+    if (onChange) {
+      binding.on('change', () => onChange(target));
     }
   }
 
@@ -343,6 +388,7 @@ export default class TweakpaneManager {
     const { path, label, min, max, step, onChange } = config;
     const parts = path.split('.');
     if (parts.length < 4) {
+      // still show for registry errors, because those are real issues
       this.addMessage(container, `Invalid registry path: ${path}`);
       return;
     }
@@ -447,9 +493,9 @@ export default class TweakpaneManager {
     folder.addBinding(model.rotation, 'x', { label: 'Rotation X', min: -Math.PI, max: Math.PI, step: 0.01 });
     folder.addBinding(model.rotation, 'y', { label: 'Rotation Y', min: -Math.PI, max: Math.PI, step: 0.01 });
     folder.addBinding(model.rotation, 'z', { label: 'Rotation Z', min: -Math.PI, max: Math.PI, step: 0.01 });
-    folder.addBinding(model.scale, 'x', { label: 'Scale X', min: 0.0001, max: 10, step: 0.0001 });
-    folder.addBinding(model.scale, 'y', { label: 'Scale Y', min: 0.0001, max: 10, step: 0.0001 });
-    folder.addBinding(model.scale, 'z', { label: 'Scale Z', min: 0.0001, max: 10, step: 0.0001 });
+    folder.addBinding(model.scale, 'x', { label: 'Scale X', min: 0.1, max: 1000, step: 0.1 });
+    folder.addBinding(model.scale, 'y', { label: 'Scale Y', min: 0.1, max: 1000, step: 0.1 });
+    folder.addBinding(model.scale, 'z', { label: 'Scale Z', min: 0.1, max: 1000, step: 0.1 });
 
     const materialsFolder = folder.addFolder({ title: 'Materials', expanded: false });
     const uniqueMaterials = new Map();
@@ -466,6 +512,9 @@ export default class TweakpaneManager {
       const matFolder = materialsFolder.addFolder({ title: material.name || 'Unnamed Material', expanded: false });
       if (material.color) {
         matFolder.addBinding(material, 'color', { label: 'Color' });
+      }
+      if (typeof material.wireframe === 'boolean') {
+        matFolder.addBinding(material, 'wireframe', { label: 'Wireframe' });
       }
       if (material.metalness !== undefined) {
         matFolder.addBinding(material, 'metalness', { label: 'Metalness', min: 0, max: 1, step: 0.01 });
@@ -544,6 +593,22 @@ export default class TweakpaneManager {
     materialsFolder.addBinding(state, 'preset', { label: 'Preset', options: toOptionsLocal(materialNames) });
     materialsFolder.addBinding(state, 'target', { label: 'Target', options: targets });
 
+    const ensureVector2 = (material, key, defaultValue = 1) => {
+      if (!material) return;
+      const current = material[key];
+      if (!current || typeof current.x !== 'number' || typeof current.y !== 'number') {
+        material[key] = new THREE.Vector2(defaultValue, defaultValue);
+      }
+    };
+
+    const stabiliseMaterial = (material) => {
+      if (!material) return;
+      ensureVector2(material, 'normalScale');
+      if ('clearcoatNormalScale' in material) {
+        ensureVector2(material, 'clearcoatNormalScale');
+      }
+    };
+
     materialsFolder.addButton({ title: 'Apply' }).on('click', () => {
       const targetMaterial = materials[state.target]?.ref;
       const presetMaterial = materials[state.preset]?.ref;
@@ -552,9 +617,15 @@ export default class TweakpaneManager {
         if (presetMaterial.color && !(presetMaterial.color instanceof THREE.Color)) {
           presetMaterial.color = new THREE.Color(presetMaterial.color);
         }
-        targetMaterial.copy(presetMaterial);
-        targetMaterial.needsUpdate = true;
-        console.log(`[materials] applied '${state.preset}' to '${state.target}'`);
+        stabiliseMaterial(targetMaterial);
+        stabiliseMaterial(presetMaterial);
+        try {
+          targetMaterial.copy(presetMaterial);
+          targetMaterial.needsUpdate = true;
+          console.log(`[materials] applied '${state.preset}' to '${state.target}'`);
+        } catch (error) {
+          console.warn('[materials] copy failed', error);
+        }
       } else {
         console.warn('[materials] apply failed:', state);
       }
@@ -695,14 +766,18 @@ export default class TweakpaneManager {
       this.textureState.target = materialOptions[0].value;
     }
 
-    texturesFolder.addBinding(this.textureState, 'texture', { label: 'Texture', options: textureOptions }).on('change', (ev) => {
-      this.textureState.texture = ev.value;
-    });
+    texturesFolder
+      .addBinding(this.textureState, 'texture', { label: 'Texture', options: textureOptions })
+      .on('change', (ev) => {
+        this.textureState.texture = ev.value;
+      });
 
     if (materialOptions.length) {
-      texturesFolder.addBinding(this.textureState, 'target', { label: 'Target Material', options: materialOptions }).on('change', (ev) => {
-        this.textureState.target = ev.value;
-      });
+      texturesFolder
+        .addBinding(this.textureState, 'target', { label: 'Target Material', options: materialOptions })
+        .on('change', (ev) => {
+          this.textureState.target = ev.value;
+        });
     } else {
       this.addMessage(texturesFolder, 'No materials available to apply textures');
     }
@@ -753,7 +828,7 @@ export default class TweakpaneManager {
   }
 
   /* ──────────────────────────────────────────────────────────────
-     PARTICLES (FIXED)
+     PARTICLES
   ────────────────────────────────────────────────────────────── */
   addParticles() {
     const particlesFolder = this.getFolder(['Assets', 'Particles']);
@@ -784,15 +859,14 @@ export default class TweakpaneManager {
       label: 'System Visible',
     });
 
-    // initial setup
     this.updateParticleEmitterControls(particlesFolder, particleSystem.getActiveEmitter?.());
 
-    // listen for runtime emitter changes (if available)
-    const unsubscribe = typeof particleSystem.onActiveEmitterChange === 'function'
-      ? particleSystem.onActiveEmitterChange((newEmitter) => {
-        this.updateParticleEmitterControls(particlesFolder, newEmitter);
-      })
-      : null;
+    const unsubscribe =
+      typeof particleSystem.onActiveEmitterChange === 'function'
+        ? particleSystem.onActiveEmitterChange((newEmitter) => {
+          this.updateParticleEmitterControls(particlesFolder, newEmitter);
+        })
+        : null;
 
     if (unsubscribe) {
       this.cleanups.push(unsubscribe);
@@ -800,13 +874,12 @@ export default class TweakpaneManager {
   }
 
   updateParticleEmitterControls(container, emitter) {
-    // clear previous
     if (this.currentEmitterControls?.length) {
       this.currentEmitterControls.forEach((ctrl) => {
         try {
           ctrl.dispose?.();
-        } catch (e) {
-          // silent
+        } catch {
+          /* noop */
         }
       });
       this.currentEmitterControls = [];
@@ -816,7 +889,6 @@ export default class TweakpaneManager {
 
     const controls = [];
 
-    // base properties — guard every binding
     controls.push(container.addBinding(emitter, 'visible', { label: 'Emitter Visible' }));
 
     if (typeof emitter.particleSize === 'number') {
@@ -893,7 +965,6 @@ export default class TweakpaneManager {
       );
     }
 
-    // ✅ FIX: guard atlas existence before reading .frames
     const atlasFrames = this.experience?.particleAtlasJson?.frames;
     let textureOptions = [];
     if (atlasFrames && typeof atlasFrames === 'object') {
@@ -944,7 +1015,8 @@ export default class TweakpaneManager {
 
     const currentState = this.experience.getCurrentSceneState?.() ?? this.initialSceneState ?? {};
     const currentHdrId = this.findHdrIdFromConfig(currentState.environment?.hdr) ?? this.environmentState?.hdr;
-    const currentCubeId = this.findCubemapIdFromConfig(currentState.environment?.cubemap) ?? this.environmentState?.cubemap;
+    const currentCubeId =
+      this.findCubemapIdFromConfig(currentState.environment?.cubemap) ?? this.environmentState?.cubemap;
 
     const currentIntensity =
       typeof this.experience.getEnvironmentIntensity === 'function'
@@ -1007,7 +1079,6 @@ export default class TweakpaneManager {
         }
       });
 
-    // fog controls
     const fogFolder = envFolder.addFolder({ title: 'Fog', expanded: false });
     const fogState = (this.fogState = this.normaliseFogState(this.fogState));
     const fogTypeOptions = [
@@ -1044,6 +1115,77 @@ export default class TweakpaneManager {
     envFolder.addButton({ title: 'Save Scene Preset' }).on('click', () => {
       this.saveScenePreset();
     });
+  }
+
+  /* ──────────────────────────────────────────────────────────────
+     WATER
+  ────────────────────────────────────────────────────────────── */
+  addWaterControls() {
+    const waterFolder = this.getFolder(['Scene', 'Water']);
+    if (!waterFolder) return;
+
+    const waterMesh = this.getWaterMesh();
+    if (!waterMesh) {
+      this.addMessage(waterFolder, 'Water mesh not available');
+      return;
+    }
+
+    if (waterFolder.title && waterFolder.title !== 'Water Shader') {
+      waterFolder.title = 'Water Shader';
+    }
+
+    const state = this.captureWaterState();
+    Object.assign(this.waterState, state);
+    if (!this.waterDirectionState) {
+      this.waterDirectionState = { x: 0, y: 0, z: 0 };
+    }
+    this.waterDirectionState.x = state.sunDirection[0] ?? 0;
+    this.waterDirectionState.y = state.sunDirection[1] ?? 0;
+    this.waterDirectionState.z = state.sunDirection[2] ?? 0;
+
+    waterFolder
+      .addBinding(this.waterState, 'alpha', { label: 'Alpha', min: 0, max: 1, step: 0.01 })
+      .on('change', (ev) => this.applyWaterUpdate({ alpha: ev.value }));
+
+    waterFolder
+      .addBinding(this.waterState, 'distortionScale', { label: 'Distortion', min: 0, max: 10, step: 0.05 })
+      .on('change', (ev) => this.applyWaterUpdate({ distortionScale: ev.value }));
+
+    waterFolder
+      .addBinding(this.waterState, 'size', { label: 'Size', min: 0.5, max: 6, step: 0.05 })
+      .on('change', (ev) => this.applyWaterUpdate({ size: ev.value }));
+
+    waterFolder
+      .addBinding(this.waterState, 'waterColor', { label: 'Water Color', view: 'color' })
+      .on('change', (ev) => this.applyWaterUpdate({ waterColor: ev.value }));
+
+    waterFolder
+      .addBinding(this.waterState, 'sunColor', { label: 'Sun Color', view: 'color' })
+      .on('change', (ev) => this.applyWaterUpdate({ sunColor: ev.value }));
+
+    waterFolder
+      .addBinding(this.waterState, 'timeSpeed', { label: 'Time Speed', min: 0, max: 2, step: 0.01 })
+      .on('change', (ev) => this.applyWaterUpdate({ timeSpeed: ev.value }));
+
+    const directionFolder = waterFolder.addFolder({ title: 'Sun Direction', expanded: false });
+    const updateDirection = () =>
+      this.applyWaterUpdate({
+        sunDirection: [this.waterDirectionState.x, this.waterDirectionState.y, this.waterDirectionState.z],
+      });
+
+    directionFolder
+      .addBinding(this.waterDirectionState, 'x', { label: 'X', min: -2, max: 2, step: 0.01 })
+      .on('change', updateDirection);
+    directionFolder
+      .addBinding(this.waterDirectionState, 'y', { label: 'Y', min: -2, max: 2, step: 0.01 })
+      .on('change', updateDirection);
+    directionFolder
+      .addBinding(this.waterDirectionState, 'z', { label: 'Z', min: -2, max: 2, step: 0.01 })
+      .on('change', updateDirection);
+
+    waterFolder
+      .addBinding(this.waterState, 'reflectionIntensity', { label: 'Reflection', min: 0, max: 1, step: 0.01 })
+      .on('change', (ev) => this.applyWaterUpdate({ reflectionIntensity: ev.value }));
   }
 
   /* ──────────────────────────────────────────────────────────────
@@ -1229,7 +1371,10 @@ export default class TweakpaneManager {
     }
 
     const pbrFolder = libraryFolder.addFolder({ title: 'PBR Materials', expanded: false });
-    const setOptions = pbrMaterialSets.map((set) => ({ text: set.label, value: set.id }));
+    const uniqueSets = Array.from(
+      new Map(pbrMaterialSets.map((set) => [set.id, set])).values(),
+    ).sort((a, b) => a.label.localeCompare(b.label));
+    const setOptions = uniqueSets.map((set) => ({ text: set.label, value: set.id }));
     if (!this.pbrMaterialState.setId && setOptions.length) {
       this.pbrMaterialState.setId = setOptions[0].value;
     }
@@ -1308,7 +1453,6 @@ export default class TweakpaneManager {
         this.updateActivePbrMaterial({ transparent: ev.value });
       });
 
-    // maps
     const mapsFolder = pbrFolder.addFolder({ title: 'Maps', expanded: false });
     const mapRoles = [
       { role: 'albedo', label: 'Albedo' },
@@ -1321,7 +1465,9 @@ export default class TweakpaneManager {
       { role: 'bump', label: 'Bump' },
       { role: 'iridescence', label: 'Iridescence' },
     ];
-    const mapBlades = mapRoles.map(({ label }) => mapsFolder.addBlade({ view: 'text', label, content: '—' }));
+    const mapBlades = mapRoles.map(({ label }) =>
+      mapsFolder.addBinding({ value: '—' }, 'value', { label, readonly: true }),
+    );
     const updateMapInfo = () => {
       const set = getPbrMaterialSetById(this.pbrMaterialState.setId);
       mapRoles.forEach(({ role }, index) => {
@@ -1341,9 +1487,21 @@ export default class TweakpaneManager {
       console.warn('[pbr] no set selected');
       return null;
     }
-    if (!force && this.activePbrMaterial?.userData?.pbrSetId === set.id) {
+    const previousSetId = this.activePbrMaterial?.userData?.pbrSetId ?? null;
+    const isSameSet = previousSetId === set.id;
+
+    if (!force && isSameSet) {
       this.updateActivePbrMaterial();
       return this.activePbrMaterial;
+    }
+
+    if ((force || !isSameSet) && set.parameters) {
+      Object.entries(set.parameters).forEach(([key, value]) => {
+        if (value === undefined) return;
+        if (Object.prototype.hasOwnProperty.call(this.pbrMaterialState, key)) {
+          this.pbrMaterialState[key] = value;
+        }
+      });
     }
 
     this.updatePbrMapInfo?.();
@@ -1380,6 +1538,35 @@ export default class TweakpaneManager {
     if (!this.activePbrMaterial) return;
     applyPbrParameters(this.activePbrMaterial, this.pbrMaterialState);
     this.refreshPbrMaterialAssignments();
+  }
+
+  getCharacterObject(target) {
+    if (!target?.startsWith('character:')) return null;
+    const [, id = ''] = target.split(':', 2);
+    const characters = this.experience.sceneRegistry?.characters ?? {};
+    if (id === 'active' || !id) {
+      const activeEntry = characters.active;
+      if (activeEntry?.ref) return activeEntry.ref;
+      const currentId = this.experience.currentCharacter?.();
+      return currentId ? characters[currentId]?.ref ?? null : null;
+    }
+    return characters[id]?.ref ?? null;
+  }
+
+  getMeshObject(target) {
+    if (!target?.startsWith('mesh:')) return null;
+    const [, id = ''] = target.split(':', 2);
+    if (!id) return null;
+    return this.experience.sceneRegistry?.meshes?.[id]?.ref ?? null;
+  }
+
+  getMaterialTarget(target) {
+    if (!target?.startsWith('material:')) return null;
+    const [, id = ''] = target.split(':', 2);
+    if (!id) return null;
+    const entry = this.experience.sceneRegistry?.materials?.[id];
+    if (!entry) return null;
+    return entry.ref ?? entry;
   }
 
   async applyPbrMaterialToTarget(target, { material: overrideMaterial } = {}) {
@@ -1525,6 +1712,15 @@ export default class TweakpaneManager {
       this.characterState.character = sceneState.character.id;
     }
 
+    const waterState = this.captureWaterState(sceneState.water);
+    Object.assign(this.waterState, waterState);
+    if (!this.waterDirectionState) {
+      this.waterDirectionState = { x: 0, y: 0, z: 0 };
+    }
+    this.waterDirectionState.x = waterState.sunDirection[0] ?? 0;
+    this.waterDirectionState.y = waterState.sunDirection[1] ?? 0;
+    this.waterDirectionState.z = waterState.sunDirection[2] ?? 0;
+
     if (this.pbrAssignments.size) {
       const material = this.activePbrMaterial;
       if (material) {
@@ -1582,6 +1778,7 @@ export default class TweakpaneManager {
     const spotlightConfig = this.normaliseSpotlightState(
       this.experience.getSpotlightState?.() ?? this.spotlightState,
     );
+    const waterConfig = this.exportWaterState();
 
     const sceneInput = {
       id: slugifyId(name),
@@ -1592,6 +1789,8 @@ export default class TweakpaneManager {
       kid: kidConfig,
       innerSphere: innerSphereConfig,
       ui: uiConfig,
+      water: waterConfig,
+      thumbnail: baseState.thumbnail ?? null,
       character: characterId ? { id: characterId } : null,
       fog: fogConfig,
       lighting: {
@@ -1645,6 +1844,121 @@ export default class TweakpaneManager {
     this.syncSpotlightBindingStates();
     if (before !== JSON.stringify(this.spotlightState)) {
       this.pane.refresh();
+    }
+  }
+
+  getWaterEntry() {
+    const api = this.experience.sceneRegistryApi;
+    if (api?.get) {
+      const entry = api.get('meshes', 'water');
+      if (entry) return entry;
+    }
+    return this.experience.sceneRegistry?.meshes?.water ?? null;
+  }
+
+  getWaterMesh() {
+    return this.getWaterEntry()?.ref ?? null;
+  }
+
+  captureWaterState(preferred) {
+    const base = preferred ?? this.experience.getCurrentSceneState?.().water ?? this.waterState ?? {};
+    const result = this.normaliseWaterState(base);
+    const entry = this.getWaterEntry();
+    const mesh = entry?.ref;
+    const uniforms = mesh?.material?.uniforms ?? {};
+
+    if (uniforms.alpha?.value !== undefined) {
+      result.alpha = uniforms.alpha.value;
+    }
+    if (uniforms.distortionScale?.value !== undefined) {
+      result.distortionScale = uniforms.distortionScale.value;
+    }
+    if (uniforms.size?.value !== undefined) {
+      result.size = uniforms.size.value;
+    }
+    if (uniforms.waterColor?.value?.isColor) {
+      result.waterColor = formatColor(uniforms.waterColor.value);
+    }
+    if (uniforms.sunColor?.value?.isColor) {
+      result.sunColor = formatColor(uniforms.sunColor.value);
+    }
+    if (uniforms.sunDirection?.value) {
+      const dir = uniforms.sunDirection.value;
+      if (dir.isVector3) {
+        result.sunDirection = [dir.x, dir.y, dir.z];
+      }
+    }
+
+    const metadataState = mesh?.userData?.htdiWater?.state ?? entry?.params ?? {};
+    if (typeof metadataState.timeSpeed === 'number') {
+      result.timeSpeed = metadataState.timeSpeed;
+    }
+    if (typeof metadataState.reflectionIntensity === 'number') {
+      result.reflectionIntensity = metadataState.reflectionIntensity;
+    }
+
+    return this.normaliseWaterState(result);
+  }
+
+  exportWaterState() {
+    const state = this.normaliseWaterState(this.waterState);
+    return {
+      alpha: state.alpha,
+      waterColor: state.waterColor,
+      sunColor: state.sunColor,
+      sunDirection: [...state.sunDirection],
+      distortionScale: state.distortionScale,
+      size: state.size,
+      timeSpeed: state.timeSpeed,
+      reflectionIntensity: state.reflectionIntensity,
+    };
+  }
+
+  applyWaterUpdate(partial) {
+    const mesh = this.getWaterMesh();
+    if (!mesh) return;
+    const uniforms = mesh.material?.uniforms ?? {};
+    const next = this.normaliseWaterState({ ...this.waterState, ...(partial ?? {}) });
+    Object.assign(this.waterState, next);
+
+    if (uniforms.alpha?.value !== undefined) {
+      uniforms.alpha.value = next.alpha;
+    }
+    if (uniforms.distortionScale?.value !== undefined) {
+      uniforms.distortionScale.value = next.distortionScale;
+    }
+    if (uniforms.size?.value !== undefined) {
+      uniforms.size.value = next.size;
+    }
+    if (uniforms.waterColor?.value?.set) {
+      uniforms.waterColor.value.set(next.waterColor);
+    }
+    if (uniforms.sunColor?.value?.set) {
+      uniforms.sunColor.value.set(next.sunColor);
+    }
+    if (uniforms.sunDirection?.value?.set) {
+      uniforms.sunDirection.value.set(next.sunDirection[0], next.sunDirection[1], next.sunDirection[2]);
+      uniforms.sunDirection.value.normalize();
+    }
+
+    if (this.waterDirectionState) {
+      this.waterDirectionState.x = next.sunDirection[0];
+      this.waterDirectionState.y = next.sunDirection[1];
+      this.waterDirectionState.z = next.sunDirection[2];
+    }
+
+    const meta = mesh.userData?.htdiWater;
+    if (meta?.state) {
+      meta.state.timeSpeed = next.timeSpeed;
+      meta.state.reflectionIntensity = next.reflectionIntensity;
+    }
+
+    if (mesh.material) {
+      mesh.material.needsUpdate = true;
+    }
+
+    if (typeof this.experience.updateSceneState === 'function') {
+      this.experience.updateSceneState({ water: this.exportWaterState() });
     }
   }
 
@@ -1706,6 +2020,48 @@ export default class TweakpaneManager {
     if (next.gobo === 'none') next.gobo = null;
     next.gobo = next.gobo ?? DEFAULT_SPOTLIGHT_STATE.gobo;
     return next;
+  }
+
+  normaliseWaterState(state) {
+    const source = clone(state) ?? {};
+    const base = {
+      ...DEFAULT_WATER_STATE,
+      ...source,
+    };
+
+    const toNumber = (value, fallback) => {
+      const num = Number(value);
+      return Number.isFinite(num) ? num : fallback;
+    };
+
+    base.alpha = THREE.MathUtils.clamp(toNumber(base.alpha, DEFAULT_WATER_STATE.alpha), 0, 1);
+    base.distortionScale = toNumber(base.distortionScale, DEFAULT_WATER_STATE.distortionScale);
+    base.size = toNumber(base.size, DEFAULT_WATER_STATE.size);
+    base.timeSpeed = Math.max(0, toNumber(base.timeSpeed, DEFAULT_WATER_STATE.timeSpeed));
+    base.reflectionIntensity = THREE.MathUtils.clamp(
+      toNumber(base.reflectionIntensity, DEFAULT_WATER_STATE.reflectionIntensity),
+      0,
+      1,
+    );
+
+    base.waterColor = formatColor(base.waterColor ?? DEFAULT_WATER_STATE.waterColor);
+    base.sunColor = formatColor(base.sunColor ?? DEFAULT_WATER_STATE.sunColor);
+
+    const direction = base.sunDirection;
+    let components = DEFAULT_WATER_STATE.sunDirection;
+    if (Array.isArray(direction) && direction.length === 3) {
+      components = direction;
+    } else if (direction && typeof direction === 'object') {
+      components = ['x', 'y', 'z'].map((axis, index) => direction[axis] ?? DEFAULT_WATER_STATE.sunDirection[index]);
+    }
+    const parsed = components.map((component, index) => {
+      const num = Number(component);
+      return Number.isFinite(num) ? num : DEFAULT_WATER_STATE.sunDirection[index];
+    });
+    const length = Math.hypot(parsed[0], parsed[1], parsed[2]) || 1;
+    base.sunDirection = parsed.map((component) => component / length);
+
+    return base;
   }
 
   findHdrIdFromConfig(hdrConfig) {
@@ -1913,13 +2269,6 @@ export default class TweakpaneManager {
     Object.entries(meshes).forEach(([name, entry]) => {
       if (entry?.ref?.isObject3D) {
         options.push({ text: `Mesh · ${prettifyLabel(name)}`, value: `mesh:${name}` });
-      }
-    });
-
-    const materials = this.experience.sceneRegistry?.materials ?? {};
-    Object.entries(materials).forEach(([name, entry]) => {
-      if (entry?.ref?.isMaterial) {
-        options.push({ text: `Material · ${prettifyLabel(name)}`, value: `material:${name}` });
       }
     });
 

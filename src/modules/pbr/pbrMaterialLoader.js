@@ -1,6 +1,13 @@
 // src/modules/pbr/pbrMaterialLoader.js
 import * as THREE from 'three';
 import { loadTextureAsset } from '@modules/assetRegistry.js';
+import { registerPbrMaterialSet } from '@config/assetCatalog.js';
+
+const MATERIAL_LIBRARY_URL = '/materials.json';
+
+let materialLibraryPromise = null;
+let materialLibraryDefinitions = null;
+const materialLibraryById = new Map();
 
 /**
  * Maps user-defined “roles” from the asset set to MeshPhysicalMaterial properties.
@@ -59,6 +66,66 @@ const MAP_ROLES = {
   iridescenceThicknessMap: { key: 'iridescenceThicknessMap' },
 };
 
+function slugify(value = '') {
+  return value
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'material';
+}
+
+function isNumeric(value) {
+  return typeof value === 'number' && Number.isFinite(value);
+}
+
+function extractNumber(value) {
+  if (isNumeric(value)) return value;
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const result = extractNumber(item);
+      if (isNumeric(result)) return result;
+    }
+  } else if (value && typeof value === 'object') {
+    if (isNumeric(value.value)) return value.value;
+    if (Array.isArray(value.values)) {
+      const result = extractNumber(value.values);
+      if (isNumeric(result)) return result;
+    }
+  }
+  return undefined;
+}
+
+function collectColorEntries(node) {
+  if (!node) return [];
+  if (Array.isArray(node)) {
+    return node.flatMap((entry) => collectColorEntries(entry));
+  }
+  if (typeof node !== 'object') return [];
+  if (Array.isArray(node.color) && node.color.length >= 3 && node.color.every((c) => typeof c === 'number')) {
+    return [
+      {
+        colorSpace: node.colorSpace ?? node.colorspace ?? null,
+        color: node.color,
+      },
+    ];
+  }
+  if (Array.isArray(node.color)) {
+    return collectColorEntries(node.color);
+  }
+  return [];
+}
+
+function pickColorArray(node) {
+  const entries = collectColorEntries(node);
+  if (!entries.length) return null;
+  const srgb = entries.find((entry) => {
+    const space = entry.colorSpace ? entry.colorSpace.toLowerCase() : '';
+    return space.includes('srgb');
+  });
+  return (srgb ?? entries[0]).color;
+}
+
 /**
  * Look up the material property configuration for a given map role.
  */
@@ -103,6 +170,210 @@ function parseColor(value, fallback = 0xffffff) {
     }
   }
   return color;
+}
+
+async function loadMaterialLibraryRaw() {
+  if (materialLibraryPromise) {
+    return materialLibraryPromise;
+  }
+  if (typeof fetch !== 'function') {
+    materialLibraryPromise = Promise.resolve([]);
+    return materialLibraryPromise;
+  }
+  materialLibraryPromise = (async () => {
+    try {
+      const response = await fetch(MATERIAL_LIBRARY_URL);
+      if (!response.ok) {
+        console.warn('[pbr] failed to fetch materials.json', response.status);
+        return [];
+      }
+      const data = await response.json();
+      if (!Array.isArray(data)) return [];
+      return data;
+    } catch (error) {
+      console.warn('[pbr] error loading materials.json', error);
+      return [];
+    }
+  })();
+  return materialLibraryPromise;
+}
+
+function normaliseLibraryDefinition(entry) {
+  if (!entry || typeof entry !== 'object') return null;
+  const baseId = slugify(entry.name ?? entry.id ?? entry.label ?? 'material');
+  const setId = `pbrlib-${baseId}`;
+
+  const parameters = {};
+
+  const baseColor = pickColorArray(entry.color);
+  if (baseColor) parameters.color = baseColor;
+
+  const specColor = pickColorArray(entry.specularColor);
+  if (specColor) parameters.specularColor = specColor;
+
+  const sheenColor = pickColorArray(entry.sheenColor);
+  if (sheenColor) parameters.sheenColor = sheenColor;
+
+  const attenuationColor = pickColorArray(entry.attenuationColor);
+  if (attenuationColor) parameters.attenuationColor = attenuationColor;
+
+  const emissiveColor = pickColorArray(entry.emissiveColor);
+  if (emissiveColor) parameters.emissiveColor = emissiveColor;
+
+  const numericFields = [
+    'metalness',
+    'roughness',
+    'ior',
+    'transmission',
+    'thickness',
+    'attenuationDistance',
+    'emissiveIntensity',
+    'clearcoat',
+    'clearcoatRoughness',
+    'sheen',
+    'sheenRoughness',
+    'specularIntensity',
+    'iridescence',
+    'iridescenceIOR',
+    'anisotropy',
+    'anisotropyRotation',
+    'opacity',
+  ];
+
+  numericFields.forEach((field) => {
+    const value = extractNumber(entry[field]);
+    if (isNumeric(value)) {
+      parameters[field] = value;
+    }
+  });
+
+  if (Array.isArray(entry.iridescenceThicknessRange) && entry.iridescenceThicknessRange.length >= 2) {
+    const min = extractNumber(entry.iridescenceThicknessRange[0]);
+    const max = extractNumber(entry.iridescenceThicknessRange[1]);
+    if (isNumeric(min)) parameters.iridescenceThicknessMin = min;
+    if (isNumeric(max)) parameters.iridescenceThicknessMax = max;
+  }
+
+  if (typeof entry.transparent === 'boolean') {
+    parameters.transparent = entry.transparent;
+  } else if (isNumeric(parameters.opacity)) {
+    parameters.transparent = parameters.opacity < 1;
+  }
+
+  const metadata = {
+    categories: Array.isArray(entry.category) ? entry.category : [],
+    tags: Array.isArray(entry.tags) ? entry.tags : [],
+    density: entry.density ?? null,
+    references: Array.isArray(entry.references) ? entry.references : [],
+    images: Array.isArray(entry.images) ? entry.images : [],
+    complexIor: entry.complexIor ?? null,
+    source: 'materials.json',
+  };
+
+  const definition = {
+    id: baseId,
+    setId,
+    label: entry.name ?? entry.label ?? baseId,
+    parameters,
+    metadata,
+    raw: entry,
+  };
+
+  materialLibraryById.set(baseId, definition);
+  materialLibraryById.set(setId, definition);
+
+  return definition;
+}
+
+async function loadMaterialLibraryDefinitions() {
+  const raw = await loadMaterialLibraryRaw();
+  materialLibraryById.clear();
+  const definitions = raw
+    .map((entry) => normaliseLibraryDefinition(entry))
+    .filter((entry) => entry !== null);
+  materialLibraryDefinitions = definitions;
+  return definitions;
+}
+
+let libraryRegistrationPromise = null;
+
+export async function registerLibraryMaterialSets() {
+  if (libraryRegistrationPromise) {
+    return libraryRegistrationPromise;
+  }
+  libraryRegistrationPromise = (async () => {
+    const defs = materialLibraryDefinitions ?? (await loadMaterialLibraryDefinitions());
+    return defs.map((def) => {
+      const set = {
+        id: def.setId,
+        label: def.label,
+        maps: {},
+        parameters: def.parameters,
+        metadata: def.metadata,
+        source: 'materials.json',
+        libraryDefinition: def,
+      };
+      registerPbrMaterialSet(set);
+      return set;
+    });
+  })();
+  return libraryRegistrationPromise;
+}
+
+function findLibraryDefinition(identifier) {
+  if (!identifier) return null;
+  const direct = materialLibraryById.get(identifier);
+  if (direct) return direct;
+  const slug = slugify(identifier);
+  return materialLibraryById.get(slug) ?? materialLibraryById.get(`pbrlib-${slug}`) ?? null;
+}
+
+async function ensureLibraryDefinitions() {
+  if (materialLibraryDefinitions) return materialLibraryDefinitions;
+  return loadMaterialLibraryDefinitions();
+}
+
+export async function getLibraryMaterials() {
+  const defs = await ensureLibraryDefinitions();
+  await registerLibraryMaterialSets();
+  return defs;
+}
+
+export async function loadLibraryMaterial(identifier, { material, parameters = {} } = {}) {
+  await ensureLibraryDefinitions();
+  await registerLibraryMaterialSets();
+  let definition = findLibraryDefinition(identifier);
+  if (!definition && materialLibraryDefinitions) {
+    definition =
+      materialLibraryDefinitions.find(
+        (def) =>
+          def.id === identifier ||
+          def.setId === identifier ||
+          def.label?.toLowerCase?.() === identifier?.toLowerCase?.(),
+      ) ?? null;
+  }
+  if (!definition) {
+    throw new Error(`loadLibraryMaterial: Unknown material '${identifier}'`);
+  }
+
+  const baseMaterial =
+    material ?? new THREE.MeshPhysicalMaterial({ name: `PBR:${definition.label}` });
+
+  resetPhysicalMaterial(baseMaterial);
+  applyPbrParameters(baseMaterial, definition.parameters);
+  applyPbrParameters(baseMaterial, parameters);
+
+  baseMaterial.userData = {
+    ...(baseMaterial.userData ?? {}),
+    pbrSetId: definition.setId,
+    pbrLabel: definition.label,
+    materialLibrary: {
+      id: definition.id,
+      metadata: definition.metadata,
+    },
+  };
+
+  return baseMaterial;
 }
 
 /**
@@ -186,6 +457,10 @@ export function resetPhysicalMaterial(mat) {
 export function applyPbrParameters(material, parameters = {}) {
   if (!material) return;
 
+  if (parameters.color) {
+    material.color.copy(parseColor(parameters.color, material.color));
+  }
+
   // metallic-roughness / environment
   if (typeof parameters.metalness === 'number') material.metalness = parameters.metalness;
   if (typeof parameters.roughness === 'number') material.roughness = parameters.roughness;
@@ -253,6 +528,10 @@ export function applyPbrParameters(material, parameters = {}) {
   // sheen layer
   if (typeof parameters.sheen === 'number') material.sheen = parameters.sheen;
   if (typeof parameters.sheenRoughness === 'number') material.sheenRoughness = parameters.sheenRoughness;
+  if (parameters.sheenColor) {
+    material.sheenColor ??= new THREE.Color(0xffffff);
+    material.sheenColor.copy(parseColor(parameters.sheenColor, material.sheenColor));
+  }
 
   // anisotropy
   if (typeof parameters.anisotropy === 'number') material.anisotropy = parameters.anisotropy;
@@ -279,6 +558,10 @@ export async function loadPbrMaterial(set, {
 
   // reset the material to defaults
   resetPhysicalMaterial(baseMaterial);
+
+  if (set.parameters) {
+    applyPbrParameters(baseMaterial, set.parameters);
+  }
 
   // load texture maps for each defined role in the set
   const mapEntries = set.maps ?? {};
@@ -309,6 +592,12 @@ export async function loadPbrMaterial(set, {
     ...(baseMaterial.userData ?? {}),
     pbrSetId: set.id,
     pbrLabel: set.label,
+    materialLibrary: set.libraryDefinition
+      ? {
+          id: set.libraryDefinition.id,
+          metadata: set.libraryDefinition.metadata,
+        }
+      : baseMaterial.userData?.materialLibrary ?? null,
   };
 
   return baseMaterial;

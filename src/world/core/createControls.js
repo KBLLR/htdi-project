@@ -1,3 +1,4 @@
+// src/world/createControls.js
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Vector3 } from 'three';
 

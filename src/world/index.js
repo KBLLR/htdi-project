@@ -1,7 +1,7 @@
 // src/world/index.js
 import * as THREE from 'three';
 
-import { ParticleSystem } from '@modules/Particles.js';
+import { ParticleSystem } from '@extras/Particles.js';
 
 import {
   BloomEffect,
@@ -58,6 +58,7 @@ import { createWaterAndGround } from '@world/materials/createWaterGround.js';
 import { SceneRegistry } from '@world/registry/SceneRegistry.js';
 import { setupResize } from '@world/utils/resize.js';
 import { startLoop } from '@world/core/loop.js';
+import { registerLibraryMaterialSets } from '@modules/pbr/pbrMaterialLoader.js';
 
 const FOG_DEFAULTS = {
   enabled: false,
@@ -164,6 +165,11 @@ export async function createExperience() {
 
   const scene = createScene();
   register('scene', 'main', { ref: scene });
+
+  const librarySetsPromise = registerLibraryMaterialSets().catch((error) => {
+    console.warn('[pbr] material library registration failed', error);
+    return [];
+  });
 
   const fogState = normaliseFogState(FOG_DEFAULTS);
   const defaultSpotlightGobo = goboAssets[0]?.id ?? null;
@@ -322,6 +328,39 @@ export async function createExperience() {
     scale: groupKid.scale.toArray(),
   });
 
+  const referenceCubeMaterial = new THREE.MeshBasicMaterial({
+    color: 0x44ffdd,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.25,
+    depthWrite: false,
+  });
+  const referenceCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+  referenceCubeGeometry.computeBoundingBox();
+  referenceCubeGeometry.translate(
+    -(referenceCubeGeometry.boundingBox.max.x + referenceCubeGeometry.boundingBox.min.x) / 2,
+    -(referenceCubeGeometry.boundingBox.max.y + referenceCubeGeometry.boundingBox.min.y) / 2,
+    -(referenceCubeGeometry.boundingBox.max.z + referenceCubeGeometry.boundingBox.min.z) / 2,
+  );
+  const referenceCube = new THREE.Mesh(referenceCubeGeometry, referenceCubeMaterial);
+  referenceCube.name = 'ReferenceCube';
+  referenceCube.position.set(0, 0, 0);
+  scene.add(referenceCube);
+  register('meshes', 'referenceCube', { ref: referenceCube });
+
+  const __cubeBox = new THREE.Box3();
+  const __cubeSize = new THREE.Vector3();
+  function updateReferenceCubeFromObject(object) {
+    if (!object) return;
+    object.updateWorldMatrix(true, true);
+    __cubeBox.setFromObject(object);
+    if (__cubeBox.isEmpty()) return;
+    const size = __cubeBox.getSize(__cubeSize);
+    referenceCube.scale.set(Math.max(size.x * 3, 0.01), Math.max(size.y * 3, 0.01), Math.max(size.z * 3, 0.01));
+  }
+
+  referenceCube.visible = false;
+
   // outer mesh
   const radiusAM = 0.15;
   const segmentsAM = 104;
@@ -329,7 +368,7 @@ export async function createExperience() {
   const alphaGeo = new THREE.SphereGeometry(radiusAM, segmentsAM, ringsAM);
   const outer_Mesh = new THREE.Mesh(alphaGeo, alphaMat);
   outer_Mesh.visible = false;
-  outer_Mesh.scale.set(100, 100, 100);
+  outer_Mesh.scale.set(200, 200, 200);
   outer_Mesh.rotation.x = -Math.PI / 4;
   outer_Mesh.position.y = 0.1;
   outer_Mesh.receiveShadow = true;
@@ -533,6 +572,7 @@ export async function createExperience() {
     }
     nextEntry.object.visible = true;
     nextEntry.onActivate?.();
+    updateReferenceCubeFromObject(nextEntry.object);
     currentCharacterId = id;
     register('characters', 'active', { id, ref: nextEntry.object });
     updateCurrentScene({ character: { id } });
@@ -817,6 +857,8 @@ export async function createExperience() {
   // ⚠️ IMPORTANT:
   // we DO NOT call activateCameraPreset('maxZoomOut') here
   // to avoid TDZ on depthOfFieldEffect. main.js will call it.
+
+  await librarySetsPromise;
 
   return {
     canvas,

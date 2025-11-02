@@ -2,6 +2,17 @@
 // tiny tweak: innerSphere is optional
 const DEFAULT_CUBEMAP_FILES = ['px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png'];
 
+const DEFAULT_WATER_STATE = {
+  alpha: 0.82,
+  waterColor: '#2580c0',
+  sunColor: '#e9f6ff',
+  sunDirection: [0.48, 0.78, 0.36],
+  distortionScale: 1.9,
+  size: 3.2,
+  timeSpeed: 0.14,
+  reflectionIntensity: 0.4,
+};
+
 function normalisePathSegment(segment) {
   if (!segment) return '';
   let value = segment.trim();
@@ -24,11 +35,13 @@ export function createScene(config) {
     id: config.id,
     name: config.name ?? config.id,
     description: config.description ?? '',
+    thumbnail: config.thumbnail ?? null,
     environment: buildEnvironment(config.environment ?? {}),
     alpha: buildAlpha(config.alpha ?? {}),
     kid: buildKid(config.kid ?? {}),
     // innerSphere is optional, but we include the node so UI can still edit it
     innerSphere: config.innerSphere ? buildInnerSphere(config.innerSphere) : null,
+    water: buildWater(config.water ?? {}),
     ui: buildUI(config.ui ?? {}),
     fog: buildFog(config.fog ?? {}),
     lighting: buildLighting(config.lighting ?? {}),
@@ -121,6 +134,35 @@ function buildInnerSphere(innerSphere) {
     emissive: innerSphere?.emissive ?? '#ffffff',
     emissiveIntensity: innerSphere?.emissiveIntensity ?? 2.5,
     opacity: innerSphere?.opacity ?? 0.6,
+  };
+}
+
+function buildWater(water) {
+  const toNumber = (value, fallback) => {
+    const num = Number(value);
+    return Number.isFinite(num) ? num : fallback;
+  };
+
+  const direction = toArray(water?.sunDirection, DEFAULT_WATER_STATE.sunDirection);
+  const parsed = direction.map((component, index) => {
+    const num = Number(component);
+    return Number.isFinite(num) ? num : DEFAULT_WATER_STATE.sunDirection[index];
+  });
+  const length = Math.hypot(parsed[0], parsed[1], parsed[2]) || 1;
+  const normalisedDir = parsed.map((component) => component / length);
+
+  return {
+    alpha: Math.min(Math.max(toNumber(water?.alpha, DEFAULT_WATER_STATE.alpha), 0), 1),
+    waterColor: water?.waterColor ?? DEFAULT_WATER_STATE.waterColor,
+    sunColor: water?.sunColor ?? DEFAULT_WATER_STATE.sunColor,
+    sunDirection: normalisedDir,
+    distortionScale: toNumber(water?.distortionScale, DEFAULT_WATER_STATE.distortionScale),
+    size: toNumber(water?.size, DEFAULT_WATER_STATE.size),
+    timeSpeed: Math.max(0, toNumber(water?.timeSpeed, DEFAULT_WATER_STATE.timeSpeed)),
+    reflectionIntensity: Math.min(
+      Math.max(toNumber(water?.reflectionIntensity, DEFAULT_WATER_STATE.reflectionIntensity), 0),
+      1,
+    ),
   };
 }
 

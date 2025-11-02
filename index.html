@@ -39,6 +39,11 @@
         <!-- Canvas Web GL ------------>
         <canvas as class="webgl" id="container"></canvas>
 
+        <!-- UI Frame Overlay -->
+        <div class="ui-frame ui-frame--landscape" aria-hidden="true">
+            <img class="ui-frame__image" src="/svg/uiframe/001.svg" alt="" />
+        </div>
+
         <!--DATA ASSETS---------------------------------->
 
         <div id="data-assets" style="display: none">
@@ -60,18 +65,6 @@
                 type="audio/ogg"
             />
         </audio>
-
-        <!-- .HEADER -------------------------------------->
-        <header class="header">
-            <!-- LOGO -->
-
-            <!-- HAMBURGER_MENU -->
-            <a class="menu-toggle" href="#">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </a>
-        </header>
 
         <footer class="glass-footer">
             <div class="glass-footer__group" data-label="UI">
@@ -464,7 +457,8 @@
                             Project Information
                         </h1>
                         <p class="modal__lede">
-                            An interactive WebGL experience with various 3D scenes and creative coding experiments.
+                            An interactive WebGL experience with various 3D
+                            scenes and creative coding experiments.
                         </p>
                     </header>
                 </section>

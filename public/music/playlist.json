@@ -23,6 +23,14 @@
       "duration": "5:57",
       "file": "/music/spin_around.wav",
       "description": "An uplifting and energetic track with a driving beat."
+    },
+    {
+      "id": "samba-nights",
+      "title": "Samba Nights",
+      "artist": "KBLLR",
+      "duration": "3:04",
+      "file": "/music/noches_de_samba.wav",
+      "description": "An uplifting and energetic track with a driving beat."
     }
   ]
 }

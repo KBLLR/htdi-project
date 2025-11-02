@@ -5,17 +5,15 @@ import 'tippy.js/animations/scale.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 import 'tippy.js/themes/translucent.css';
-
 import tippy, { animateFill } from 'tippy.js';
-import { Easing } from '@tweenjs/tween.js';
 
 import { EventBus } from '@shared/EventBus.js';
 
-import { initialiseDeploymentTimeline } from '@modules/deploymentTimelineUI.js';
+import { initialiseDeploymentTimeline } from '@history/deploymentTimelineUI.js';
 import { getScenes, applyScene, setSceneContext, getActiveSceneId } from '@world/sceneManager.js';
 import { initialiseScenePicker } from '@modules/scenePickerUI.js';
-import { initDeploymentViewer } from '@modules/deploymentViewer.js';
-import { initialiseMusicPlayer } from '@modules/musicPlayerUI.js';
+import { initDeploymentViewer } from '@history/deploymentViewer.js';
+import { initialiseMusicPlayer } from '@music/musicPlayerUI.js';
 
 import { ActionsBarManager } from '@modules/actionsBar/ActionsBarManager.js';
 import { initTasksAction } from '@modules/actionsBar/actions/tasksAction.js';
@@ -24,7 +22,7 @@ import { initMusicAction } from '@modules/actionsBar/actions/musicAction.js';
 import { initSceneGeneratorAction } from '@modules/actionsBar/actions/sceneGeneratorAction.js';
 import { initAIAction } from '@modules/actionsBar/actions/aiAction.js';
 import { initDataAction } from '@modules/actionsBar/actions/dataAction.js';
-import { initDeploymentTimelineOverlay } from '@modules/deploymentTimelineOverlay.js';
+import { initDeploymentTimelineOverlay } from '@history/deploymentTimelineOverlay.js';
 import { wireModalButtons } from '@modules/wireModalButtons.js';
 import { createCustomCursor } from '@modules/customCursor.js';
 
@@ -68,36 +66,37 @@ const updateTooltipContent = (el, content) => {
 
 document.addEventListener('DOMContentLoaded', async () => {
   const eventBus = new EventBus();
+  const uiFrame = document.querySelector('.ui-frame');
+
+  const applyUiFrameOrientation = () => {
+    if (!uiFrame) return;
+    const { innerWidth: width, innerHeight: height } = window;
+    const shouldUsePortrait = height >= width;
+    uiFrame.classList.toggle('ui-frame--portrait', shouldUsePortrait);
+    uiFrame.classList.toggle('ui-frame--landscape', !shouldUsePortrait);
+  };
+
+  applyUiFrameOrientation();
+  window.addEventListener('resize', applyUiFrameOrientation, { passive: true });
+  window.addEventListener('orientationchange', applyUiFrameOrientation);
+  if (import.meta?.hot) {
+    import.meta.hot.dispose(() => {
+      window.removeEventListener('resize', applyUiFrameOrientation);
+      window.removeEventListener('orientationchange', applyUiFrameOrientation);
+    });
+  }
+
   const experience = await createExperience();
 
   // ✅ now safe: depthOfFieldEffect is initialized inside createExperience
   experience.activateCameraPreset('maxZoomOut');
 
-  const {
-    scene,
-    renderer,
-    alphaMaterial,
-    innerSphereMaterial,
-    activateCameraPreset,
-  } = experience;
+  const { scene, renderer, alphaMaterial, innerSphereMaterial } = experience;
 
   const actionsBarTarget = document.querySelector('.glass-footer');
   actionsBarTarget.classList.add('is-ready');
 
-  const modalService = initModalService(eventBus, {
-    focusCameraOnModal: () => {
-      activateCameraPreset('focus', {
-        camera: { duration: 1800, easing: Easing.Cubic.InOut },
-        dof: { duration: 1500 },
-      });
-    },
-    resetCameraFromModal: () => {
-      activateCameraPreset('overview', {
-        camera: { duration: 1600, easing: Easing.Cubic.InOut },
-        dof: { duration: 1400 },
-      });
-    },
-  });
+  const modalService = initModalService(eventBus);
 
   if (import.meta.env.DEV) {
     import('@modules/TweakpaneManager.js').then(({ default: TweakpaneManager }) => {
@@ -209,6 +208,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   const rebuildScenePicker = (activeScene) => {
+    scenePicker?.dispose?.();
     scenePicker = initialiseScenePicker({
       scenes: getScenes(),
       onSelect: handleSceneSelect,

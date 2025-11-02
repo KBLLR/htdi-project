@@ -105,6 +105,12 @@ const CONFIG = {
             // Environment controls will be added dynamically
           ],
         },
+        {
+          type: 'folder',
+          title: 'Water',
+          expanded: false,
+          children: [],
+        },
       ],
     },
     {

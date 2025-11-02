@@ -15,6 +15,7 @@ import {
   getRuntimeScenes,
   addRuntimeScene,
   ensureUniqueSceneId,
+  removeRuntimeScene,
 } from '@world/runtimeScenes.js';
 
 // ─────────────────────────────────────────────────────────────
@@ -30,6 +31,22 @@ const THREE_CONSTANTS = {
 };
 
 const LOCAL_PRESET_KEY = 'htdi.scene.presets.v1';
+const THUMBNAIL_STORAGE_KEY = 'htdi:scene-thumbnails.v1';
+const METADATA_STORAGE_KEY = 'htdi:scene-metadata.v1';
+
+let thumbnailCache = null;
+let sceneMetadataCache = null;
+
+const WATER_DEFAULTS = {
+  alpha: 0.82,
+  waterColor: '#2580c0',
+  sunColor: '#e9f6ff',
+  sunDirection: [0.48, 0.78, 0.36],
+  distortionScale: 1.9,
+  size: 3.2,
+  timeSpeed: 0.14,
+  reflectionIntensity: 0.4,
+};
 
 function sanitiseKey(value) {
   if (value === null || value === undefined) return '';
@@ -38,6 +55,191 @@ function sanitiseKey(value) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
+}
+
+function readThumbnailMap() {
+  if (thumbnailCache) return thumbnailCache;
+  if (typeof window === 'undefined') {
+    thumbnailCache = {};
+    return thumbnailCache;
+  }
+  try {
+    const raw = window.localStorage.getItem(THUMBNAIL_STORAGE_KEY);
+    if (!raw) {
+      thumbnailCache = {};
+    } else {
+      thumbnailCache = JSON.parse(raw) ?? {};
+    }
+  } catch (error) {
+    console.warn('[sceneManager] failed to read thumbnail overrides', error);
+    thumbnailCache = {};
+  }
+  return thumbnailCache;
+}
+
+function writeThumbnailMap(map) {
+  thumbnailCache = map;
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(THUMBNAIL_STORAGE_KEY, JSON.stringify(map));
+  } catch (error) {
+    console.warn('[sceneManager] failed to persist thumbnail overrides', error);
+  }
+}
+
+function readSceneMetadataMap() {
+  if (sceneMetadataCache) return sceneMetadataCache;
+  if (typeof window === 'undefined') {
+    sceneMetadataCache = {};
+    return sceneMetadataCache;
+  }
+  try {
+    const raw = window.localStorage.getItem(METADATA_STORAGE_KEY);
+    if (!raw) {
+      sceneMetadataCache = {};
+    } else {
+      const parsed = JSON.parse(raw);
+      sceneMetadataCache = typeof parsed === 'object' && parsed !== null ? parsed : {};
+    }
+  } catch (error) {
+    console.warn('[sceneManager] failed to read scene metadata overrides', error);
+    sceneMetadataCache = {};
+  }
+  return sceneMetadataCache;
+}
+
+function writeSceneMetadataMap(map) {
+  sceneMetadataCache = map;
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(METADATA_STORAGE_KEY, JSON.stringify(map));
+  } catch (error) {
+    console.warn('[sceneManager] failed to persist scene metadata overrides', error);
+  }
+}
+
+export function getSceneThumbnail(sceneId) {
+  if (!sceneId) return null;
+  const map = readThumbnailMap();
+  return map[sceneId] ?? null;
+}
+
+export function setSceneThumbnail(sceneId, thumbnailDataUrl) {
+  if (!sceneId) return;
+  const map = { ...readThumbnailMap() };
+  if (thumbnailDataUrl) {
+    map[sceneId] = thumbnailDataUrl;
+  } else {
+    delete map[sceneId];
+  }
+  writeThumbnailMap(map);
+
+  if (currentSceneState?.id === sceneId) {
+    currentSceneState.thumbnail = thumbnailDataUrl ?? null;
+    updateCurrentScene({ thumbnail: thumbnailDataUrl ?? null });
+  }
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('htdi:scene-thumbnail-changed', {
+        detail: { id: sceneId, thumbnail: thumbnailDataUrl ?? null },
+      }),
+    );
+  }
+}
+
+export function getSceneMetadata(sceneId) {
+  if (!sceneId) return null;
+  const map = readSceneMetadataMap();
+  const entry = map[sceneId];
+  if (!entry) return null;
+  return { ...entry };
+}
+
+export function setSceneMetadata(sceneId, overrides) {
+  if (!sceneId) return;
+  const map = { ...readSceneMetadataMap() };
+  if (!overrides) {
+    delete map[sceneId];
+  } else {
+    const next = { ...(map[sceneId] ?? {}) };
+    if (Object.prototype.hasOwnProperty.call(overrides, 'name')) {
+      const value = overrides.name;
+      if (typeof value === 'string' && value.trim()) {
+        next.name = value.trim();
+      } else {
+        delete next.name;
+      }
+    }
+    if (Object.prototype.hasOwnProperty.call(overrides, 'description')) {
+      const value = overrides.description;
+      if (typeof value === 'string' && value.trim()) {
+        next.description = value.trim();
+      } else {
+        delete next.description;
+      }
+    }
+    if (Object.keys(next).length === 0) {
+      delete map[sceneId];
+    } else {
+      map[sceneId] = next;
+    }
+  }
+  writeSceneMetadataMap(map);
+
+  if (currentSceneState?.id === sceneId) {
+    if (map[sceneId]?.name) {
+      currentSceneState.name = map[sceneId].name;
+    }
+    if (Object.prototype.hasOwnProperty.call(map, sceneId)) {
+      if (Object.prototype.hasOwnProperty.call(map[sceneId], 'description')) {
+        currentSceneState.description = map[sceneId].description ?? '';
+      }
+    }
+  }
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('htdi:scene-metadata-changed', {
+        detail: { id: sceneId, metadata: map[sceneId] ?? null },
+      }),
+    );
+  }
+}
+
+export function deleteScene(sceneId) {
+  if (!sceneId) return false;
+  let changed = false;
+  const presets = readLocalPresets();
+  Object.keys(presets).forEach((key) => {
+    const preset = presets[key];
+    if (key === sceneId || preset?.id === sceneId) {
+      delete presets[key];
+      changed = true;
+    }
+  });
+  if (changed) {
+    writeLocalPresets(presets);
+  }
+  const runtimeRemoved = removeRuntimeScene(sceneId);
+
+  const thumbs = { ...readThumbnailMap() };
+  if (thumbs[sceneId]) {
+    delete thumbs[sceneId];
+    writeThumbnailMap(thumbs);
+  }
+
+  const metaMap = { ...readSceneMetadataMap() };
+  if (metaMap[sceneId]) {
+    delete metaMap[sceneId];
+    writeSceneMetadataMap(metaMap);
+  }
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('htdi:scene-deleted', { detail: { id: sceneId } }));
+  }
+
+  return runtimeRemoved || changed;
 }
 
 function ensureDirectoryPath(path, fallback = '') {
@@ -190,13 +392,18 @@ function findSceneById(sceneId) {
 // PUBLIC: list scenes
 // ─────────────────────────────────────────────────────────────
 export function getScenes() {
-  return getAllScenes().map(({ id, name, description, thumbnail, metadata }) => ({
-    id,
-    name,
-    description,
-    thumbnail: thumbnail ?? null,
-    metadata: metadata ?? null,
-  }));
+  const thumbnails = readThumbnailMap();
+  const metadataOverrides = readSceneMetadataMap();
+  return getAllScenes().map(({ id, name, description, thumbnail, metadata }) => {
+    const override = metadataOverrides[id] ?? {};
+    return {
+      id,
+      name: override.name ?? name,
+      description: override.description ?? description,
+      thumbnail: thumbnails[id] ?? thumbnail ?? (id ? `/thumbnails/${id}.png` : null),
+      metadata: metadata ?? null,
+    };
+  });
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -549,6 +756,10 @@ export async function applyScene(sceneId, overrideContext) {
   }
 
   currentSceneState = cloneScene(sceneDef);
+  const overrideThumb = getSceneThumbnail(currentSceneState.id);
+  if (overrideThumb) {
+    currentSceneState.thumbnail = overrideThumb;
+  }
   currentSceneMeta.environment = cloneScene(sceneDef.environment);
 
   const token = ++activeSceneToken;
@@ -625,7 +836,8 @@ export async function applyScene(sceneId, overrideContext) {
   await applyAlphaTexture(sceneDef, token);
 
   // ── INNER SPHERE (optional) ─────────────────────
-  await applyInnerSphereSettings(sceneDef, environmentTexture, token);
+  await applyInnerSphereSettings(sceneDef, environmentTexture);
+  applyWaterState(sceneDef.water);
 
   // ── KID SKIN / AVATAR ───────────────────────────
   await applyKidTextures(sceneDef, environmentTexture, token);
@@ -725,7 +937,7 @@ async function applyAlphaTexture(sceneDef, token) {
 // ─────────────────────────────────────────────────────────────
 // APPLY: INNER SPHERE (now OPTIONAL)
 // ─────────────────────────────────────────────────────────────
-async function applyInnerSphereSettings(sceneDef, environmentTexture, token) {
+async function applyInnerSphereSettings(sceneDef, environmentTexture) {
   // old scenes might have { innerSphere: { color, opacity } }
   if (!sceneDef.innerSphere) return;
   if (!sharedContext.innerSphereMaterial) return;
@@ -742,6 +954,49 @@ async function applyInnerSphereSettings(sceneDef, environmentTexture, token) {
     registerEnvironmentTarget(mat);
   }
   mat.needsUpdate = true;
+}
+
+// ─────────────────────────────────────────────────────────────
+// APPLY: WATER SHADER
+// ─────────────────────────────────────────────────────────────
+function applyWaterState(config) {
+  const waterMesh = sharedContext.scene?.getObjectByName?.('water');
+  if (!waterMesh) return;
+
+  const state = normaliseWaterState(config);
+  const uniforms = waterMesh.material?.uniforms ?? {};
+
+  if (uniforms.alpha?.value !== undefined) {
+    uniforms.alpha.value = state.alpha;
+  }
+  if (uniforms.distortionScale?.value !== undefined) {
+    uniforms.distortionScale.value = state.distortionScale;
+  }
+  if (uniforms.size?.value !== undefined) {
+    uniforms.size.value = state.size;
+  }
+  if (uniforms.waterColor?.value?.set) {
+    uniforms.waterColor.value.set(state.waterColor);
+  }
+  if (uniforms.sunColor?.value?.set) {
+    uniforms.sunColor.value.set(state.sunColor);
+  }
+  if (uniforms.sunDirection?.value?.set) {
+    uniforms.sunDirection.value.set(state.sunDirection[0], state.sunDirection[1], state.sunDirection[2]);
+    uniforms.sunDirection.value.normalize();
+  }
+
+  const meta = waterMesh.userData?.htdiWater;
+  if (meta?.state) {
+    meta.state.timeSpeed = state.timeSpeed;
+    meta.state.reflectionIntensity = state.reflectionIntensity;
+  }
+
+  if (waterMesh.material) {
+    waterMesh.material.needsUpdate = true;
+  }
+
+  updateCurrentScene({ water: state });
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -963,6 +1218,9 @@ export function updateCurrentScene(partial = {}) {
   if (partial.app !== undefined) {
     next.app = mergeSection(next.app, partial.app);
   }
+  if (partial.water !== undefined) {
+    next.water = mergeSection(next.water, partial.water);
+  }
 
   currentSceneState = next;
 }
@@ -988,6 +1246,66 @@ function mergeSection(target, source) {
     return base;
   }
   return source;
+}
+
+function normaliseWaterState(input = {}) {
+  const candidate = typeof input === 'object' && input !== null ? input : {};
+  const toNumber = (value, fallback) => {
+    const num = Number(value);
+    return Number.isFinite(num) ? num : fallback;
+  };
+
+  const alpha = THREE.MathUtils.clamp(toNumber(candidate.alpha, WATER_DEFAULTS.alpha), 0, 1);
+  const distortionScale = toNumber(candidate.distortionScale, WATER_DEFAULTS.distortionScale);
+  const size = toNumber(candidate.size, WATER_DEFAULTS.size);
+  const timeSpeed = Math.max(0, toNumber(candidate.timeSpeed, WATER_DEFAULTS.timeSpeed));
+  const reflectionIntensity = THREE.MathUtils.clamp(
+    toNumber(candidate.reflectionIntensity, WATER_DEFAULTS.reflectionIntensity),
+    0,
+    1,
+  );
+
+  return {
+    alpha,
+    waterColor: normaliseColorValue(candidate.waterColor, WATER_DEFAULTS.waterColor),
+    sunColor: normaliseColorValue(candidate.sunColor, WATER_DEFAULTS.sunColor),
+    sunDirection: normaliseWaterDirection(candidate.sunDirection),
+    distortionScale,
+    size,
+    timeSpeed,
+    reflectionIntensity,
+  };
+}
+
+function normaliseWaterDirection(value) {
+  let components;
+  if (Array.isArray(value) && value.length === 3) {
+    components = value;
+  } else if (value && typeof value === 'object') {
+    components = [value.x, value.y, value.z];
+  } else {
+    components = WATER_DEFAULTS.sunDirection;
+  }
+  const parsed = components.map((component, index) => {
+    const num = Number(component);
+    return Number.isFinite(num) ? num : WATER_DEFAULTS.sunDirection[index];
+  });
+  const length = Math.hypot(parsed[0], parsed[1], parsed[2]) || 1;
+  return parsed.map((component) => component / length);
+}
+
+function normaliseColorValue(value, fallback) {
+  if (typeof value === 'string' && value.trim()) {
+    return value.trim();
+  }
+  if (typeof value === 'number') {
+    return `#${value.toString(16).padStart(6, '0')}`;
+  }
+  if (value?.isColor || value instanceof THREE.Color) {
+    const color = value.isColor ? value : new THREE.Color(value);
+    return `#${color.getHexString().padStart(6, '0')}`;
+  }
+  return fallback;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -1019,20 +1337,48 @@ function writeLocalPresets(map) {
  * If snapshot is omitted, it saves the *current* scene state.
  */
 export function saveScenePreset(name, snapshot) {
-  const key = name?.trim();
-  if (!key) {
-    console.warn('[sceneManager] saveScenePreset called without a name');
+  let presetName = null;
+  let sceneData = snapshot ? cloneScene(snapshot) : null;
+
+  if (typeof name === 'string') {
+    presetName = name.trim();
+  } else if (name && typeof name === 'object') {
+    sceneData = cloneScene(name);
+    presetName = typeof name.name === 'string' ? name.name.trim() : name.id ?? null;
+  }
+
+  if (!presetName) {
+    console.warn('[sceneManager] saveScenePreset called without a valid name');
     return;
   }
-  const data = snapshot ? cloneScene(snapshot) : getCurrentSceneState();
+
+  const data = sceneData ?? getCurrentSceneState();
   if (!data) {
     console.warn('[sceneManager] saveScenePreset: no current scene to save');
     return;
   }
+  const baseId = data.id ? sanitiseKey(data.id) : sanitiseKey(presetName);
+  const sceneId = data.id ? baseId : ensureUniqueSceneId(baseId);
+  data.id = sceneId;
   const presets = readLocalPresets();
-  presets[key] = data;
+  presets[presetName] = data;
   writeLocalPresets(presets);
-  console.log('[sceneManager] preset saved:', key, data);
+  setSceneMetadata(sceneId, { name: data.name, description: data.description ?? null });
+  let runtimeScene = null;
+  try {
+    runtimeScene = addRuntimeScene({ ...data, id: sceneId });
+  } catch (error) {
+    console.warn('[sceneManager] failed to register runtime scene', error);
+  }
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('htdi:scenes-changed', {
+        detail: { scene: runtimeScene ?? data },
+      }),
+    );
+  }
+  console.log('[sceneManager] preset saved:', presetName, data);
+  return runtimeScene ?? data;
 }
 
 /**
@@ -1045,6 +1391,11 @@ export async function loadScenePreset(name) {
   const presets = readLocalPresets();
   const preset = presets[key];
   if (!preset) {
+    const scene = findSceneById(key);
+    if (scene) {
+      await applyScene(scene.id);
+      return;
+    }
     console.warn('[sceneManager] loadScenePreset: not found', key);
     return;
   }

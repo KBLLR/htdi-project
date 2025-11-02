@@ -1053,6 +1053,11 @@ export default [
         "type": "audio"
       },
       {
+        "name": "music_noches_de_samba_wav",
+        "source": "/music/noches_de_samba.wav",
+        "type": "audio"
+      },
+      {
         "name": "music_playlist_json",
         "source": "/music/playlist.json",
         "type": "json"
@@ -1313,6 +1318,11 @@ export default [
     "data": {},
     "items": [
       {
+        "name": "thumbnails_blueverse_png",
+        "source": "/thumbnails/blueverse.png",
+        "type": "image"
+      },
+      {
         "name": "thumbnails_era_png",
         "source": "/thumbnails/era.png",
         "type": "image"
@@ -1320,6 +1330,11 @@ export default [
       {
         "name": "thumbnails_omega_png",
         "source": "/thumbnails/omega.png",
+        "type": "image"
+      },
+      {
+        "name": "thumbnails_thegrid_png",
+        "source": "/thumbnails/thegrid.png",
         "type": "image"
       }
     ]

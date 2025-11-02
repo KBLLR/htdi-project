@@ -1,10 +1,8 @@
-import { Easing } from '@tweenjs/tween.js';
-
 import { EventBus } from '@shared/EventBus.js';
 
-import { initialiseDeploymentTimeline } from '@modules/deploymentTimelineUI.js';
-import { initDeploymentViewer } from '@modules/deploymentViewer.js';
-import { initialiseMusicPlayer } from '@modules/musicPlayerUI.js';
+import { initialiseDeploymentTimeline } from '@history/deploymentTimelineUI.js';
+import { initDeploymentViewer } from '@history/deploymentViewer.js';
+import { initialiseMusicPlayer } from '@music/musicPlayerUI.js';
 import { setupSoundButton } from '@modules/soundButtonUI.js';
 import { ActionsBarManager } from '@modules/actionsBar/ActionsBarManager.js';
 import { initDevlogAction } from '@modules/actionsBar/actions/devlogAction.js';
@@ -14,7 +12,7 @@ import { initMusicAction } from '@modules/actionsBar/actions/musicAction.js';
 import { initSceneGeneratorAction } from '@modules/actionsBar/actions/sceneGeneratorAction.js';
 import { initAIAction } from '@modules/actionsBar/actions/aiAction.js';
 import { initDataAction } from '@modules/actionsBar/actions/dataAction.js';
-import { initDeploymentTimelineOverlay } from '@modules/deploymentTimelineOverlay.js';
+import { initDeploymentTimelineOverlay } from '@history/deploymentTimelineOverlay.js';
 import { wireModalButtons } from '@modules/wireModalButtons.js';
 import { initModalService } from '@modules/modalService.js';
 import { initialiseScenePicker } from '@modules/scenePickerUI.js';
@@ -80,13 +78,7 @@ export function bootstrapApp({ experience, updateTooltipContent, customCursor })
 
   console.log('Experience object after creation:', experience);
 
-  const {
-    scene,
-    renderer,
-    alphaMaterial,
-    innerSphereMaterial,
-    activateCameraPreset,
-  } = experience;
+  const { scene, renderer, alphaMaterial, innerSphereMaterial } = experience;
 
   const actionsBarTarget = document.querySelector('.glass-footer');
   if (!actionsBarTarget) {
@@ -99,20 +91,7 @@ export function bootstrapApp({ experience, updateTooltipContent, customCursor })
   // Reveal the footer once the experience is ready.
   actionsBarTarget.classList.add('is-ready');
 
-  const modalService = initModalService(eventBus, {
-    focusCameraOnModal: () => {
-      activateCameraPreset('focus', {
-        camera: { duration: 1800, easing: Easing.Cubic.InOut },
-        dof: { duration: 1500 },
-      });
-    },
-    resetCameraFromModal: () => {
-      activateCameraPreset('overview', {
-        camera: { duration: 1600, easing: Easing.Cubic.InOut },
-        dof: { duration: 1400 },
-      });
-    },
-  });
+  const modalService = initModalService(eventBus);
 
   if (import.meta.env.DEV) {
     import('@modules/TweakpaneManager.js')
