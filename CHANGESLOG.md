@@ -1,5 +1,16 @@
 # Changelog
 
+## refactor: postprocessing pipeline refresh
+- Replaced the inlined composer setup with `createPostprocessing.js`, registering effects through the scene registry and keeping a single, shared pipeline.
+- Threaded postprocessing resize and render hooks through the animation loop so the composer tracks pixel ratio updates without duplicating handlers.
+- Verified `postprocessing@6.37.8` remains the latest release, retaining the existing dependency range.
+- Expanded the Tweakpane post-processing panel with a composer toggle, bloom mipmap tuning, depth-of-field focus controls, and FXAA thresholds aligned to the new pipeline order.
+- Enabled Three.js color management/physically correct lighting and force the composer’s effect pass to encode output so ACES tone mapping and sRGB matches the direct renderer.
+
+## feat: tweakpane mobility
+- Default the controls pane to a centered, closed state with larger typography, fade-in/out transitions, and overflow scrolling.
+- Added drag handling on the pane title bar so creators can reposition the UI anywhere on screen without losing subsequent toggles.
+
 ## feat: sculpt circular water feature
 - Replaced the planar ground/water basin with matching circle geometries for a cleaner hero composition.
 - Swapped in the Three.js reflective water shader with animated normals, sun highlights, and fog awareness driven by the main render loop.

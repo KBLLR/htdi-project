@@ -1,112 +1,101 @@
+// src/world/core/loop.js
 import { Clock } from 'three';
-import { Group } from '@tweenjs/tween.js';
+import { createRenderLoop } from './createRenderLoop.js';
 
-const tweenGroup = new Group();
-
-/**
- * Initializes and starts the animation loop for the Three.js experience.
- * @param {object} options - Options for the animation loop.
- * @param {THREE.WebGLRenderer} options.renderer - The Three.js renderer.
- * @param {THREE.Scene} options.scene - The Three.js scene.
- * @param {THREE.Camera} options.camera - The Three.js camera.
- * @param {import('three/examples/jsm/controls/OrbitControls.js').OrbitControls} options.controls - The OrbitControls instance.
- * @param {import('postprocessing').EffectComposer} options.composer - The Postprocessing EffectComposer.
- * @param {THREE.Mesh} options.outerMesh - The outer mesh object to animate.
- * @param {function(number): void} options.updateRotatingLights - Function to update rotating lights.
- * @param {object} options.mixers - Object containing animation mixers (kid, cFlow, kid2).
- */
 export function startLoop({
+  renderer,
   scene,
   camera,
-  controls,
-  composer,
-  outerMesh,
-  updateRotatingLights,
-  mixers,
-  particles,
-  frameMonitors: initialFrameMonitors = [],
-}) {
+  controls = null,
+  composer = null,
+  postprocessRender = null,
+  outerMesh = null,
+  updateRotatingLights = null,
+  mixers = null,
+  particles = null,
+  frameMonitors = [],
+} = {}) {
   const clock = new Clock();
-  let previousTime = 0;
-  let animationFrameId = null;
-  const frameMonitors = new Set(initialFrameMonitors.filter(Boolean));
+  const monitorList = Array.isArray(frameMonitors) ? frameMonitors : [];
 
-  const addFrameMonitor = (monitor) => {
-    if (!monitor) return () => {};
-    frameMonitors.add(monitor);
-    return () => frameMonitors.delete(monitor);
-  };
+  const render = () => {
+    const dt = clock.getDelta();
 
-  const removeFrameMonitor = (monitor) => frameMonitors.delete(monitor);
+    // controls
+    if (controls && controls.enabled !== false && typeof controls.update === 'function') {
+      controls.update();
+    }
 
-  const callMonitors = (method, payload) => {
-    for (const monitor of frameMonitors) {
-      try {
-        monitor?.[method]?.(payload);
-      } catch (error) {
-        console.warn(`Frame monitor ${method} failed`, error);
+    // lights
+    if (typeof updateRotatingLights === 'function') {
+      updateRotatingLights(dt);
+    }
+
+    // mixers
+    if (mixers && typeof mixers === 'object') {
+      for (const key in mixers) {
+        const mixer = mixers[key];
+        if (mixer && typeof mixer.update === 'function') {
+          mixer.update(dt);
+        }
       }
     }
-  };
 
-  const tick = () => {
-    const elapsedTime = clock.getElapsedTime();
-    const deltaTime = elapsedTime - previousTime;
-    previousTime = elapsedTime;
+    // particles
+    if (particles && typeof particles.update === 'function') {
+      particles.update(dt);
+    }
 
-    callMonitors('begin', { elapsedTime, deltaTime });
+    // frame monitors (water, FBOs…)
+    for (const monitor of monitorList) {
+      if (typeof monitor === 'function') {
+        monitor(dt);
+      } else if (monitor && typeof monitor.update === 'function') {
+        monitor.update(dt);
+      }
+    }
 
-    // Update controls
-    controls.update();
+    // render / postprocess
+    if (typeof postprocessRender === 'function') {
+      postprocessRender(dt);
+    } else if (composer) {
+      composer.render(dt);
+    } else if (renderer) {
+      renderer.render(scene, camera);
+    }
 
-    // Update tweens (if any active)
-    tweenGroup.update();
-
-    // Animate outer mesh
+    // optional eye candy
     if (outerMesh) {
-      outerMesh.rotation.y = Math.sin(elapsedTime * 0.01) * 20;
-      outerMesh.rotation.x += 0.005;
+      outerMesh.rotation.y += dt * 0.1;
     }
-
-    // Update rotating lights
-    updateRotatingLights(deltaTime);
-
-    // Update Animation Mixers
-    Object.values(mixers ?? {}).forEach((mixerInstance) => {
-      if (mixerInstance && typeof mixerInstance.update === 'function') {
-        mixerInstance.update(deltaTime);
-      }
-    });
-
-    // Update particles
-    if (particles) {
-      particles.update(elapsedTime);
-    }
-
-    // Render
-    composer.render(scene, camera);
-
-    callMonitors('end', { elapsedTime, deltaTime });
-
-    // Call tick again on the next frame
-    animationFrameId = requestAnimationFrame(tick);
   };
 
-  // Start the loop
-  if (animationFrameId === null) {
-    tick();
-  }
+  const loop = createRenderLoop({
+    render,
+    autoStart: true,
+  });
 
-  const stop = () => {
-    if (animationFrameId) {
-      cancelAnimationFrame(animationFrameId);
-      animationFrameId = null;
+  const addFrameMonitor = (fn) => {
+    if (!fn) return () => {};
+    monitorList.push(fn);
+    return () => {
+      const idx = monitorList.indexOf(fn);
+      if (idx >= 0) monitorList.splice(idx, 1);
+    };
+  };
+
+  const removeFrameMonitor = (fn) => {
+    const idx = monitorList.indexOf(fn);
+    if (idx >= 0) {
+      monitorList.splice(idx, 1);
+      return true;
     }
-    frameMonitors.clear();
+    return false;
   };
 
   return {
-    stop,
+    start: loop.start,
+    stop: loop.stop,
     addFrameMonitor,
     removeFrameMonitor,
   };

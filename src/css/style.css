@@ -1635,54 +1635,6 @@ only screen and (min-resolution: 458dpi),
 only screen and (min-resolution: 3dppx) {}
 
 /* Tweakpane Fullscreen Styles */
-.tp-dfwv {
-    position: fixed !important;
-    top: 0 !important;
-    /* Dock to top-left */
-    left: 0 !important;
-    width: 100% !important;
-    height: 0 !important;
-    /* Initially closed */
-    max-height: 50vh;
-    /* Max height when open */
-    z-index: 9999 !important;
-    pointer-events: none;
-    /* Allow interaction with elements below by default */
-    background-color: var(--tp-base-background-color);
-    /* Use existing theme variable for transparency */
-    transition: height 0.3s ease-out;
-    /* Smooth transition for height */
-    display: flex !important;
-    justify-content: flex-start !important;
-    align-items: flex-start !important;
-    padding-left: clamp(1.25rem, 4vh, 3rem) !important;
-    padding-right: clamp(1.25rem, 4vh, 3rem) !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-}
-
-.tp-dfwv.expanded {
-    height: 50vh !important;
-    /* Open to half view height */
-    pointer-events: auto !important;
-    /* Enable interaction when expanded */
-}
-
-/* Ensure Tweakpane content is scrollable if it overflows and is interactive */
-.tp-dfwv .tp-rotv {
-    overflow-y: auto !important;
-    height: 100% !important;
-    pointer-events: auto !important;
-    /* Ensure content is interactive */
-    margin-top: 0 !important;
-    margin-left: 0 !important;
-    inset: 0 auto auto clamp(1.25rem, 4vh, 3rem) !important;
-    right: auto !important;
-    top: 0 !important;
-    bottom: auto !important;
-    transform-origin: left center !important;
-}
-
 /* ****************************** /* Retina 3x Media Query */
 @media only screen and (-webkit-min-device-pixel-ratio: 2),
 only screen and (min--moz-device-pixel-ratio: 2),

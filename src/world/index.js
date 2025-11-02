@@ -4,15 +4,6 @@ import * as THREE from 'three';
 import { ParticleSystem } from '@extras/Particles.js';
 
 import {
-  BloomEffect,
-  DepthOfFieldEffect,
-  EffectComposer,
-  EffectPass,
-  RenderPass,
-  FXAAEffect,
-} from 'postprocessing';
-
-import {
   loadVideoTextureAsset,
   setKTX2Loader,
   loadTextureAtlasImage,
@@ -30,7 +21,7 @@ import {
   getEnvironmentIntensity,
   saveScenePreset,
   getCurrentSceneState,
-} from './sceneManager.js';
+} from '@world/sceneManager.js';
 
 import { createScene } from '@world/core/createScene.js';
 import {
@@ -59,6 +50,7 @@ import { SceneRegistry } from '@world/registry/SceneRegistry.js';
 import { setupResize } from '@world/utils/resize.js';
 import { startLoop } from '@world/core/loop.js';
 import { registerLibraryMaterialSets } from '@modules/pbr/pbrMaterialLoader.js';
+import { createPostProcessing } from '@world/postprocessing/createPostprocessing.js';
 
 const FOG_DEFAULTS = {
   enabled: false,
@@ -157,8 +149,37 @@ function formatColorIfAvailable(color) {
   return null;
 }
 
+// ensure controls cannot be undefined
+function ensureControls(maybeControls, camera) {
+  if (maybeControls) return maybeControls;
+  const dummyTarget = new THREE.Vector3();
+  return {
+    enabled: true,
+    enableDamping: false,
+    dampingFactor: 0.1,
+    autoRotate: false,
+    autoRotateSpeed: 0,
+    enableZoom: true,
+    minDistance: 0.1,
+    maxDistance: 50,
+    minPolarAngle: 0,
+    maxPolarAngle: Math.PI,
+    target: dummyTarget,
+    update: () => {},
+    object: camera,
+  };
+}
+
 export async function createExperience() {
-  const canvas = document.querySelector('canvas.webgl');
+  const canvas =
+    document.querySelector('canvas.webgl') ||
+    document.getElementById('container') ||
+    document.querySelector('#container');
+
+  if (!canvas) {
+    throw new Error('createExperience: cannot find canvas');
+  }
+
   const sceneRegistry = new SceneRegistry();
   const register = sceneRegistry.register.bind(sceneRegistry);
   window.sceneRegistry = sceneRegistry.getAll();
@@ -178,7 +199,6 @@ export async function createExperience() {
     gobo: defaultSpotlightGobo ? { id: defaultSpotlightGobo } : null,
   });
 
-  // camera from presets
   const camPreset = CAMERA_PRESETS.maxZoomOut;
   const camera = createCamera(
     camPreset.fov,
@@ -199,6 +219,8 @@ export async function createExperience() {
   });
 
   const renderer = createRenderer(canvas);
+  const safeShadowMap = renderer.shadowMap ? { enabled: !!renderer.shadowMap.enabled, type: 'PCFSoftShadowMap' } : null;
+
   register('renderer', 'main', {
     ref: renderer,
     config: {
@@ -206,51 +228,75 @@ export async function createExperience() {
       outputColorSpace: 'SRGBColorSpace',
       toneMapping: 'ACESFilmicToneMapping',
       toneMappingExposure: renderer.toneMappingExposure,
-      shadowMap: {
-        enabled: renderer.shadowMap.enabled,
-        type: 'PCFSoftShadowMap',
-      },
+      shadowMap: safeShadowMap,
       clearColor: 0x000000,
     },
   });
 
-  // KTX2
   const ktx2Loader = new KTX2Loader();
   ktx2Loader.setTranscoderPath('/basis/');
-  ktx2Loader.detectSupport(renderer);
+  try {
+    if (!renderer?.extensions?.has) {
+      renderer?.getContext?.();
+    }
+    if (renderer?.extensions?.has || renderer?.capabilities) {
+      ktx2Loader.detectSupport(renderer);
+    } else {
+      console.warn('[ktx2] renderer does not expose extensions API; skipping automatic support detection');
+    }
+  } catch (error) {
+    console.warn('[ktx2] detectSupport failed; decoder fallback disabled', error);
+  }
   setKTX2Loader(ktx2Loader);
 
-  // atlases
   const goboAtlasTexture = loadTextureAtlasImage('texture:goboAtlas', '/textureAtlas.webp');
   const goboAtlasJson = await loadTextureAtlasJson('json:goboAtlas', '/textureAtlas.json');
   const particleAtlasTexture = loadTextureAtlasImage('texture:particleAtlas', '/particleAtlas.webp');
   const particleAtlasJson = await loadTextureAtlasJson('json:particleAtlas', '/particleAtlas.json');
 
-  // controls
-  const controls = createControls(camera, canvas);
+  const rawControls = createControls?.(camera, canvas);
+  const controls = ensureControls(rawControls, camera);
+
   controls.maxDistance = 12.0;
-  applyControlsState(controls, 'maxZoomOut');
+  applyControlsState?.(controls, 'maxZoomOut');
+
   register('controls', 'orbit', {
-    enabled: controls.enabled,
-    enableDamping: controls.enableDamping,
-    dampingFactor: controls.dampingFactor,
-    autoRotate: controls.autoRotate,
-    autoRotateSpeed: controls.autoRotateSpeed,
-    enableZoom: controls.enableZoom,
-    minDistance: controls.minDistance,
-    maxDistance: controls.maxDistance,
-    minPolarAngle: controls.minPolarAngle,
-    maxPolarAngle: controls.maxPolarAngle,
-    target: controls.target.toArray(),
+    enabled: Boolean(controls.enabled),
+    enableDamping: Boolean(controls.enableDamping),
+    dampingFactor: Number(controls.dampingFactor ?? 0.1),
+    autoRotate: Boolean(controls.autoRotate),
+    autoRotateSpeed: Number(controls.autoRotateSpeed ?? 0),
+    enableZoom: Boolean(controls.enableZoom),
+    minDistance: Number(controls.minDistance ?? 0.1),
+    maxDistance: Number(controls.maxDistance ?? 50),
+    minPolarAngle: Number(controls.minPolarAngle ?? 0),
+    maxPolarAngle: Number(controls.maxPolarAngle ?? Math.PI),
+    target: controls.target?.toArray ? controls.target.toArray() : [0, 0, 0],
   });
 
-  setupResize(camera, renderer);
+  const postprocessing = createPostProcessing({
+    renderer,
+    scene,
+    camera,
+    register,
+  });
 
-  // lights
+  const depthOfFieldEffect = postprocessing?.effects?.depthOfField ?? null;
+  const composer = postprocessing?.composer ?? null;
+
+  const teardownResize = setupResize(camera, renderer, {
+    onResize: (w, h) => postprocessing?.resize?.(w, h),
+    onPixelRatioChange: (r) => postprocessing?.setPixelRatio?.(r),
+  });
+
   const { directional, rotatingPoints, update: updateRotatingLights } = attachLightsToScene(scene);
-  directional.visible = false;
-  register('lights', 'directional', { ref: directional });
-  register('lights', 'rotatingPoints', { ref: rotatingPoints });
+  if (directional) {
+    directional.visible = false;
+    register('lights', 'directional', { ref: directional });
+  }
+  if (rotatingPoints) {
+    register('lights', 'rotatingPoints', { ref: rotatingPoints });
+  }
 
   const spotlight = new THREE.SpotLight(
     spotlightState.color,
@@ -270,13 +316,11 @@ export async function createExperience() {
   spotlight.target = spotlightTarget;
   scene.add(spotlight);
 
-  // materials from JSON
   const loadedMaterials = await loadMaterialsFromJson('/materials.json');
   Object.entries(loadedMaterials).forEach(([name, material]) => {
     register('materials', name, { ref: material });
   });
 
-  // video eye
   const videoEyeAsset = loadVideoTextureAsset('video:eye', {
     src: '/vid/eye.webm',
     autoplay: true,
@@ -302,7 +346,6 @@ export async function createExperience() {
     texture: webmEye,
   });
 
-  // default materials
   const alphaMat = createAlphaMaterial();
   register('materials', 'alphaMat', { ref: alphaMat });
 
@@ -317,7 +360,6 @@ export async function createExperience() {
   registerEnvironmentTarget(groundMaterial);
   register('materials', 'groundMaterial', { ref: groundMaterial });
 
-  // root group
   const groupKid = new THREE.Group();
   scene.add(groupKid);
   groupKid.position.set(0, 0, 0);
@@ -361,7 +403,6 @@ export async function createExperience() {
 
   referenceCube.visible = false;
 
-  // outer mesh
   const radiusAM = 0.15;
   const segmentsAM = 104;
   const ringsAM = 104;
@@ -381,7 +422,6 @@ export async function createExperience() {
     rotation: [outer_Mesh.rotation.x, outer_Mesh.rotation.y, outer_Mesh.rotation.z],
   });
 
-  // mixers
   const mixers = {
     kid: null,
     piya: null,
@@ -579,12 +619,10 @@ export async function createExperience() {
     return nextEntry;
   }
 
-  // load default character, non-blocking
   setCharacter('kid').catch((error) => {
     console.error('Failed to load default character "kid"', error);
   });
 
-  // Creative Flow GLTF
   let creativeFlow;
   loadGLTFAsset('gltf:cFlow4', 'models/glb/flow4/cFlow4.glb')
     .then((gltf) => {
@@ -621,7 +659,6 @@ export async function createExperience() {
       console.error('Failed to load creative flow GLTF', error);
     });
 
-  // Water + Ground
   const waterRadius = 16;
   const waterSegments = 128;
   const waterGeometry = new THREE.CircleGeometry(waterRadius, waterSegments);
@@ -799,7 +836,6 @@ export async function createExperience() {
   setFog(serialiseFogState(fogState));
   setSpotlightState(serialiseSpotlightState(spotlightState));
 
-  // Particles
   const particles = new ParticleSystem({
     particleAtlasTexture,
     particleAtlasJson,
@@ -808,37 +844,14 @@ export async function createExperience() {
   scene.add(particles);
   register('particles', 'main', { ref: particles });
 
-  // Post-processing
-  const composer = new EffectComposer(renderer);
-  composer.addPass(new RenderPass(scene, camera));
-
-  const bloomEffect = new BloomEffect({
-    intensity: 0.1,
-  });
-  bloomEffect.enabled = false;
-
-  const depthOfFieldEffect = new DepthOfFieldEffect(camera, {
-    focusDistance: 0.2,
-    focalLength: 0.018,
-    bokehScale: 1.0,
-  });
-  depthOfFieldEffect.enabled = false;
-
-  const fxaaEffect = new FXAAEffect();
-  fxaaEffect.enabled = false;
-
-  composer.addPass(new EffectPass(camera, bloomEffect, depthOfFieldEffect, fxaaEffect));
-  register('postprocessing', 'bloomEffect', { ref: bloomEffect });
-  register('postprocessing', 'depthOfFieldEffect', { ref: depthOfFieldEffect });
-  register('postprocessing', 'fxaaEffect', { ref: fxaaEffect });
-  register('postprocessing', 'composer', { ref: composer });
-
   function activateCameraPreset(presetName, options = {}) {
     const cameraOptions = options.camera ?? options;
     const dofOptions = options.dof ?? options;
-    applyControlsState(controls, presetName);
-    animateCameraPreset(camera, controls, presetName, cameraOptions);
-    animateDepthOfField(depthOfFieldEffect, presetName, dofOptions);
+    applyControlsState?.(controls, presetName);
+    animateCameraPreset?.(camera, controls, presetName, cameraOptions);
+    if (depthOfFieldEffect) {
+      animateDepthOfField?.(depthOfFieldEffect, presetName, dofOptions);
+    }
   }
 
   const loopControls = startLoop({
@@ -847,16 +860,13 @@ export async function createExperience() {
     camera,
     controls,
     composer,
+    postprocessRender: postprocessing?.render ?? null,
     outerMesh: outer_Mesh,
     updateRotatingLights,
     mixers,
     particles,
     frameMonitors,
   });
-
-  // ⚠️ IMPORTANT:
-  // we DO NOT call activateCameraPreset('maxZoomOut') here
-  // to avoid TDZ on depthOfFieldEffect. main.js will call it.
 
   await librarySetsPromise;
 
@@ -867,21 +877,24 @@ export async function createExperience() {
     camera,
     controls,
     composer,
+    postprocessing,
     alphaMaterial: alphaMat,
     innerSphereMaterial,
     register: sceneRegistry.register.bind(sceneRegistry),
-    applyControlsState: applyControlsState.bind(null, controls),
-    animateCameraPreset: animateCameraPreset.bind(null, camera, controls),
-    animateDepthOfField: animateDepthOfField.bind(null, depthOfFieldEffect),
+    applyControlsState: applyControlsState?.bind?.(null, controls) ?? (() => {}),
+    animateCameraPreset: animateCameraPreset?.bind?.(null, camera, controls) ?? (() => {}),
+    animateDepthOfField: depthOfFieldEffect ? animateDepthOfField?.bind?.(null, depthOfFieldEffect) : () => {},
     activateCameraPreset,
-    setDepthOfFieldPreset: setDepthOfFieldPreset.bind(null, depthOfFieldEffect),
+    setDepthOfFieldPreset: depthOfFieldEffect ? setDepthOfFieldPreset?.bind?.(null, depthOfFieldEffect) : () => {},
     stopCameraTween,
     stopDofTween,
-    start: () => { },
+    start: () => {},
     stop: () => {
       loopControls?.stop?.();
+      teardownResize?.();
+      postprocessing?.dispose?.();
     },
-    addFrameMonitor: loopControls?.addFrameMonitor ?? (() => () => { }),
+    addFrameMonitor: loopControls?.addFrameMonitor ?? (() => () => {}),
     removeFrameMonitor: loopControls?.removeFrameMonitor ?? (() => false),
     setEnvironment,
     setEnvironmentIntensity,

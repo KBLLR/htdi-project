@@ -21,22 +21,18 @@
     --tp-label-foreground-color: hsla(0, 0%, 100%, 0.5);
     --tp-monitor-background-color: hsla(0, 0%, 0%, 0.3);
     --tp-monitor-foreground-color: hsla(0, 0%, 100%, 0.3);
+    --tp-base-font-size: 13px;
 }
 
-/* Tweakpane container - docked to the right with 8px gutter */
+/* Tweakpane container */
 .tp-dfwv {
     position: fixed !important;
-    top: 8px !important;
-    right: 8px !important;
-    bottom: 8px !important;
-    left: auto !important;
     transform: none !important;
-    width: min(360px, calc(100vw - 16px)) !important;
-    max-height: calc(100vh - 16px) !important;
+    width: min(360px, calc(100vw - 32px)) !important;
+    max-height: calc(100vh - 32px) !important;
     z-index: 9999 !important;
-    transition: transform 0.3s ease, opacity 0.3s ease !important;
+    transition: opacity 0.25s ease !important;
     border-radius: 12px !important;
-    pointer-events: auto !important;
     display: flex !important;
     flex-direction: column !important;
     overflow: hidden !important;
@@ -45,7 +41,7 @@
 .tp-dfwv.is-hidden {
     opacity: 0 !important;
     pointer-events: none !important;
-    transform: translate3d(calc(100% + 32px), 0, 0) !important;
+    visibility: hidden !important;
 }
 
 .tp-dfwv.is-hidden .tp-rotv {
@@ -58,7 +54,6 @@
     overflow-y: auto !important;
     border-radius: 12px !important;
     padding-right: 4px !important;
-    /* accommodate scrollbar */
     flex: 1 1 auto !important;
 }
 

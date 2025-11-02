@@ -6,7 +6,7 @@ import { get } from 'lodash';
 import TweakpaneConfig from '../config/tweakpane-config';
 import { ParticleSystem } from '@extras/Particles.js';
 import { loadTextureAsset } from '@modules/assetRegistry.js';
-import { initialisePaneShell, hidePaneElement, showPaneElement } from '@modules/tweakpane/paneVisibility.js';
+import { initialisePaneShell, hidePaneElement, showPaneElement, enablePaneDragging } from '@modules/tweakpane/paneVisibility.js';
 import {
   hdrAssets,
   cubemapAssets,
@@ -171,6 +171,10 @@ export default class TweakpaneManager {
     const { title = TweakpaneConfig.title, expanded = TweakpaneConfig.expanded } = opts;
     const pane = (this.pane = new Pane({ title, expanded, container: document.body }));
     initialisePaneShell(pane.element, { hidden: true });
+    const detachDrag = enablePaneDragging(pane.element);
+    if (detachDrag) {
+      this.cleanups.push(detachDrag);
+    }
 
     // logo
     const titleElement = pane.element.querySelector('.tp-rotv_t');
