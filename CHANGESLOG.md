@@ -11,6 +11,13 @@
 - Default the controls pane to a centered, closed state with larger typography, fade-in/out transitions, and overflow scrolling.
 - Added drag handling on the pane title bar so creators can reposition the UI anywhere on screen without losing subsequent toggles.
 
+## feat: lightweight default scene
+- Added the `studio-lite` preset with a 1K HDRI and streamlined kid material for quicker startup.
+- Switched the default scene selection to `studio-lite` so the app loads the lighter environment on boot.
+
+## fix: revive fps monitor
+- Updated the render loop to call `begin/update/end` hooks on frame monitors so the Tweakpane FPS graph receives live samples again.
+
 ## feat: sculpt circular water feature
 - Replaced the planar ground/water basin with matching circle geometries for a cleaner hero composition.
 - Swapped in the Three.js reflective water shader with animated normals, sun highlights, and fog awareness driven by the main render loop.

@@ -1,4 +1,4 @@
-// src/world/graphics/createRenderer.js
+// src/world/core/createRenderer.js
 import {
   WebGLRenderer,
   SRGBColorSpace,

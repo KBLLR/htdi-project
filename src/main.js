@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   };
 
-  const PREFERRED_START_SCENE = 'omega';
+  const PREFERRED_START_SCENE = 'studio-lite';
   const initialScenes = getScenes();
   const defaultSceneId =
     initialScenes.find((s) => s.id === PREFERRED_START_SCENE)?.id ?? initialScenes[0]?.id;

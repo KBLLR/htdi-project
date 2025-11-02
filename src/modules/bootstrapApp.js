@@ -195,7 +195,7 @@ export function bootstrapApp({ experience, updateTooltipContent, customCursor })
   setupInitialScene({
     experience,
     scenePicker,
-    preferredSceneId: 'omega',
+    preferredSceneId: 'studio-lite',
   });
 
   window.addEventListener('htdi:scenes-changed', (event) => {

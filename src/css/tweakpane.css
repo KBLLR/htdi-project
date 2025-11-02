@@ -30,7 +30,7 @@
     transform: none !important;
     width: min(360px, calc(100vw - 32px)) !important;
     max-height: calc(100vh - 32px) !important;
-    z-index: 9999 !important;
+    z-index: 20000 !important;
     transition: opacity 0.25s ease !important;
     border-radius: 12px !important;
     display: flex !important;
