@@ -348,6 +348,20 @@ const CONFIG = {
           expanded: false,
           children: [
             { type: 'binding', path: 'sceneRegistry.meshes.outerMesh.ref.visible', label: 'Outer Mesh Visible' },
+            { type: 'binding', path: 'sceneRegistry.meshes.referenceCube.ref.visible', label: 'Reference Cube Visible' },
+            {
+              type: 'binding',
+              path: 'sceneRegistry.meshes.referenceCube.ref.material.opacity',
+              label: 'Reference Cube Opacity',
+              min: 0,
+              max: 1,
+              step: 0.01,
+            },
+            {
+              type: 'binding',
+              path: 'sceneRegistry.meshes.referenceCube.ref.material.wireframe',
+              label: 'Reference Cube Wireframe',
+            },
             // Models will be added dynamically
           ],
         },

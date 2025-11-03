@@ -18,6 +18,9 @@
 ## fix: revive fps monitor
 - Updated the render loop to call `begin/update/end` hooks on frame monitors so the Tweakpane FPS graph receives live samples again.
 
+## feat: animate reference cube
+- Reused the eye video texture on the reference cube and exposed visibility/opacity controls in the pane so the helper geometry finally renders when toggled on.
+
 ## feat: sculpt circular water feature
 - Replaced the planar ground/water basin with matching circle geometries for a cleaner hero composition.
 - Swapped in the Three.js reflective water shader with animated normals, sun highlights, and fog awareness driven by the main render loop.

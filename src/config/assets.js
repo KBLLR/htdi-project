@@ -1310,6 +1310,11 @@ export default [
         "name": "svg_uiframe_001_svg",
         "source": "/svg/uiframe/001.svg",
         "type": "svg"
+      },
+      {
+        "name": "svg_uiframe_002_svg",
+        "source": "/svg/uiframe/002.svg",
+        "type": "svg"
       }
     ]
   },
@@ -1344,14 +1349,19 @@ export default [
     "data": {},
     "items": [
       {
+        "name": "vid_2_webm",
+        "source": "/vid/2.webm",
+        "type": "video"
+      },
+      {
         "name": "vid_eye_webm",
         "source": "/vid/eye.webm",
         "type": "video"
       },
       {
-        "name": "vid_gif_iris_gif",
-        "source": "/vid/gif/iris.gif",
-        "type": "image"
+        "name": "vid_vantapoint_webm",
+        "source": "/vid/vantapoint.webm",
+        "type": "video"
       }
     ]
   }

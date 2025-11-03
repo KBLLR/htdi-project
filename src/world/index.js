@@ -371,12 +371,19 @@ export async function createExperience() {
   });
 
   const referenceCubeMaterial = new THREE.MeshBasicMaterial({
-    color: 0x44ffdd,
-    wireframe: true,
+    map: webmEye,
+    color: 0xffffff,
+    wireframe: false,
     transparent: true,
-    opacity: 0.25,
+    opacity: 0.6,
     depthWrite: false,
+    depthTest: true,
+    side: THREE.DoubleSide,
   });
+  if (webmEye) {
+    webmEye.needsUpdate = true;
+  }
+  referenceCubeMaterial.needsUpdate = true;
   const referenceCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
   referenceCubeGeometry.computeBoundingBox();
   referenceCubeGeometry.translate(
@@ -387,8 +394,10 @@ export async function createExperience() {
   const referenceCube = new THREE.Mesh(referenceCubeGeometry, referenceCubeMaterial);
   referenceCube.name = 'ReferenceCube';
   referenceCube.position.set(0, 0, 0);
+  referenceCube.scale.set(200, 200, 200);
   scene.add(referenceCube);
   register('meshes', 'referenceCube', { ref: referenceCube });
+  register('materials', 'referenceCubeMaterial', { ref: referenceCubeMaterial });
 
   const __cubeBox = new THREE.Box3();
   const __cubeSize = new THREE.Vector3();
@@ -398,7 +407,11 @@ export async function createExperience() {
     __cubeBox.setFromObject(object);
     if (__cubeBox.isEmpty()) return;
     const size = __cubeBox.getSize(__cubeSize);
-    referenceCube.scale.set(Math.max(size.x * 3, 0.01), Math.max(size.y * 3, 0.01), Math.max(size.z * 3, 0.01));
+    referenceCube.scale.set(
+      Math.max(size.x * 3, 200),
+      Math.max(size.y * 3, 200),
+      Math.max(size.z * 3, 200),
+    );
   }
 
   referenceCube.visible = false;
