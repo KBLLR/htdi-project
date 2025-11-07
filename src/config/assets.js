@@ -1043,6 +1043,11 @@ export default [
     "data": {},
     "items": [
       {
+        "name": "music_Do_mp3",
+        "source": "/music/Do.mp3",
+        "type": "audio"
+      },
+      {
         "name": "music_i_keep_on_walking_mp3",
         "source": "/music/i_keep_on_walking.mp3",
         "type": "audio"
