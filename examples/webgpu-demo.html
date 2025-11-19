@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebGPU Postprocessing Demo - HTDI Project</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    .info-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(10, 10, 15, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 16px;
+      z-index: 1000;
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 300px;
+    }
+
+    .info-panel h2 {
+      font-size: 16px;
+      margin-bottom: 12px;
+      color: #88aaff;
+    }
+
+    .info-panel .backend {
+      font-weight: bold;
+      color: #4ade80;
+    }
+
+    .info-panel .backend.webgl {
+      color: #fbbf24;
+    }
+
+    .info-panel code {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+    }
+
+    .controls {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(10, 10, 15, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 16px;
+      z-index: 1000;
+    }
+
+    .controls button {
+      background: rgba(136, 170, 255, 0.2);
+      border: 1px solid rgba(136, 170, 255, 0.4);
+      color: #88aaff;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      margin: 4px;
+      transition: all 0.2s;
+    }
+
+    .controls button:hover {
+      background: rgba(136, 170, 255, 0.3);
+      border-color: rgba(136, 170, 255, 0.6);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="info-panel">
+      <h2>WebGPU Postprocessing Demo</h2>
+      <p>Backend: <span class="backend" id="backend-type">detecting...</span></p>
+      <p style="margin-top: 8px; font-size: 12px; opacity: 0.8;">
+        Open DevTools console and try:<br>
+        <code>window.__webgpuDemo</code>
+      </p>
+      <p style="margin-top: 8px; font-size: 12px; opacity: 0.8;">
+        Export scene:<br>
+        <code>__webgpuDemo.exportCurrentScene()</code>
+      </p>
+    </div>
+
+    <div class="controls">
+      <button onclick="toggleBloom()">Toggle Bloom</button>
+      <button onclick="increaseBloom()">+ Bloom</button>
+      <button onclick="decreaseBloom()">- Bloom</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { bootstrap } from './webgpu-postprocessing-demo.js';
+
+    // Wait for bootstrap to complete
+    setTimeout(() => {
+      const demo = window.__webgpuDemo;
+      if (demo) {
+        const backendEl = document.getElementById('backend-type');
+        backendEl.textContent = demo.backend.toUpperCase();
+        backendEl.className = `backend ${demo.backend}`;
+      }
+    }, 500);
+
+    // Global controls
+    window.toggleBloom = () => {
+      const demo = window.__webgpuDemo;
+      if (!demo) return;
+
+      const ppm = demo.postProcessingManager;
+      const pipeline = ppm.getPipeline();
+      if (!pipeline || !pipeline.settings) return;
+
+      const enabled = !pipeline.settings.bloom.enabled;
+      ppm.updateSettings({ bloom: { enabled } });
+      console.log('[Demo] Bloom:', enabled ? 'ON' : 'OFF');
+    };
+
+    window.increaseBloom = () => {
+      const demo = window.__webgpuDemo;
+      if (!demo) return;
+
+      const ppm = demo.postProcessingManager;
+      const pipeline = ppm.getPipeline();
+      if (!pipeline || !pipeline.settings) return;
+
+      const newIntensity = Math.min(3.0, pipeline.settings.bloom.intensity + 0.2);
+      ppm.updateSettings({ bloom: { intensity: newIntensity } });
+      console.log('[Demo] Bloom intensity:', newIntensity.toFixed(2));
+    };
+
+    window.decreaseBloom = () => {
+      const demo = window.__webgpuDemo;
+      if (!demo) return;
+
+      const ppm = demo.postProcessingManager;
+      const pipeline = ppm.getPipeline();
+      if (!pipeline || !pipeline.settings) return;
+
+      const newIntensity = Math.max(0, pipeline.settings.bloom.intensity - 0.2);
+      ppm.updateSettings({ bloom: { intensity: newIntensity } });
+      console.log('[Demo] Bloom intensity:', newIntensity.toFixed(2));
+    };
+  </script>
+</body>
+</html>

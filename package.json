@@ -37,7 +37,8 @@
     "snd-lib": "^1.2.4",
     "stats.js": "^0.17.0",
     "three": "^0.180.0",
-    "tippy.js": "^6.3.7"
+    "tippy.js": "^6.3.7",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@tweakpane/plugin-essentials": "^0.2.1",
