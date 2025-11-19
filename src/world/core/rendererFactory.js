@@ -1,7 +1,7 @@
 // src/world/core/rendererFactory.js
 import * as THREE from 'three';
-import WebGPU from 'three/webgpu';
-import { WebGPURenderer } from 'three/webgpu';
+import WebGPU from 'three/addons/capabilities/WebGPU.js';
+import WebGPURenderer from 'three/addons/renderers/webgpu/WebGPURenderer.js';
 
 /**
  * RendererFactory

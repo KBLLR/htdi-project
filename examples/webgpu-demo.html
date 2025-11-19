@@ -106,9 +106,9 @@
     </div>
 
     <div class="controls">
-      <button onclick="toggleBloom()">Toggle Bloom</button>
-      <button onclick="increaseBloom()">+ Bloom</button>
-      <button onclick="decreaseBloom()">- Bloom</button>
+      <button id="toggleBloom">Toggle Bloom</button>
+      <button id="increaseBloom">+ Bloom</button>
+      <button id="decreaseBloom">- Bloom</button>
     </div>
   </div>
 
@@ -125,8 +125,8 @@
       }
     }, 500);
 
-    // Global controls
-    window.toggleBloom = () => {
+    // Control functions
+    function toggleBloom() {
       const demo = window.__webgpuDemo;
       if (!demo) return;
 
@@ -137,9 +137,9 @@
       const enabled = !pipeline.settings.bloom.enabled;
       ppm.updateSettings({ bloom: { enabled } });
       console.log('[Demo] Bloom:', enabled ? 'ON' : 'OFF');
-    };
+    }
 
-    window.increaseBloom = () => {
+    function increaseBloom() {
       const demo = window.__webgpuDemo;
       if (!demo) return;
 
@@ -150,9 +150,9 @@
       const newIntensity = Math.min(3.0, pipeline.settings.bloom.intensity + 0.2);
       ppm.updateSettings({ bloom: { intensity: newIntensity } });
       console.log('[Demo] Bloom intensity:', newIntensity.toFixed(2));
-    };
+    }
 
-    window.decreaseBloom = () => {
+    function decreaseBloom() {
       const demo = window.__webgpuDemo;
       if (!demo) return;
 
@@ -163,7 +163,12 @@
       const newIntensity = Math.max(0, pipeline.settings.bloom.intensity - 0.2);
       ppm.updateSettings({ bloom: { intensity: newIntensity } });
       console.log('[Demo] Bloom intensity:', newIntensity.toFixed(2));
-    };
+    }
+
+    // Attach event listeners
+    document.getElementById('toggleBloom').addEventListener('click', toggleBloom);
+    document.getElementById('increaseBloom').addEventListener('click', increaseBloom);
+    document.getElementById('decreaseBloom').addEventListener('click', decreaseBloom);
   </script>
 </body>
 </html>
