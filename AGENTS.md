@@ -1,5 +1,37 @@
 # Repository Guidelines
 
+## Paradigm (House-Level)
+- House ID: `htdi-project`
+- Role: canonical runtime and stage-facing surface for diary profiles, sessions, tasks, and scene references
+- Status/Type: discovered · ui
+- This house participates in the Core-X ecosystem by emitting and consuming **OpenResponses** events via the Event Bus. No local schema forks.
+
+## Sources of Truth (No Split Brain)
+- `/registries/houses.registry.json`
+- `/registries/agents.registry.json`
+- `/registries/services.registry.json`
+- `/registries/models.registry.json` (model-zoo)
+- Event Bus: `http://localhost:8085/events` (SSE) and `POST http://localhost:8085/emit`
+
+## Interfaces
+- Primary UI: Vite app at `http://localhost:5170`
+- Canonical diary API target shape:
+  - `GET /api/diary`
+  - `GET /api/profiles`
+  - `PUT /api/profiles/:agentHandle`
+  - `GET /api/tasks`
+  - `PUT /api/tasks/:taskId`
+  - `PUT /api/sessions/:sessionId/reflection`
+  - `PUT /api/sessions/:sessionId/events`
+
+## Services
+- No registered services (see `/registries/houses.registry.json`).
+
+## Communication (OpenResponses)
+- Emit events using the canonical OpenResponses schema (no local copies).
+- Subscribe to the Event Bus SSE stream for activity.
+- Use `response.*` and `tool.*` events for agent activity and tool calls.
+
 ## Project Structure & Module Organization
 - `src/` — application code: `js/` modules (e.g., `src/js/Particles.js`), `css/`, `pages/`, `controllers/`, `shaders/`, plus `main.js` entry.
 - `public/` — served at site root by Vite (e.g., `/favicon.svg`, `/manifest.webmanifest`).
@@ -24,6 +56,7 @@
 - No unit tests configured. Manual QA:
   - `npm run dev` — scene renders; no console errors; interactions OK.
   - Asset paths resolve from `public/` and `static/` in dev and build.
+  - Diary/profile/task data still remains canonical here even when downstream houses consume it.
   - Test desktop Chrome/Edge and one mobile viewport.
 
 ## Commit & Pull Request Guidelines
@@ -41,3 +74,9 @@
 - Maintain texture/particle atlases with `scripts/make_atlas.mjs`; update accompanying `.json` manifests when adding sprites.
 - Use KTX2/WebP helpers in `scripts/convertImageToKTX2.mjs` and `scripts/convertImageToWebP.mjs` for new textures.
 - Blender FBX→GLB conversions rely on `scripts/convert_fbx_with_blender.zsh`; set `BLENDER_BIN` before running.
+
+## LeAgentDiary Boundary
+- HTDI owns canonical `agent.profile.v1`, `diary.session.v2`, and `task.record.v1`
+- LeAgentDiary is the review/intake/export surface
+- Any `/v1/stages` bridge is experimental and secondary
+- Public publication belongs in Le Belle Epoch, not here

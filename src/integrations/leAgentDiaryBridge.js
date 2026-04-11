@@ -2,10 +2,10 @@
 import { validateSceneJson } from './leAgentDiarySceneSchema.js';
 
 /**
- * LeAgentDiaryBridge
- * Responsible for:
- *  - validating scenes
- *  - sending them to LeAgentDiary API
+ * Experimental stage bridge for LeAgentDiary-adjacent scene references.
+ *
+ * The primary HTDI -> LeAgentDiary contract is now diary/profile/task data.
+ * This bridge remains secondary for optional `/v1/stages` experiments only.
  */
 export class LeAgentDiaryBridge {
   constructor({ baseUrl, apiKey }) {
