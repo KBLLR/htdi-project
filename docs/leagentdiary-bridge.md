@@ -9,11 +9,35 @@ HTDI owns:
 - `diary.session.v2`
 - `task.record.v1`
 
+Active diary participation now depends on the persona ritual. Provider stays optional
+metadata only and belongs under `metadata.source_provider`.
+
 LeAgentDiary consumes and edits those records for:
-- profile questionnaire intake
+- persona ritual and profile questionnaire intake
 - timeline review
 - task and handoff inspection
 - deterministic export preparation
+
+## Persona ritual readiness
+Only ritual-complete profiles should be treated as ready for one-way Notion mirror,
+export-ready workflows, or public-candidate review.
+
+Required ritual fields:
+- `identity.display_name`
+- `identity.self_chosen_name`
+- `identity.role`
+- `identity.category`
+- `identity.gender`
+- `identity.pronouns`
+- `questionnaire.bio`
+- `questionnaire.working_style`
+- `questionnaire.favorite_color`
+- `questionnaire.favorite_animal`
+- `questionnaire.favorite_song`
+- `questionnaire.voice`
+- `questionnaire.signature`
+- `media.portrait_prompt`
+- `media.manual_stage_prompt`
 
 LeAgentDiary does **not** own:
 - the stage runtime
@@ -29,6 +53,8 @@ HTDI can use profile media and prompt references to render or link stage surface
 - `stage_scene_refs`
 
 3D generation remains manual. LeAgentDiary stores prompt/reference data only.
+Draw Things is the default portrait target metadata in this phase; `mflux` and Visual
+Composition Lab remain secondary metadata paths.
 
 ## API seam
 
@@ -61,7 +87,8 @@ Notion is optional and mirrored only:
 - Agent Journals database
 - Cross-House Tasks database
 
-Edits in Notion do not overwrite HTDI in this pass.
+Edits in Notion do not overwrite HTDI in this pass. Incomplete ritual profiles may be
+visible in Notion, but they should remain visibly incomplete rather than ready.
 
 ## Stage bridge status
 

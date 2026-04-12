@@ -6,6 +6,12 @@
 - Status/Type: discovered · ui
 - This house participates in the Core-X ecosystem by emitting and consuming **OpenResponses** events via the Event Bus. No local schema forks.
 
+## Persona Ritual Boundary
+- HTDI remains the canonical owner of `agent.profile.v1`, but active diary identity is persona-first.
+- Provider is optional metadata only and should live under `metadata.source_provider`.
+- A profile is only considered ready for mirror/export/public-candidate workflows once the persona ritual is complete and `metadata.ritual_complete` is true.
+- Required ritual fields include chosen/display name, role, category, gender, pronouns, bio, working style, favorite color, favorite animal, favorite song, voice, signature, portrait prompt, and manual stage prompt.
+
 ## Sources of Truth (No Split Brain)
 - `/registries/houses.registry.json`
 - `/registries/agents.registry.json`
@@ -78,5 +84,6 @@
 ## LeAgentDiary Boundary
 - HTDI owns canonical `agent.profile.v1`, `diary.session.v2`, and `task.record.v1`
 - LeAgentDiary is the review/intake/export surface
+- LeAgentDiary now performs persona ritual intake, not just thin provider-backed profile capture
 - Any `/v1/stages` bridge is experimental and secondary
 - Public publication belongs in Le Belle Epoch, not here
