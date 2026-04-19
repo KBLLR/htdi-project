@@ -17,6 +17,7 @@
     "start": "npm run dev",
     "lint": "eslint \"src/**/*.js\"",
     "test": "echo \"No tests configured\" && exit 0",
+    "sync:warehouse-fonts": "node tools/syncWarehouseFonts.mjs",
     "generate:assets": "node scripts/updateAssets.mjs",
     "fbx:glb": "BLENDER_BIN=\"/Applications/Blender.app/Contents/MacOS/Blender\" zsh scripts/convert_fbx_with_blender.zsh ./assets/fbx ./assets/gltf glb --recursive --verbose",
     "fbx:gltf:separate": "BLENDER_BIN=\"/Applications/Blender.app/Contents/MacOS/Blender\" zsh scripts/convert_fbx_with_blender.zsh ./assets/fbx ./assets/gltf gltf_separate --recursive --verbose"
