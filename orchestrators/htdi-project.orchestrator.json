@@ -1,0 +1,120 @@
+{
+  "$schema": "../../../htdi-collective-agency/schemas/house-orchestrator.schema.json",
+  "id": "orchestrator:htdi-project",
+  "house_id": "htdi-project",
+  "name": "Htdi Project Orchestrator",
+  "version": "1.0.0",
+  "status": "active",
+  "personality": {
+    "voice": "analytical",
+    "tone": "professional",
+    "style_guide": "Clear, concise communication focused on the house's domain.",
+    "pronouns": "we/our",
+    "signature_phrases": [],
+    "avatar": "/assets/htdi-project.png",
+    "theme": {
+      "primary_color": "#06B6D4",
+      "secondary_color": "#0891B2",
+      "icon": "analytics"
+    }
+  },
+  "shared_resources": {
+    "filesystem": {
+      "root_paths": [
+        "houses/htdi-project"
+      ],
+      "workspace": "var/workspace",
+      "artifacts": "var/artifacts"
+    },
+    "knowledge": {
+      "collections": [
+        "house:htdi-project:docs"
+      ],
+      "embeddings_model": "/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/embeddings/all-minilm-l6-v2-4bit",
+      "rag_endpoint": "http://localhost:8090/v1/search",
+      "vector_db": "lancedb"
+    },
+    "skills": [],
+    "tools": [
+      "fs_list",
+      "fs_read",
+      "rag_search"
+    ],
+    "mcp_servers": [
+      "house-functions",
+      "mlx-rag"
+    ]
+  },
+  "agents": {
+    "roster": [
+      {
+        "agent_id": "htdi-project:orchestrator",
+        "role_in_house": "lead",
+        "delegation_priority": 100,
+        "capabilities": [
+          "routing",
+          "planning",
+          "coordination"
+        ]
+      },
+      {
+        "agent_id": "htdi-project:worker",
+        "role_in_house": "worker",
+        "delegation_priority": 80,
+        "capabilities": [
+          "execute",
+          "process"
+        ]
+      }
+    ],
+    "default_agent": "htdi-project:orchestrator",
+    "routing_rules": []
+  },
+  "capabilities": {
+    "domains": [
+      "analysis"
+    ],
+    "input_types": [
+      "text"
+    ],
+    "output_types": [
+      "text"
+    ],
+    "streaming": true,
+    "tool_calling": true,
+    "max_context_window": 32768
+  },
+  "council_integration": {
+    "council_member_id": "council:htdi-project",
+    "broadcast_events": [
+      "response.in_progress",
+      "response.output_text.delta",
+      "response.completed",
+      "council.task.completed"
+    ],
+    "subscribe_events": [
+      "council.task.delegated",
+      "council.motion.proposed",
+      "council.vote.required",
+      "council.house.capabilities"
+    ],
+    "voting_weight": 0.1,
+    "delegation_accepts": [
+      "analysis"
+    ]
+  },
+  "workflows": {
+    "flows": []
+  },
+  "endpoints": {
+    "base_url": "http://localhost:3006",
+    "chat": "/v1/chat/completions",
+    "responses": "/v1/responses",
+    "capabilities": "/capabilities"
+  },
+  "_envelope": {
+    "created_at": "2026-02-03T13:50:29.824477Z",
+    "updated_at": "2026-02-03T13:50:29.824477Z",
+    "generated_by": "house-orchestrator-generator"
+  }
+}

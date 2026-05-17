@@ -12,6 +12,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "dev:diary-api": "node server/leagentdiary-api.mjs",
     "build": "vite build",
     "preview": "vite preview --port 4173",
     "start": "npm run dev",

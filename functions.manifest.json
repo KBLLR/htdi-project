@@ -1,0 +1,588 @@
+{
+  "$schema": "../../htdi-collective-agency/schemas/flow-manifest.schema.json",
+  "house_id": "htdi-project",
+  "version": "1.0.0",
+  "description": "HTDI Project - Central orchestration hub for registry management and cross-house coordination",
+  "items": [
+    {
+      "id": "htdi-project:registry-orchestrator",
+      "type": "agent",
+      "status": "active",
+      "name": "Registry Orchestrator",
+      "description": "Manages agent registries, validates manifests, and coordinates aggregation",
+      "provider": "mlx-local",
+      "model": "/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen2.5-14b-4bit",
+      "promptPath": "./agents/registry-orchestrator.md",
+      "skills": [
+        "registration-flow",
+        "monitoring-cycle"
+      ],
+      "tools": [
+        "register_agent",
+        "validate_manifest",
+        "sync_registry",
+        "query_agents"
+      ],
+      "capabilities": [
+        "orchestration",
+        "registry",
+        "validation"
+      ],
+      "house_binding": "local",
+      "house_id": "htdi-project",
+      "_envelope": {
+        "version": "1.0.0",
+        "generated_at": "2026-02-06T18:24:23.153046+00:00",
+        "source_path": "houses/htdi-project/functions.manifest.json"
+      }
+    },
+    {
+      "id": "htdi-project:task-dispatcher",
+      "type": "agent",
+      "status": "active",
+      "name": "Task Dispatcher",
+      "description": "Distributes tasks to appropriate houses and agents",
+      "provider": "mlx-local",
+      "model": "/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen2.5-14b-4bit",
+      "promptPath": "./agents/task-dispatcher.md",
+      "skills": [
+        "task-routing"
+      ],
+      "tools": [
+        "dispatch_task",
+        "query_agents",
+        "check_health"
+      ],
+      "capabilities": [
+        "dispatch",
+        "routing",
+        "coordination"
+      ],
+      "house_binding": "local",
+      "house_id": "htdi-project",
+      "_envelope": {
+        "version": "1.0.0",
+        "generated_at": "2026-02-06T18:24:23.153057+00:00",
+        "source_path": "houses/htdi-project/functions.manifest.json"
+      }
+    },
+    {
+      "id": "htdi-project:health-monitor",
+      "type": "agent",
+      "status": "active",
+      "name": "Health Monitor",
+      "description": "Monitors system health across houses and services",
+      "provider": "mlx-local",
+      "model": "/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen2.5-14b-4bit",
+      "promptPath": "./agents/health-monitor.md",
+      "skills": [
+        "monitoring-cycle"
+      ],
+      "tools": [
+        "check_health",
+        "update_status"
+      ],
+      "capabilities": [
+        "monitoring",
+        "health",
+        "alerts"
+      ],
+      "house_binding": "local",
+      "house_id": "htdi-project",
+      "_envelope": {
+        "version": "1.0.0",
+        "generated_at": "2026-02-06T18:24:23.153062+00:00",
+        "source_path": "houses/htdi-project/functions.manifest.json"
+      }
+    },
+    {
+      "id": "htdi-project:register_agent",
+      "type": "tool",
+      "status": "active",
+      "name": "Register Agent",
+      "description": "Register a new agent in the central registry",
+      "category": "registry",
+      "entry_point": "./tools/register_agent.ts",
+      "mcp_server": "house-functions",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "agent_id": {
+            "type": "string",
+            "description": "Unique agent identifier (house_id:agent_name)"
+          },
+          "manifest_path": {
+            "type": "string",
+            "description": "Path to agent's manifest file"
+          },
+          "force": {
+            "type": "boolean",
+            "description": "Override existing registration",
+            "default": false
+          }
+        },
+        "required": [
+          "agent_id",
+          "manifest_path"
+        ]
+      },
+      "capabilities": [
+        "registry",
+        "registration"
+      ],
+      "house_binding": "local",
+      "house_id": "htdi-project",
+      "_envelope": {
+        "version": "1.0.0",
+        "generated_at": "2026-02-06T18:24:23.153067+00:00",
+        "source_path": "houses/htdi-project/functions.manifest.json"
+      }
+    },
+    {
+      "id": "htdi-project:validate_manifest",
+      "type": "tool",
+      "status": "active",
+      "name": "Validate Manifest",
+      "description": "Validate a house manifest against the schema",
+      "category": "validation",
+      "entry_point": "./tools/validate_manifest.ts",
+      "mcp_server": "house-functions",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "manifest_path": {
+            "type": "string",
+            "description": "Path to manifest file"
+          },
+          "strict": {
+            "type": "boolean",
+            "description": "Enable strict validation",
+            "default": true
+          }
+        },
+        "required": [
+          "manifest_path"
+        ]
+      },
+      "capabilities": [
+        "validation",
+        "schema"
+      ],
+      "house_binding": "shared",
+      "house_id": "htdi-project",
+      "_envelope": {
+        "version": "1.0.0",
+        "generated_at": "2026-02-06T18:24:23.153072+00:00",
+        "source_path": "houses/htdi-project/functions.manifest.json"
+      }
+    },
+    {
+      "id": "htdi-project:dispatch_task",
+      "type": "tool",
+      "status": "active",
+      "name": "Dispatch Task",
+      "description": "Send a task to a specific house or agent",
+      "category": "dispatch",
+      "entry_point": "./tools/dispatch_task.ts",
+      "mcp_server": "house-functions",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "task": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "payload": {
+                "type": "object"
+              }
+            },
+            "description": "Task definition"
+          },
+          "target_house": {
+            "type": "string",
+            "description": "Target house ID"
+          },
+          "target_agent": {
+            "type": "string",
+            "description": "Specific agent ID (optional)"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "low",
+              "normal",
+              "high",
+              "critical"
+            ],
+            "default": "normal"
+          }
+        },
+        "required": [
+          "task",
+          "target_house"
+        ]
+      },
+      "capabilities": [
+        "dispatch",
+        "coordination"
+      ],
+      "house_binding": "local",
+      "house_id": "htdi-project",
+      "_envelope": {
+        "version": "1.0.0",
+        "generated_at": "2026-02-06T18:24:23.153076+00:00",
+        "source_path": "houses/htdi-project/functions.manifest.json"
+      }
+    },
+    {
+      "id": "htdi-project:check_health",
+      "type": "tool",
+      "status": "active",
+      "name": "Check Health",
+      "description": "Run health checks on houses and services",
+      "category": "monitoring",
+      "entry_point": "./tools/check_health.ts",
+      "mcp_server": "house-functions",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "description": "House ID, service name, or 'all'"
+          },
+          "checks": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "connectivity",
+                "manifest",
+                "agents",
+                "memory"
+              ]
+            },
+            "description": "Specific checks to run"
+          }
+        },
+        "required": [
+          "target"
+        ]
+      },
+      "capabilities": [
+        "health",
+        "monitoring"
+      ],
+      "house_binding": "shared",
+      "house_id": "htdi-project",
+      "_envelope": {
+        "version": "1.0.0",
+        "generated_at": "2026-02-06T18:24:23.153081+00:00",
+        "source_path": "houses/htdi-project/functions.manifest.json"
+      }
+    },
+    {
+      "id": "htdi-project:sync_registry",
+      "type": "tool",
+      "status": "active",
+      "name": "Sync Registry",
+      "description": "Synchronize registry with all house manifests",
+      "category": "registry",
+      "entry_point": "./tools/sync_registry.ts",
+      "mcp_server": "house-functions",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "houses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Specific houses to sync (empty = all)"
+          },
+          "dry_run": {
+            "type": "boolean",
+            "description": "Preview changes without applying",
+            "default": false
+          }
+        }
+      },
+      "capabilities": [
+        "registry",
+        "sync"
+      ],
+      "house_binding": "local",
+      "house_id": "htdi-project",
+      "_envelope": {
+        "version": "1.0.0",
+        "generated_at": "2026-02-06T18:24:23.153086+00:00",
+        "source_path": "houses/htdi-project/functions.manifest.json"
+      }
+    },
+    {
+      "id": "htdi-project:query_agents",
+      "type": "tool",
+      "status": "active",
+      "name": "Query Agents",
+      "description": "Query the registry for agents matching criteria",
+      "category": "query",
+      "entry_point": "./tools/query_agents.ts",
+      "mcp_server": "house-functions",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "house_id": {
+            "type": "string",
+            "description": "Filter by house"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Required capabilities"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive",
+              "all"
+            ],
+            "default": "active"
+          }
+        }
+      },
+      "capabilities": [
+        "query",
+        "registry"
+      ],
+      "house_binding": "shared",
+      "house_id": "htdi-project",
+      "_envelope": {
+        "version": "1.0.0",
+        "generated_at": "2026-02-06T18:24:23.153090+00:00",
+        "source_path": "houses/htdi-project/functions.manifest.json"
+      }
+    },
+    {
+      "id": "htdi-project:update_status",
+      "type": "tool",
+      "status": "active",
+      "name": "Update Status",
+      "description": "Update the status of an agent or house",
+      "category": "registry",
+      "entry_point": "./tools/update_status.ts",
+      "mcp_server": "house-functions",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "target_id": {
+            "type": "string",
+            "description": "Agent or house ID"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive",
+              "maintenance",
+              "error"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "description": "Reason for status change"
+          }
+        },
+        "required": [
+          "target_id",
+          "status"
+        ]
+      },
+      "capabilities": [
+        "registry",
+        "status"
+      ],
+      "house_binding": "local",
+      "house_id": "htdi-project",
+      "_envelope": {
+        "version": "1.0.0",
+        "generated_at": "2026-02-06T18:24:23.153094+00:00",
+        "source_path": "houses/htdi-project/functions.manifest.json"
+      }
+    },
+    {
+      "id": "htdi-project:registration-flow",
+      "type": "skill",
+      "status": "active",
+      "name": "Registration Flow",
+      "description": "Complete agent/house registration workflow with validation",
+      "category": "workflow",
+      "entry_point": "./skills/registration-flow/SKILL.md",
+      "tools": [
+        "register_agent",
+        "validate_manifest",
+        "sync_registry"
+      ],
+      "agents": [
+        "registry-orchestrator"
+      ],
+      "capabilities": [
+        "registration",
+        "workflow"
+      ],
+      "house_binding": "local",
+      "house_id": "htdi-project",
+      "_envelope": {
+        "version": "1.0.0",
+        "generated_at": "2026-02-06T18:24:23.153099+00:00",
+        "source_path": "houses/htdi-project/functions.manifest.json"
+      }
+    },
+    {
+      "id": "htdi-project:task-routing",
+      "type": "skill",
+      "status": "active",
+      "name": "Task Routing",
+      "description": "Intelligent task distribution based on capabilities",
+      "category": "routing",
+      "entry_point": "./skills/task-routing/SKILL.md",
+      "tools": [
+        "dispatch_task",
+        "query_agents",
+        "check_health"
+      ],
+      "agents": [
+        "task-dispatcher"
+      ],
+      "capabilities": [
+        "routing",
+        "workflow"
+      ],
+      "house_binding": "local",
+      "house_id": "htdi-project",
+      "_envelope": {
+        "version": "1.0.0",
+        "generated_at": "2026-02-06T18:24:23.153103+00:00",
+        "source_path": "houses/htdi-project/functions.manifest.json"
+      }
+    },
+    {
+      "id": "htdi-project:monitoring-cycle",
+      "type": "skill",
+      "status": "active",
+      "name": "Monitoring Cycle",
+      "description": "Regular health check and status update routine",
+      "category": "monitoring",
+      "entry_point": "./skills/monitoring-cycle/SKILL.md",
+      "tools": [
+        "check_health",
+        "update_status"
+      ],
+      "agents": [
+        "health-monitor"
+      ],
+      "capabilities": [
+        "monitoring",
+        "routine"
+      ],
+      "house_binding": "local",
+      "house_id": "htdi-project",
+      "_envelope": {
+        "version": "1.0.0",
+        "generated_at": "2026-02-06T18:24:23.153108+00:00",
+        "source_path": "houses/htdi-project/functions.manifest.json"
+      }
+    },
+    {
+      "id": "htdi-project:registry-cache",
+      "type": "memory_store",
+      "status": "active",
+      "name": "Registry Cache",
+      "description": "Cached registry data for fast queries",
+      "category": "memory",
+      "entry_point": "./memory/registry-cache.ts",
+      "config": {
+        "backend": "sqlite",
+        "path": "./.ai-memory/registry.db",
+        "cache_ttl": 300
+      },
+      "capabilities": [
+        "memory",
+        "cache"
+      ],
+      "house_binding": "local",
+      "house_id": "htdi-project",
+      "_envelope": {
+        "version": "1.0.0",
+        "generated_at": "2026-02-06T18:24:23.153112+00:00",
+        "source_path": "houses/htdi-project/functions.manifest.json"
+      }
+    },
+    {
+      "id": "htdi-project:task-queue",
+      "type": "memory_store",
+      "status": "active",
+      "name": "Task Queue",
+      "description": "Pending and active task queue",
+      "category": "memory",
+      "entry_point": "./memory/task-queue.ts",
+      "config": {
+        "backend": "sqlite",
+        "path": "./.ai-memory/tasks.db",
+        "max_queue_size": 1000
+      },
+      "capabilities": [
+        "memory",
+        "queue"
+      ],
+      "house_binding": "local",
+      "house_id": "htdi-project",
+      "_envelope": {
+        "version": "1.0.0",
+        "generated_at": "2026-02-06T18:24:23.153117+00:00",
+        "source_path": "houses/htdi-project/functions.manifest.json"
+      }
+    },
+    {
+      "id": "htdi-project:health-history",
+      "type": "memory_store",
+      "status": "active",
+      "name": "Health History",
+      "description": "Historical health check results",
+      "category": "memory",
+      "entry_point": "./memory/health-store.ts",
+      "config": {
+        "backend": "sqlite",
+        "path": "./.ai-memory/health.db",
+        "retention_days": 30
+      },
+      "capabilities": [
+        "memory",
+        "health"
+      ],
+      "house_binding": "local",
+      "house_id": "htdi-project",
+      "_envelope": {
+        "version": "1.0.0",
+        "generated_at": "2026-02-06T18:24:23.153121+00:00",
+        "source_path": "houses/htdi-project/functions.manifest.json"
+      }
+    }
+  ],
+  "metadata": {
+    "features": [
+      "Central registry management",
+      "Cross-house task dispatch",
+      "Health monitoring",
+      "Manifest validation",
+      "Agent capability queries"
+    ]
+  },
+  "updatedAt": "2026-02-06T18:24:23.153125+00:00"
+}

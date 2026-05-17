@@ -25,7 +25,7 @@ Stages rendered in LeAgentDiary timeline where agents can:
 ### Agent Orchestration
 - **Stage Artist**: Creative generation (materials, environments, compositions)
 - **Stage Manager**: Orchestration, data flow, API coordination
-- All communications: OpenAI API v3.1.0 compliant
+- All communications: OpenResponses API v3.1.0 compliant
 
 ---
 
@@ -97,7 +97,7 @@ Stages rendered in LeAgentDiary timeline where agents can:
 │              HTDI DiaryStage Factory (Generator)                 │
 │                                                                   │
 │  ┌──────────────────────────────────────────────────────────┐  │
-│  │  INPUTS (OpenAI API v3.1.0 Compliant)                     │  │
+│  │  INPUTS (OpenResponses API v3.1.0 Compliant)                     │  │
 │  ├──────────────────────────────────────────────────────────┤  │
 │  │  1. Agent Profile JSON                                    │  │
 │  │     - agentId, role, personality traits                   │  │
@@ -139,7 +139,7 @@ Stages rendered in LeAgentDiary timeline where agents can:
 │  │  - Scene assembly from templates                          │  │
 │  │  - Asset loading coordination (Asset Registry)            │  │
 │  │  - Stage state serialization                              │  │
-│  │  - OpenAI API endpoint routing                            │  │
+│  │  - OpenResponses API endpoint routing                            │  │
 │  │  - Memory/provenance snapshot writes                      │  │
 │  │  - Multi-agent placement (when >1 agent per stage)        │  │
 │  │                                                            │  │
@@ -261,7 +261,7 @@ Stages rendered in LeAgentDiary timeline where agents can:
 
 ---
 
-## OpenAI API v3.1.0 Endpoints
+## OpenResponses API v3.1.0 Endpoints
 
 ### Core Endpoints
 
@@ -309,7 +309,7 @@ Stages rendered in LeAgentDiary timeline where agents can:
 - **UI**: Headless UI + Radix (for modals/controls)
 - **Loaders**: Same + WebGPU texture compression
 - **State**: Zustand or Valtio (reactive stage state)
-- **API Client**: Custom OpenAI-compliant fetch wrapper
+- **API Client**: Custom OpenResponses-compliant fetch wrapper
 
 ### Additional Integrations
 - **panorama-to-cubemap**: Import from KBLLR repo
@@ -410,7 +410,7 @@ export class StudioLiteStage extends StageBase {
    │   │   ├── templates/      # StudioLiteStage, EraStage, etc.
    │   │   └── generators/     # Stage Artist logic
    │   ├── api/
-   │   │   ├── endpoints/      # OpenAI API routes
+   │   │   ├── endpoints/      # OpenResponses API routes
    │   │   └── clients/        # DrawThings, Figma MCP
    │   ├── modules/
    │   │   ├── assetRegistry/  # Migrated from legacy
@@ -432,7 +432,7 @@ export class StudioLiteStage extends StageBase {
    - Three.js r170+ (WebGPU)
    - `postprocessing` library
    - Zustand (state management)
-   - OpenAI SDK (API client base)
+   - OpenResponses SDK (API client base)
 
 3. Configure build:
    - WebGPU renderer fallback to WebGL
@@ -470,7 +470,7 @@ export class StudioLiteStage extends StageBase {
 - Unit tests for Asset Registry, Scene Manager
 - Migration verification checklist
 
-### Phase 4: Implement OpenAI API Endpoints (Week 3-4)
+### Phase 4: Implement OpenResponses API Endpoints (Week 3-4)
 **Tasks:**
 1. Create endpoint handlers:
    - `/v1/stages:generate` (core generator)
@@ -651,7 +651,7 @@ export class StudioLiteStage extends StageBase {
 - ✅ Stage generation time < 10 seconds (simple) / < 30 seconds (complex)
 - ✅ Bundle size < 500KB (gzipped, excluding assets)
 - ✅ Asset loading via S3 signed URLs (< 2s latency)
-- ✅ All OpenAI API endpoints return valid responses
+- ✅ All OpenResponses API endpoints return valid responses
 - ✅ HMR functional for rapid development
 
 ### Functional
@@ -677,7 +677,7 @@ export class StudioLiteStage extends StageBase {
 | **DrawThings local dependency** | MEDIUM | LOW | Document alternative texture sources |
 | **S3 upload latency** | MEDIUM | MEDIUM | Implement upload queue + progress UI |
 | **Agent model quality** | HIGH | MEDIUM | Curated Sora/Tencent generation guidelines |
-| **LeAgentDiary API changes** | MEDIUM | LOW | Versioned OpenAI API contract |
+| **LeAgentDiary API changes** | MEDIUM | LOW | Versioned OpenResponses API contract |
 | **Migration timeline overrun** | MEDIUM | MEDIUM | Phased rollout, MVP-first approach |
 
 ---
@@ -776,9 +776,9 @@ export class StudioLiteStage extends StageBase {
 | `src/css/tokens.css` | `src/styles/tokens.css` | Scene template overrides |
 | `src/css/style.css` | `src/styles/components.css` | Extract reusable components only |
 
-### B. OpenAI API Schema Examples
+### B. OpenResponses API Schema Examples
 
-See inline in OpenAI API Endpoints section above.
+See inline in OpenResponses API Endpoints section above.
 
 ### C. Stage Template Specifications
 

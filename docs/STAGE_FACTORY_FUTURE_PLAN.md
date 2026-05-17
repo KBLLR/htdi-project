@@ -9,12 +9,12 @@
 
 ## Executive Summary
 
-This document outlines the vision for transforming the HTDI DiaryStage Factory into a system where **"classroom" / "stage world" is a first-class OpenAI-style object** that agents can create, update, and export—not just a one-off scene.
+This document outlines the vision for transforming the HTDI DiaryStage Factory into a system where **"classroom" / "stage world" is a first-class OpenResponses-style object** that agents can create, update, and export—not just a one-off scene.
 
 The factory orchestrates a magical user journey from GitHub authentication through generative stage creation, culminating in a personalized 3D environment with commemorative frames that celebrate the user's development history.
 
 **Key Principles:**
-- **Agent-Driven**: Tools (OpenAI/MCP) can remix environments, frames, and materials
+- **Agent-Driven**: Tools (OpenResponses/MCP) can remix environments, frames, and materials
 - **Serializable**: LeAgentDiary-compatible scene schema
 - **Discoverable**: GitHub universe becomes input for generative processes
 - **Commemorative**: Frames celebrate developer identity and achievements
@@ -23,7 +23,7 @@ The factory orchestrates a magical user journey from GitHub authentication throu
 
 ## 1. High-Level Vision
 
-### The Classroom/Stage as an OpenAI Object
+### The Classroom/Stage as an OpenResponses Object
 
 Think of the **Classroom** (or **Stage**) as:
 
@@ -45,7 +45,7 @@ interface Classroom {
 **A Stage/Classroom object:**
 - Knows about a user, their agents, and their GitHub universe
 - Is serializable to LeAgentDiary scenes (via `LeAgentDiaryBridge`)
-- Can be driven by tools (OpenAI / MCP) to remix environments, frames, and materials
+- Can be driven by tools (OpenResponses / MCP) to remix environments, frames, and materials
 - Persists configuration across sessions
 
 ### Factory Responsibilities
@@ -103,7 +103,7 @@ Once the user "logs in" (real or stub):
 #### 2.1 Discovery Phase
 
 **System discovers agent profiles** from repos:
-- Scan for `CLAUDE.md`, `AGENT_PROFILE.json`, or similar config files
+- Scan for `STAGE_FACTORY_BRIEF.md`, `AGENT_PROFILE.json`, or similar config files
 - Infer tags/topics from GitHub repo metadata:
   - Topics, languages, commit messages
   - Lines of code, contribution streaks, activity patterns
@@ -308,7 +308,7 @@ interface GenerativeFrameTheme {
 
 ## 4. Factory / API Surface: Preparing for Tools
 
-We don't need to implement these now, but we **do** want to **name them** and make them **thinkable as OpenAI / MCP tool objects**.
+We don't need to implement these now, but we **do** want to **name them** and make them **thinkable as OpenResponses / MCP tool objects**.
 
 ### 4.1 Conceptual Building Blocks
 
@@ -356,7 +356,7 @@ interface StageWorld {
 
 ---
 
-### 4.2 OpenAI-Style Tools
+### 4.2 OpenResponses-Style Tools
 
 **Conceptual tools** we might expose later:
 
@@ -905,12 +905,12 @@ interface StageFactoryState {
 
 ---
 
-### Phase 6: OpenAI Tool Preparation
+### Phase 6: OpenResponses Tool Preparation
 
 **Goal:** Design tool interfaces (no implementation yet)
 
 **Tasks:**
-1. Document OpenAI tool schemas
+1. Document OpenResponses tool schemas
 2. Create tool specification files (JSON)
 3. Design LeAgentDiaryBridge integration points
 4. Plan MCP server structure
@@ -918,7 +918,7 @@ interface StageFactoryState {
 
 **Deliverables:**
 - `docs/OPENAI_TOOLS.md`
-- `schemas/tools/*.json` (OpenAI tool definitions)
+- `schemas/tools/*.json` (OpenResponses tool definitions)
 - MCP server architecture doc
 - Integration plan with LeAgentDiary
 
@@ -1072,7 +1072,7 @@ interface StageFactoryState {
 
 ---
 
-### Step 9: Document OpenAI Tool Specs
+### Step 9: Document OpenResponses Tool Specs
 
 **Action:** Write comprehensive tool documentation
 
@@ -1113,7 +1113,7 @@ interface StageFactoryState {
 - ✅ Exported scene JSON validates against LeAgentDiary schema
 
 ### Preparedness for Agent Integration
-- ✅ OpenAI tool specs are complete and accurate
+- ✅ OpenResponses tool specs are complete and accurate
 - ✅ LeAgentDiaryBridge integration points are documented
 - ✅ Classroom API surface is well-defined
 - ✅ Future agents can extend system without core changes
