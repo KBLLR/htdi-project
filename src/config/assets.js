@@ -492,6 +492,46 @@ export default [
         "name": "fonts_Roboto_Thin_woff2",
         "source": "/fonts/Roboto-Thin.woff2",
         "type": "font"
+      },
+      {
+        "name": "fonts_shared_flowa_woff2",
+        "source": "/fonts/shared/flowa.woff2",
+        "type": "font"
+      },
+      {
+        "name": "fonts_shared_fonts_generated_css",
+        "source": "/fonts/shared/fonts.generated.css",
+        "type": "asset"
+      },
+      {
+        "name": "fonts_shared_manifest_json",
+        "source": "/fonts/shared/manifest.json",
+        "type": "json"
+      },
+      {
+        "name": "fonts_shared_pirulen_woff2",
+        "source": "/fonts/shared/pirulen.woff2",
+        "type": "font"
+      },
+      {
+        "name": "fonts_shared_Roboto_Bold_woff2",
+        "source": "/fonts/shared/Roboto-Bold.woff2",
+        "type": "font"
+      },
+      {
+        "name": "fonts_shared_Roboto_Medium_woff2",
+        "source": "/fonts/shared/Roboto-Medium.woff2",
+        "type": "font"
+      },
+      {
+        "name": "fonts_shared_Roboto_Regular_woff2",
+        "source": "/fonts/shared/Roboto-Regular.woff2",
+        "type": "font"
+      },
+      {
+        "name": "fonts_shared_Roboto_Thin_woff2",
+        "source": "/fonts/shared/Roboto-Thin.woff2",
+        "type": "font"
       }
     ]
   },

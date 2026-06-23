@@ -40,7 +40,7 @@
       "title": "AI",
       "buttonId": "ai-btn",
       "params": {
-        "model": { "type": "enum", "options": ["gpt-4o", "gpt-4.1-mini", "llama3.1"], "value": "gpt-4o" }
+        "model": { "type": "enum", "options": ["/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/gpt-oss-20b-mxfp4-q8", "/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen2.5-7b-instr", "/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/llama-3.2-3b-4bit"], "value": "/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/gpt-oss-20b-mxfp4-q8" }
       }
     },
     {

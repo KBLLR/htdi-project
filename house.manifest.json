@@ -1,0 +1,150 @@
+{
+  "house_id": "htdi-project",
+  "name": "HTDI Project",
+  "version": "1.0.0",
+  "status": "active",
+  "tier": "lab",
+  "purpose": {
+    "domain": "creative-coding",
+    "mission": "Coordinate registry, task routing, and health monitoring for cross-house execution integrity.",
+    "target_users": [
+      "ecosystem maintainers"
+    ],
+    "key_outcomes": [
+      "Consistent registry state",
+      "Reliable task dispatch and monitoring"
+    ]
+  },
+  "personality": {
+    "voice": "HTDI Project acts as a focused creative-coding collaborator inside the unified Core-X interface.",
+    "tone": "professional",
+    "theme": {
+      "primary_color": "#0f172a",
+      "secondary_color": "#334155",
+      "icon": "htdi-project"
+    }
+  },
+  "agents": {
+    "roster": [
+      {
+        "agent_id": "htdi-project:registry-orchestrator",
+        "role_in_house": "lead",
+        "capabilities": [
+          "orchestration",
+          "registry",
+          "validation"
+        ]
+      },
+      {
+        "agent_id": "htdi-project:task-dispatcher",
+        "role_in_house": "worker",
+        "capabilities": [
+          "dispatch",
+          "routing",
+          "coordination"
+        ]
+      },
+      {
+        "agent_id": "htdi-project:health-monitor",
+        "role_in_house": "specialist",
+        "capabilities": [
+          "monitoring",
+          "health",
+          "alerts"
+        ]
+      }
+    ],
+    "default_agent": "htdi-project:registry-orchestrator",
+    "routing_rules": [
+      {
+        "pattern": "orchestration",
+        "capability": "orchestration",
+        "agent_id": "htdi-project:registry-orchestrator"
+      },
+      {
+        "pattern": "dispatch",
+        "capability": "dispatch",
+        "agent_id": "htdi-project:task-dispatcher"
+      },
+      {
+        "pattern": "monitoring",
+        "capability": "monitoring",
+        "agent_id": "htdi-project:health-monitor"
+      },
+      {
+        "pattern": "*",
+        "capability": "orchestration",
+        "agent_id": "htdi-project:registry-orchestrator"
+      }
+    ]
+  },
+  "capabilities": {
+    "domains": [
+      "creative-coding",
+      "orchestration",
+      "registry",
+      "validation",
+      "dispatch",
+      "routing",
+      "coordination"
+    ],
+    "input_types": [
+      "text"
+    ],
+    "output_types": [
+      "structured",
+      "text"
+    ],
+    "streaming": true,
+    "tool_calling": true
+  },
+  "dependencies": {
+    "services": [
+      "gateway",
+      "mlx-llm",
+      "event-bus"
+    ],
+    "models": [
+      "text/qwen2.5-14b-4bit"
+    ],
+    "houses": [],
+    "mcp_servers": [
+      "house-functions"
+    ]
+  },
+  "skills": {
+    "house_skills": [
+      "monitoring-cycle",
+      "registration-flow",
+      "task-routing"
+    ],
+    "shared_skills": [
+      "core-ops",
+      "mlx-chat",
+      "design-principles"
+    ]
+  },
+  "ui_modes": [
+    "chat",
+    "dashboard",
+    "flow",
+    "code"
+  ],
+  "council_integration": {
+    "broadcast_events": [
+      "htdi-project.status",
+      "task.complete",
+      "health.pong"
+    ],
+    "subscribe_events": [
+      "task.request",
+      "council.directive",
+      "health.ping"
+    ],
+    "voting_weight": 0.7
+  },
+  "health": {
+    "endpoint": "/health",
+    "port": 8090
+  }
+}

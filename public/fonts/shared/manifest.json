@@ -1,0 +1,92 @@
+{
+  "generated_at": "2026-04-19T07:18:17.847Z",
+  "warehouse_base_url": "http://127.0.0.1:5202",
+  "source_id": "core-ui-shared-fonts",
+  "item_count": 6,
+  "items": [
+    {
+      "id": "b6c8034d74845d30",
+      "filename": "flowa.woff2",
+      "checksum": "b9ea67152901ca9b1888958fd79909ad484d66416e3106b0b97c13bdcff1df4c",
+      "path": "/fonts/shared/flowa.woff2",
+      "family": "Flowa",
+      "weight": 400,
+      "style": "normal",
+      "format": "woff2",
+      "license": "license-review-required",
+      "license_url": null,
+      "specimen_text": "Quiet forms drift through a measured archive.",
+      "source": "core-ui-fonts"
+    },
+    {
+      "id": "b336ef572c332717",
+      "filename": "pirulen.woff2",
+      "checksum": "68219f091bce2e2dd3275b98925b5604dd251c7e338fcf047e9f39869a6f7d13",
+      "path": "/fonts/shared/pirulen.woff2",
+      "family": "Pirulen",
+      "weight": 400,
+      "style": "normal",
+      "format": "woff2",
+      "license": "license-review-required",
+      "license_url": null,
+      "specimen_text": "Orbiting signals align around one precise axis.",
+      "source": "core-ui-fonts"
+    },
+    {
+      "id": "028c1a3f87305dec",
+      "filename": "Roboto-Thin.woff2",
+      "checksum": "94958fc8b174b09cf73977a337f57504e0a02000c850c12ce591b5162791f383",
+      "path": "/fonts/shared/Roboto-Thin.woff2",
+      "family": "Roboto",
+      "weight": 100,
+      "style": "normal",
+      "format": "woff2",
+      "license": "Apache-2.0",
+      "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
+      "specimen_text": "Sphinx of black quartz, judge my vow.",
+      "source": "core-ui-fonts"
+    },
+    {
+      "id": "be4f97accbfd9abc",
+      "filename": "Roboto-Regular.woff2",
+      "checksum": "036642c0f38f7b34a617e5c17a42ddd785a438b8db0c00ab8ac78dc491309ff7",
+      "path": "/fonts/shared/Roboto-Regular.woff2",
+      "family": "Roboto",
+      "weight": 400,
+      "style": "normal",
+      "format": "woff2",
+      "license": "Apache-2.0",
+      "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
+      "specimen_text": "Sphinx of black quartz, judge my vow.",
+      "source": "core-ui-fonts"
+    },
+    {
+      "id": "5c39deb89025986c",
+      "filename": "Roboto-Medium.woff2",
+      "checksum": "27c4851599b67419297332837616c41389a8fea6094237b5b39ce0d2c57027b0",
+      "path": "/fonts/shared/Roboto-Medium.woff2",
+      "family": "Roboto",
+      "weight": 500,
+      "style": "normal",
+      "format": "woff2",
+      "license": "Apache-2.0",
+      "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
+      "specimen_text": "Sphinx of black quartz, judge my vow.",
+      "source": "core-ui-fonts"
+    },
+    {
+      "id": "d4d5feebd5ef88ee",
+      "filename": "Roboto-Bold.woff2",
+      "checksum": "28a9cbbc8e27603a974f37ca865b80785e824679f2cf60083cbbccf37091df4e",
+      "path": "/fonts/shared/Roboto-Bold.woff2",
+      "family": "Roboto",
+      "weight": 700,
+      "style": "normal",
+      "format": "woff2",
+      "license": "Apache-2.0",
+      "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
+      "specimen_text": "Sphinx of black quartz, judge my vow.",
+      "source": "core-ui-fonts"
+    }
+  ]
+}

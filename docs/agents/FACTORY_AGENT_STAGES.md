@@ -23,7 +23,7 @@ Your job:
 
 Always:
 - Keep architecture decisions explicit.
-- Keep outputs deterministic, documented, and OpenAI API–compatible in shape.
+- Keep outputs deterministic, documented, and OpenResponses API–compatible in shape.
 - Prefer stable, well-defined schemas over ad-hoc config.
 
 ---
