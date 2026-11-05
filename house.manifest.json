@@ -105,7 +105,7 @@
       "event-bus"
     ],
     "models": [
-      "text/qwen2.5-14b-4bit"
+      "text/qwen3.5-9b-optiq-4bit"
     ],
     "houses": [],
     "mcp_servers": [
