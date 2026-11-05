@@ -11,7 +11,7 @@
       "name": "Registry Orchestrator",
       "description": "Manages agent registries, validates manifests, and coordinates aggregation",
       "provider": "mlx-local",
-      "model": "/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen2.5-14b-4bit",
+      "model": "/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen3.5-9b-optiq-4bit",
       "promptPath": "./agents/registry-orchestrator.md",
       "skills": [
         "registration-flow",
@@ -43,7 +43,7 @@
       "name": "Task Dispatcher",
       "description": "Distributes tasks to appropriate houses and agents",
       "provider": "mlx-local",
-      "model": "/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen2.5-14b-4bit",
+      "model": "/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen3.5-9b-optiq-4bit",
       "promptPath": "./agents/task-dispatcher.md",
       "skills": [
         "task-routing"
@@ -73,7 +73,7 @@
       "name": "Health Monitor",
       "description": "Monitors system health across houses and services",
       "provider": "mlx-local",
-      "model": "/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen2.5-14b-4bit",
+      "model": "/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen3.5-9b-optiq-4bit",
       "promptPath": "./agents/health-monitor.md",
       "skills": [
         "monitoring-cycle"
